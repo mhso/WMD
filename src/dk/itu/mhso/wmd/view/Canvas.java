@@ -6,11 +6,13 @@ import java.awt.geom.Path2D;
 
 import javax.swing.JPanel;
 
+import dk.itu.mhso.wmd.model.Level;
+
 public class Canvas extends JPanel {
-	private Path2D path;
+	private Level level;
 	
-	public void setPath(Path2D path) {
-		this.path = path;
+	public void setLevel(Level level) {
+		this.level = level;
 	}
 	
 	protected void paintComponent(Graphics g) {
