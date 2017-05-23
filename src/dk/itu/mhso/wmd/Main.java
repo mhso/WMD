@@ -20,7 +20,6 @@ public class Main {
 		PathParser parser = new PathParser(image);
 		
 		Canvas canvas = new Canvas();
-		canvas.setPath(parser.getMainPath());
 		
 		WindowGame window = new WindowGame();
 		window.getContentPane().add(canvas);
