@@ -39,7 +39,7 @@ public class WindowMainMenu extends JFrame {
 		centerPanel.add(buttonContinue);
 		
 		JButton buttonNewGame = new JButton("New Game");
-		buttonNewGame.addActionListener(e -> new Game());
+		buttonNewGame.addActionListener(e -> Game.startGame());
 		centerPanel.add(buttonNewGame);
 		
 		JButton buttonExit = new JButton("Exit");

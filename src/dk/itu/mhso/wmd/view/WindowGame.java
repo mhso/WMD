@@ -1,18 +1,25 @@
 package dk.itu.mhso.wmd.view;
 
-import java.awt.BorderLayout;
-
 import javax.swing.JFrame;
 import javax.swing.JPanel;
+import javax.swing.OverlayLayout;
 
 import dk.itu.mhso.wmd.WMDConstants;
+import dk.itu.mhso.wmd.model.Level;
 
 public class WindowGame extends JFrame {
-	public WindowGame() {
+	private Level level;
+	private Canvas canvas;
+	
+	public WindowGame(Level level) {
+		this.level = level;
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		
 		JPanel contentPane = (JPanel) getContentPane();
-		contentPane.setLayout(new BorderLayout());
+		contentPane.setLayout(new OverlayLayout(contentPane));
+		
+		canvas = new Canvas();
+		contentPane.add(canvas);
 		
 		setPreferredSize(WMDConstants.WINDOW_SIZE_BASE);
 		pack();

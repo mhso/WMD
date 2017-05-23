@@ -1,5 +1,5 @@
 package dk.itu.mhso.wmd.model;
 
-public class Path {
+public class Wave {
 
 }
