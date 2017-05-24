@@ -3,7 +3,7 @@ package dk.itu.mhso.wmd.model;
 import java.awt.Shape;
 import java.awt.geom.Ellipse2D;
 
-public class Soldier extends Enemy {
+public class SoldierBasic extends Enemy {
 
 	@Override
 	Shape getTestShape() {

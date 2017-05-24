@@ -1,8 +1,12 @@
 package dk.itu.mhso.wmd.model;
 
 import java.awt.image.BufferedImage;
+import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
+import java.nio.charset.Charset;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 
 import javax.imageio.ImageIO;
 
@@ -24,6 +28,16 @@ public class Level {
 	}
 	
 	private void parseWaves(String pathName) {
-		
+		Charset charset = Charset.forName("UNICODE");
+		try(BufferedReader reader = Files.newBufferedReader(Paths.get(pathName + "/enemies.txt"), charset)) {
+			String line = reader.readLine();
+			while(line != null) {
+				
+				line = reader.readLine();
+			}
+		}
+		catch(IOException e) {
+			e.printStackTrace();
+		}
 	}
 }
