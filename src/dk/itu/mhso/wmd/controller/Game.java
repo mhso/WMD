@@ -22,7 +22,7 @@ public class Game {
 	
 	public static void loadLevels() {
 		try {
-			for(Iterator<Path> it = Files.list(Paths.get("resources/levels/paths")).iterator(); it.hasNext(); ) {
+			for(Iterator<Path> it = Files.list(Paths.get("resources/levels")).iterator(); it.hasNext(); ) {
 				levels.add(new Level(it.next().toString()));
 			}
 		} catch (IOException e) {

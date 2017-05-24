@@ -9,17 +9,21 @@ import javax.imageio.ImageIO;
 import dk.itu.mhso.wmd.controller.PathParser;
 
 public class Level {
-	public Level(String imageFileName) {
-		parsePath(imageFileName);
+	public Level(String pathName) {
+		parsePath(pathName);
 	}
 	
-	private void parsePath(String imageFileName) {
+	private void parsePath(String pathName) {
 		BufferedImage image = null;
 		try {
-			image = ImageIO.read(new File(imageFileName));
+			image = ImageIO.read(new File(pathName + "/path.png"));
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
 		PathParser parser = new PathParser(image);
+	}
+	
+	private void parseWaves(String pathName) {
+		
 	}
 }
