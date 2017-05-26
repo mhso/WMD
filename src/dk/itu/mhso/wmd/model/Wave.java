@@ -1,5 +1,19 @@
 package dk.itu.mhso.wmd.model;
 
-public class Wave {
+import java.util.List;
 
+public class Wave {
+	private int currentEnemy;
+	private List<Enemy> enemies;
+	
+	public Wave(List<Enemy> enemies) {
+		this.enemies = enemies;
+	}
+	
+	public Enemy getNextEnemy() {
+		if(currentEnemy == enemies.size()) return null;
+		Enemy enemy = enemies.get(currentEnemy);
+		currentEnemy++;
+		return enemy;
+	}
 }

@@ -9,6 +9,7 @@ import java.util.List;
 
 import dk.itu.mhso.wmd.model.Entrance;
 import dk.itu.mhso.wmd.model.Exit;
+import dk.itu.mhso.wmd.model.UnitPath;
 
 public class PathParser {
 	private final int AREA_RGB = Color.BLACK.getRGB();
@@ -20,7 +21,7 @@ public class PathParser {
 	private List<Entrance> entrances = new ArrayList<>();
 	private List<Exit> exits = new ArrayList<>();
 	private Path2D mainPath;
-	private Path2D unitPath;
+	private UnitPath unitPath;
 	
 	public PathParser(BufferedImage pathImage) {
 		this.pathImage = pathImage;
@@ -42,30 +43,29 @@ public class PathParser {
 		createExitsAndEntrances(exitPoints, true);
 		createExitsAndEntrances(entrancePoints, false);
 		
-		List<Path2D> movePaths = new ArrayList<>();
+		List<UnitPath> movePaths = new ArrayList<>();
 		List<Point> traversedPoints = new ArrayList<>();
 		int x = entrances.get(0).getBetween().x;
 		int y = entrances.get(0).getBetween().y;
 		traversedPoints.add(entrances.get(0).getBetween());
-		Path2D path = new Path2D.Double();
-		path.moveTo(x, y);
+		unitPath = new UnitPath();
+		unitPath.addPoint(entrances.get(0).getBetween());
 		boolean finished = false;
 		while(!finished) {
 			Point nextPoint = getNextPathPoint(new Point(x, y), traversedPoints, MOVE_RGB);
 			traversedPoints.add(nextPoint);
-			path.lineTo(nextPoint.x, nextPoint.y);
+			unitPath.addPoint(nextPoint);
 			x = nextPoint.x;
 			y = nextPoint.y;
 			
 			for(Exit exit : exits) {
 				if(exit.getBetween().x == x && exit.getBetween().y == y) {
-					path.lineTo(exit.getBetween().x, exit.getBetween().y);
+					unitPath.addPoint(exit.getBetween());
 					finished = true;
-					movePaths.add(path);
+					movePaths.add(unitPath);
 				}
 			}
 		}
-		unitPath = path;
 		
 		List<Path2D> paths = new ArrayList<>();
 		for(int i = 0; i < entrancePoints.size(); i++) {
@@ -73,7 +73,7 @@ public class PathParser {
 			x = entrancePoints.get(i).x;
 			y = entrancePoints.get(i).y;
 			traversedPoints.add(entrancePoints.get(i));
-			path = new Path2D.Double();
+			Path2D path = new Path2D.Double();
 			path.moveTo(x, y);
 			finished = false;
 			while(!finished) {
@@ -157,7 +157,7 @@ public class PathParser {
 		return mainPath;
 	}
 	
-	public Path2D getUnitPath() {
+	public UnitPath getUnitPath() {
 		return unitPath;
 	}
 	
