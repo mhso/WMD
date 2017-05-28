@@ -10,10 +10,6 @@ public class Wave {
 		this.enemies = enemies;
 	}
 	
-	public void spawnEnemy() {
-		
-	}
-	
 	public boolean isEmpty() {
 		return currentEnemy == enemies.size();
 	}

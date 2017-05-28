@@ -11,17 +11,16 @@ import dk.itu.mhso.wmd.model.GameEvent;
 import dk.itu.mhso.wmd.model.Level;
 
 public class WindowGame extends JFrame implements ChangeListener {
-	private Level level;
 	private Canvas canvas;
 	
 	public WindowGame(Level level) {
-		this.level = level;
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		
 		JPanel contentPane = (JPanel) getContentPane();
 		contentPane.setLayout(new OverlayLayout(contentPane));
 		
 		canvas = new Canvas();
+		canvas.setLevel(level);
 		contentPane.add(canvas);
 		
 		setPreferredSize(WMDConstants.WINDOW_SIZE_BASE);
@@ -34,5 +33,7 @@ public class WindowGame extends JFrame implements ChangeListener {
 	@Override
 	public void stateChanged(ChangeEvent ce) {
 		GameEvent ge = (GameEvent) ce;
+		canvas.setCurrentEnemies(ge.getCurrentEnemies());
+		canvas.repaint();
 	}
 }

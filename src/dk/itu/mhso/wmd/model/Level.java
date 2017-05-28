@@ -16,13 +16,17 @@ import dk.itu.mhso.wmd.controller.PathParser;
 import dk.itu.mhso.wmd.controller.UnitFactory;
 
 public class Level {
-	private List<Wave> waves;
+	private List<Wave> waves = new ArrayList<>();
 	private int currentWave;
+	private List<Exit> exits;
+	private List<Entrance> entrances;
+	private BufferedImage bgImage;
 	
 	public Level(String pathName) {
 		parseWaves(pathName, parsePath(pathName));
+		loadBGImage(pathName);
 	}
-	
+
 	private UnitPath parsePath(String pathName) {
 		BufferedImage image = null;
 		try {
@@ -31,6 +35,8 @@ public class Level {
 			e.printStackTrace();
 		}
 		PathParser parser = new PathParser(image);
+		exits = parser.getExits();
+		entrances = parser.getEntrances();
 		return parser.getUnitPath();
 	}
 	
@@ -56,6 +62,26 @@ public class Level {
 		catch(IOException e) {
 			e.printStackTrace();
 		}
+	}
+	
+	private void loadBGImage(String pathName) {
+		try {
+			bgImage = ImageIO.read(new File(pathName+"/bg.png"));
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+	}
+	
+	public BufferedImage getBGImage() {
+		return bgImage;
+	}
+	
+	public List<Exit> getExits() {
+		return exits;
+	}
+	
+	public List<Entrance> getEntrances() {
+		return entrances;
 	}
 	
 	public Wave getNextWave() {

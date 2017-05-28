@@ -13,7 +13,7 @@ import dk.itu.mhso.wmd.model.UnitPath;
 
 public class PathParser {
 	private final int AREA_RGB = Color.BLACK.getRGB();
-	private final int MOVE_RGB = new Color(237, 28, 36).getRGB();
+	private final int MOVE_RGB = Color.RED.getRGB();
 	private final int ENTRANCE_RGB = Color.GREEN.getRGB();
 	private final int EXIT_RGB = Color.BLUE.getRGB();
 	
@@ -129,7 +129,7 @@ public class PathParser {
 	}
 	
 	private boolean isWithinBounds(int x, int y) {
-		return x > 0 && x < pathImage.getWidth() && y > 0 && y < pathImage.getHeight();
+		return x >= 0 && x < pathImage.getWidth() && y >= 0 && y < pathImage.getHeight();
 	}
 	
 	private void createExitsAndEntrances(List<Point> relevantPoints, boolean exit) {
@@ -151,6 +151,14 @@ public class PathParser {
 			usedPoints.add(point);
 			usedPoints.add(closestPoint);
 		}
+	}
+	
+	public List<Exit> getExits() {
+		return exits;
+	}
+	
+	public List<Entrance> getEntrances() {
+		return entrances;
 	}
 	
 	public Path2D getMainPath() {
