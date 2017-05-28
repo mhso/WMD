@@ -41,6 +41,14 @@ public abstract class Enemy extends Unit {
 		return angle;
 	}
 	
+	public int getWidth() {
+		return icon.getWidth();
+	}
+	
+	public int getHeight() {
+		return icon.getHeight();
+	}
+	
 	public Point getPointOnPath() {
 		return pointOnPath;
 	}

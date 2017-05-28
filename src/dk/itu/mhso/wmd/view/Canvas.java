@@ -18,6 +18,10 @@ public class Canvas extends JPanel {
 	private Level level;
 	private List<Enemy> enemies;
 	
+	public Canvas() {
+		setDoubleBuffered(true);
+	}
+	
 	public void setLevel(Level level) {
 		this.level = level;
 	}
@@ -27,7 +31,6 @@ public class Canvas extends JPanel {
 	}
 	
 	protected void paintComponent(Graphics g) {
-		super.paintComponent(g);
 		drawLevel((Graphics2D) g);
 		drawAllies((Graphics2D) g);
 		drawEnemies((Graphics2D) g);
@@ -44,11 +47,12 @@ public class Canvas extends JPanel {
 	private void drawEnemies(Graphics2D g2d) {
 		if(enemies == null || enemies.isEmpty()) return;
 		for(Enemy enemy : enemies) {
-			double midX = enemy.getIcon().getWidth()/2;
-			double midY = enemy.getIcon().getHeight()/2;
+			double midX = enemy.getWidth()/2;
+			double midY = enemy.getHeight()/2;
 			AffineTransform transform = AffineTransform.getRotateInstance(enemy.getAngle(), midX, midY);
 			AffineTransformOp op = new AffineTransformOp(transform, AffineTransformOp.TYPE_BILINEAR);
-			g2d.drawImage(op.filter(enemy.getIcon(), null), enemy.getPointOnPath().x, enemy.getPointOnPath().y, null);
+			g2d.drawImage(op.filter(enemy.getIcon(), null), enemy.getPointOnPath().x-(enemy.getWidth()/2), 
+					enemy.getPointOnPath().y-(enemy.getHeight()/2), null);
 			
 			drawHealth(g2d, enemy);
 			
@@ -61,11 +65,11 @@ public class Canvas extends JPanel {
 	}
 
 	private void drawHealth(Graphics2D g2d, Enemy enemy) {
-		g2d.draw(new Rectangle2D.Double(enemy.getPointOnPath().getX(), enemy.getPointOnPath().getY()-12, 
-				enemy.getIcon().getWidth(), 7));
+		g2d.draw(new Rectangle2D.Double(enemy.getPointOnPath().getX()-(enemy.getWidth()/2), enemy.getPointOnPath().getY()-12-(enemy.getHeight()/2), 
+				enemy.getWidth(), 7));
 		g2d.setColor(Color.RED);
-		g2d.fill(new Rectangle2D.Double(enemy.getPointOnPath().getX()+1, enemy.getPointOnPath().getY()-11, 
-				(enemy.getIcon().getWidth()-1)*((double)enemy.getCurrentHealth()/(double)enemy.getMaxHealth()), 6));
+		g2d.fill(new Rectangle2D.Double(enemy.getPointOnPath().getX()+1-(enemy.getWidth()/2), enemy.getPointOnPath().getY()-11-(enemy.getHeight()/2), 
+				(enemy.getWidth()-1)*((double)enemy.getCurrentHealth()/(double)enemy.getMaxHealth()), 6));
 		g2d.setColor(Color.BLACK);
 	}
 }
