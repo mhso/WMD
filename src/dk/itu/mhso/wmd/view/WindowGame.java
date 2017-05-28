@@ -3,11 +3,14 @@ package dk.itu.mhso.wmd.view;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.OverlayLayout;
+import javax.swing.event.ChangeEvent;
+import javax.swing.event.ChangeListener;
 
 import dk.itu.mhso.wmd.WMDConstants;
+import dk.itu.mhso.wmd.model.GameEvent;
 import dk.itu.mhso.wmd.model.Level;
 
-public class WindowGame extends JFrame {
+public class WindowGame extends JFrame implements ChangeListener {
 	private Level level;
 	private Canvas canvas;
 	
@@ -26,5 +29,10 @@ public class WindowGame extends JFrame {
 		
 		setLocationRelativeTo(null);
 		setVisible(true);
+	}
+	
+	@Override
+	public void stateChanged(ChangeEvent ce) {
+		GameEvent ge = (GameEvent) ce;
 	}
 }
