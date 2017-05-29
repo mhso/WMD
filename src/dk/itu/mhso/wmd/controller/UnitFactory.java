@@ -15,7 +15,7 @@ public class UnitFactory {
 	}
 	
 	private static Unit initializeUnit(Unit unit, String unitName) {
-		unit.loadIcon(unitName);
+		unit.loadIcons(unitName);
 		return unit;
 	}
 }

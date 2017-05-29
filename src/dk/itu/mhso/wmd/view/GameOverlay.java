@@ -6,6 +6,8 @@ import javax.swing.JButton;
 import javax.swing.JLabel;
 import java.awt.Color;
 import java.awt.Font;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 
 public class GameOverlay extends JPanel {
 	private TowersMenu towers;
@@ -13,6 +15,14 @@ public class GameOverlay extends JPanel {
 	public GameOverlay() {
 		setLayout(new BorderLayout(0, 0));
 		setOpaque(false);
+		setFocusable(true);
+		
+		addMouseMotionListener(new MouseAdapter() {
+			@Override
+			public void mouseMoved(MouseEvent e) {
+				WindowGame.canvas.checkHighlight(e.getPoint());
+			}
+		});
 		
 		towers = new TowersMenu(this);
 		

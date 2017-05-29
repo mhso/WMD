@@ -3,20 +3,29 @@ package dk.itu.mhso.wmd.view;
 import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
+import java.awt.Point;
 import java.awt.geom.AffineTransform;
+import java.awt.geom.Ellipse2D;
 import java.awt.geom.Rectangle2D;
 import java.awt.image.AffineTransformOp;
+import java.awt.image.BufferedImage;
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.swing.JPanel;
 
 import dk.itu.mhso.wmd.Main;
+import dk.itu.mhso.wmd.controller.Game;
+import dk.itu.mhso.wmd.model.Ally;
 import dk.itu.mhso.wmd.model.Enemy;
 import dk.itu.mhso.wmd.model.Level;
+import dk.itu.mhso.wmd.model.Projectile;
+import dk.itu.mhso.wmd.model.Unit;
 
 public class Canvas extends JPanel {
-	private Level level;
-	private List<Enemy> enemies;
+	private Level level;	
+	private Ally highlightedUnit;
+	private boolean drawUnitRange;
 	
 	public Canvas() {
 		setDoubleBuffered(true);
@@ -26,14 +35,35 @@ public class Canvas extends JPanel {
 		this.level = level;
 	}
 	
-	public void setCurrentEnemies(List<Enemy> enemies) {
-		this.enemies = enemies;
+	public void checkHighlight(Point pos) {
+		highlightedUnit = null;
+		for(Ally ally : Game.getAllies()) {
+			if(ally.contains(pos)) {
+				ally.setHighlighted(true);
+				highlightedUnit = ally;
+			}
+			else if(ally.isHighlighted()) ally.setHighlighted(false);
+		}
+		if(highlightedUnit == null) drawUnitRange = false;
+	}
+	
+	public Ally getHighlighedUnit() {
+		return highlightedUnit;
+	}
+	
+	public boolean isDrawingUnitRange() {
+		return drawUnitRange;
 	}
 	
 	protected void paintComponent(Graphics g) {
 		drawLevel((Graphics2D) g);
 		drawAllies((Graphics2D) g);
+		drawProjectiles((Graphics2D) g);
 		drawEnemies((Graphics2D) g);
+	}
+	
+	public void drawUnitRange(boolean drawRange) {
+		drawUnitRange = drawRange;
 	}
 	
 	private void drawLevel(Graphics2D g2d) {
@@ -41,34 +71,53 @@ public class Canvas extends JPanel {
 	}
 	
 	private void drawAllies(Graphics2D g2d) {
-		
+		for(Ally ally : Game.getAllies()) {
+			if(!ally.isHighlighted()) transformAndDrawImage(ally, ally.getIcon(), 0, 0, g2d);
+			else transformAndDrawImage(ally, ally.getHighlightedIcon(), 0, 0, g2d);
+		}
+		if(drawUnitRange) {
+			g2d.setColor(new Color(230, 230, 230, 150));
+			g2d.fill(highlightedUnit.getRangeCircle());
+			g2d.setColor(Color.BLACK);
+		}
+	}
+	
+	private void drawProjectiles(Graphics2D g2d) {
+		if(Game.getCurrentProjectiles() == null || Game.getCurrentProjectiles().isEmpty()) return;
+		for(Projectile projectile : Game.getCurrentProjectiles()) {
+			transformAndDrawImage(projectile, projectile.getIcon(), 0, 0, g2d);
+		}
 	}
 	
 	private void drawEnemies(Graphics2D g2d) {
-		if(enemies == null || enemies.isEmpty()) return;
-		for(Enemy enemy : enemies) {
-			double midX = enemy.getWidth()/2;
-			double midY = enemy.getHeight()/2;
-			AffineTransform transform = AffineTransform.getRotateInstance(enemy.getAngle(), midX, midY);
-			AffineTransformOp op = new AffineTransformOp(transform, AffineTransformOp.TYPE_BILINEAR);
-			g2d.drawImage(op.filter(enemy.getIcon(), null), enemy.getPointOnPath().x-(enemy.getWidth()/2), 
-					enemy.getPointOnPath().y-(enemy.getHeight()/2), null);
+		if(Game.getCurrentEnemies() == null || Game.getCurrentEnemies().isEmpty()) return;
+		for(Enemy enemy : Game.getCurrentEnemies()) {
+			transformAndDrawImage(enemy, enemy.getIcon(), -(enemy.getWidth()/2), -(enemy.getHeight()/2), g2d);
 			
 			drawHealth(g2d, enemy);
 			
 			if(Main.DEBUG) {
 				String angleString = ""+Math.toDegrees(enemy.getAngle());
 				if(angleString.length() > 4) angleString = angleString.substring(0, 5);
-				g2d.drawString(angleString, enemy.getPointOnPath().x+10, enemy.getPointOnPath().y-10);
+				g2d.drawString(angleString, enemy.getLocation().x+10, enemy.getLocation().y-10);
 			}
 		}
 	}
+	
+	private void transformAndDrawImage(Unit unit, BufferedImage image, int offsetX, int offsetY, Graphics2D g2d) {
+		double midX = unit.getWidth()/2;
+		double midY = unit.getHeight()/2;
+		AffineTransform transform = AffineTransform.getRotateInstance(unit.getAngle(), midX, midY);
+		AffineTransformOp op = new AffineTransformOp(transform, AffineTransformOp.TYPE_BILINEAR);
+		g2d.drawImage(op.filter(image, null), unit.getLocation().x + offsetX, 
+				unit.getLocation().y+offsetY, null);
+	}
 
 	private void drawHealth(Graphics2D g2d, Enemy enemy) {
-		g2d.draw(new Rectangle2D.Double(enemy.getPointOnPath().getX()-(enemy.getWidth()/2), enemy.getPointOnPath().getY()-12-(enemy.getHeight()/2), 
+		g2d.draw(new Rectangle2D.Double(enemy.getLocation().getX()-(enemy.getWidth()/2), enemy.getLocation().getY()-12-(enemy.getHeight()/2), 
 				enemy.getWidth(), 7));
 		g2d.setColor(Color.RED);
-		g2d.fill(new Rectangle2D.Double(enemy.getPointOnPath().getX()+1-(enemy.getWidth()/2), enemy.getPointOnPath().getY()-11-(enemy.getHeight()/2), 
+		g2d.fill(new Rectangle2D.Double(enemy.getLocation().getX()+1-(enemy.getWidth()/2), enemy.getLocation().getY()-11-(enemy.getHeight()/2), 
 				(enemy.getWidth()-1)*((double)enemy.getCurrentHealth()/(double)enemy.getMaxHealth()), 6));
 		g2d.setColor(Color.BLACK);
 	}

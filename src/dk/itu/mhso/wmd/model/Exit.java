@@ -9,12 +9,12 @@ public class Exit extends Passage {
 	
 	public boolean hasExited(Enemy enemy) {
 		if(start.x - end.x == 0) {
-			if(start.x < 10) return enemy.getPointOnPath().x < start.x+5;
-			else return enemy.getPointOnPath().x > start.x-5;
+			if(start.x < 10) return enemy.getLocation().x < start.x+5;
+			else return enemy.getLocation().x > start.x-5;
 		}
 		else {
-			if(start.y < 10) return enemy.getPointOnPath().y < start.y+5;
-			else return enemy.getPointOnPath().y > start.y-5;
+			if(start.y < 10) return enemy.getLocation().y < start.y+5;
+			else return enemy.getLocation().y > start.y-5;
 		}
 	}
 	

@@ -9,11 +9,10 @@ import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 
 import dk.itu.mhso.wmd.WMDConstants;
-import dk.itu.mhso.wmd.model.GameEvent;
 import dk.itu.mhso.wmd.model.Level;
 
 public class WindowGame extends JFrame implements ChangeListener {
-	private Canvas canvas;
+	public static Canvas canvas;
 	private GameOverlay overlay;
 	
 	public WindowGame(Level level) {
@@ -31,6 +30,7 @@ public class WindowGame extends JFrame implements ChangeListener {
 		canvas.setLevel(level);
 		
 		overlay = new GameOverlay();
+		
 		gameOverlay.add(overlay);
 		
 		overlayPanel.add(gameOverlay);
@@ -47,8 +47,6 @@ public class WindowGame extends JFrame implements ChangeListener {
 	
 	@Override
 	public void stateChanged(ChangeEvent ce) {
-		GameEvent ge = (GameEvent) ce;
-		canvas.setCurrentEnemies(ge.getCurrentEnemies());
 		repaint();
 	}
 }

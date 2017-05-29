@@ -4,12 +4,15 @@ import java.awt.BorderLayout;
 import java.awt.Cursor;
 import java.awt.Dimension;
 import java.awt.GridLayout;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 
 import javax.swing.JButton;
 import javax.swing.JComponent;
 import javax.swing.JPanel;
 import javax.swing.JPopupMenu;
 
+import dk.itu.mhso.wmd.controller.Game;
 import dk.itu.mhso.wmd.controller.UnitFactory;
 import dk.itu.mhso.wmd.model.Ally;
 
@@ -21,7 +24,25 @@ public class TowersMenu extends JPopupMenu {
 		this.overlay = overlay;
 		setLayout(new BorderLayout(0, 0));
 		setBackground(Style.OVERLAY_MENU_MAIN);
-
+		
+		overlay.addMouseListener(new MouseAdapter() {
+			@Override
+			public void mouseClicked(MouseEvent e) {
+				if(selectedUnit != null) {
+					Game.addAlly(selectedUnit);
+					selectedUnit.setLocation(e.getPoint());
+					Cursor cursor = CursorImage.getDefault();
+					setCursor(cursor);
+					overlay.setCursor(cursor);
+				}
+				if(WindowGame.canvas.getHighlighedUnit() != null) {
+					if(!WindowGame.canvas.isDrawingUnitRange()) WindowGame.canvas.drawUnitRange(true);
+					else WindowGame.canvas.drawUnitRange(false);
+				}
+				selectedUnit = null;
+			}
+		});
+		
 		JPanel topPanel = new JPanel();
 		topPanel.setBackground(Style.OVERLAY_MENU_MAIN);
 		add(topPanel, BorderLayout.NORTH);
