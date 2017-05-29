@@ -8,7 +8,7 @@ import javax.imageio.ImageIO;
 public abstract class Ally extends Unit {
 	public void loadIcon(String unitName) {
 		try {
-			icon = ImageIO.read(new File("resources/sprites/enemy/"+unitName+".png"));
+			icon = ImageIO.read(new File("resources/sprites/ally/"+unitName+".png"));
 		} catch (IOException e) {
 			e.printStackTrace();
 		}

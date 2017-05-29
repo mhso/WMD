@@ -1,6 +1,7 @@
 package dk.itu.mhso.wmd.view;
 
 import java.awt.BorderLayout;
+import java.awt.Cursor;
 import java.awt.Dimension;
 import java.awt.GridLayout;
 
@@ -9,11 +10,20 @@ import javax.swing.JComponent;
 import javax.swing.JPanel;
 import javax.swing.JPopupMenu;
 
+import dk.itu.mhso.wmd.controller.UnitFactory;
+import dk.itu.mhso.wmd.model.Ally;
+
 public class TowersMenu extends JPopupMenu {
-	public TowersMenu() {
+	private Ally selectedUnit;
+	private GameOverlay overlay;
+	
+	public TowersMenu(GameOverlay overlay) {
+		this.overlay = overlay;
 		setLayout(new BorderLayout(0, 0));
+		setBackground(Style.OVERLAY_MENU_MAIN);
 
 		JPanel topPanel = new JPanel();
+		topPanel.setBackground(Style.OVERLAY_MENU_MAIN);
 		add(topPanel, BorderLayout.NORTH);
 		
 		JButton buttonDeflateLeft = new JButton("<");
@@ -23,10 +33,12 @@ public class TowersMenu extends JPopupMenu {
 		buttonDeflateLeft.setEnabled(true);
 		
 		JPanel panelTowers = new JPanel();
+		panelTowers.setBackground(Style.OVERLAY_MENU_MAIN);
 		add(panelTowers, BorderLayout.CENTER);
 		panelTowers.setLayout(new GridLayout(0, 2, 0, 0));
 		
 		JButton btnNewButton = new JButton("Tower 1");
+		btnNewButton.addActionListener(e -> addToSelected("SNIPER"));
 		panelTowers.add(btnNewButton);
 		
 		JButton btnNewButton_1 = new JButton("Tower 2");
@@ -43,6 +55,13 @@ public class TowersMenu extends JPopupMenu {
 		
 		JButton btnNewButton_5 = new JButton("Tower 6");
 		panelTowers.add(btnNewButton_5);
+	}
+	
+	private void addToSelected(String unitName) {
+		selectedUnit = (Ally) UnitFactory.createUnit(unitName);
+		Cursor cursor = CursorImage.getCursor(selectedUnit.getIcon(), this);
+		setCursor(cursor);
+		overlay.setCursor(cursor);
 	}
 	
 	public void showDropdown(JComponent source) {

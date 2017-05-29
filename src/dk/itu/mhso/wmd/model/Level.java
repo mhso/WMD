@@ -53,7 +53,6 @@ public class Level {
 				else {
 					Enemy enemy = (Enemy)UnitFactory.createUnit(line);
 					enemy.setUnitPath(unitPath);
-					enemy.loadIcon(line.toLowerCase());
 					currentWaveEnemies.add(enemy);
 				}
 				line = reader.readLine();
