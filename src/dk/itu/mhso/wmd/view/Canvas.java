@@ -5,12 +5,9 @@ import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.Point;
 import java.awt.geom.AffineTransform;
-import java.awt.geom.Ellipse2D;
 import java.awt.geom.Rectangle2D;
 import java.awt.image.AffineTransformOp;
 import java.awt.image.BufferedImage;
-import java.util.ArrayList;
-import java.util.List;
 
 import javax.swing.JPanel;
 
@@ -84,9 +81,8 @@ public class Canvas extends JPanel {
 	
 	private void drawProjectiles(Graphics2D g2d) {
 		if(Game.getCurrentProjectiles() == null || Game.getCurrentProjectiles().isEmpty()) return;
-		for(Projectile projectile : Game.getCurrentProjectiles()) {
+		for(Projectile projectile : Game.getCurrentProjectiles()) 
 			transformAndDrawImage(projectile, projectile.getIcon(), 0, 0, g2d);
-		}
 	}
 	
 	private void drawEnemies(Graphics2D g2d) {

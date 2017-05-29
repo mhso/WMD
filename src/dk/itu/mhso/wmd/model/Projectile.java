@@ -6,7 +6,7 @@ public class Projectile extends Unit {
 	private Ally ally;
 	private Point previousPoint;
 	private Enemy targetEnemy;
-	private final int DIST_PER_TICK = 5;
+	private int distPerTick = 5;
 	
 	public Projectile(Ally ally, Enemy targetEnemy) {
 		this.ally = ally;
@@ -17,14 +17,26 @@ public class Projectile extends Unit {
 	
 	public void move() {
 		previousPoint = location;
-		double deltaX = location.x - previousPoint.x;
-		double deltaY = location.y - previousPoint.y;
 		
-		double ratioX = deltaX/DIST_PER_TICK;
-		double desiredX = location.x + DIST_PER_TICK;
-		double desiredY = location.y * ratioX;
+		int deltaX = targetEnemy.getLocation().x - location.x;
+		
+		if(deltaX == 0) {
+			active = false;
+			return;
+		}
+		if(deltaX < 0) distPerTick *= -1;
+		
+		double ratioX = distPerTick/deltaX;
+		double desiredX = location.x + distPerTick;
+		double desiredY = location.y += location.y * ratioX;
 		location = new Point((int)desiredX, (int)desiredY);
-		angle = Math.atan2(deltaY, deltaX) + Math.toRadians(180);
+		
+		calculateAngle(previousPoint, location);
+	}
+	
+	public boolean hasHit() {
+		return location.x > targetEnemy.getLocation().x-3 && location.x < targetEnemy.getLocation().x+3
+				&& location.y > targetEnemy.getLocation().y-3 && location.y < targetEnemy.getLocation().y+3;
 	}
 
 	@Override

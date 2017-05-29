@@ -85,6 +85,7 @@ public class Game extends Observable {
 		private int enemyDelay;
 		private final int ENEMY_SPAWN_MOD = 250;
 		private final int ENEMY_MOVE_MOD = 2;
+		private final int PROJECTILE_MOVE_MOD = 5;
 		
 		public GameTimer(int delay) {
 			timer = new Timer(delay, this);
@@ -103,7 +104,7 @@ public class Game extends Observable {
 			if(enemyDelay < 0) enemyDelay = 0;
 			window.stateChanged(new ChangeEvent(this));
 			
-			moveProjectiles();
+			if(enemyDelay % PROJECTILE_MOVE_MOD == 0) moveProjectiles();
 			
 			fireAllies();
 			
@@ -121,13 +122,22 @@ public class Game extends Observable {
 					}
 				}
 				if(ally.getCurrentlyTargetedEnemy() != null) {
-					activeProjectiles.add(new Projectile(ally, ally.getCurrentlyTargetedEnemy()));
+					if(enemyDelay % ally.getFireRate() == 0) 
+						activeProjectiles.add(new Projectile(ally, ally.getCurrentlyTargetedEnemy()));
 				}
 			}
 		}
 		
 		private void moveProjectiles() {
-			
+			Iterator<Projectile> it = activeProjectiles.iterator();
+			while(it.hasNext()) {
+				Projectile projectile = it.next();
+				projectile.move();
+				
+				if(projectile.hasHit()) projectile.setActive(false);
+				
+				if(!projectile.isActive()) it.remove();
+			}
 		}
 		
 		private void moveEnemies() {
@@ -135,11 +145,10 @@ public class Game extends Observable {
 			while(it.hasNext()) {
 				Enemy enemy = it.next();
 				enemy.move();
-				if(!enemy.isActive()) {
-					it.remove();
-					continue;
-				}
-				for(Exit exit : currentLevel.getExits()) if(exit.hasExited(enemy)) it.remove();
+				
+				for(Exit exit : currentLevel.getExits()) if(exit.hasExited(enemy)) enemy.setActive(false);
+				
+				if(!enemy.isActive()) it.remove();
 			}
 		}
 	}

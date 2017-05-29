@@ -74,6 +74,10 @@ public abstract class Ally extends Unit {
 		currentlyTargetedEnemy = enemy;
 	}
 	
+	public int getFireRate() {
+		return fireRate;
+	}
+	
 	public Enemy getCurrentlyTargetedEnemy() {
 		return currentlyTargetedEnemy;
 	}
