@@ -1,6 +1,11 @@
 package dk.itu.mhso.wmd.view;
 
 import javax.swing.JPanel;
+import javax.swing.event.ChangeEvent;
+import javax.swing.event.ChangeListener;
+
+import dk.itu.mhso.wmd.controller.Game;
+
 import java.awt.BorderLayout;
 import javax.swing.JButton;
 import javax.swing.JLabel;
@@ -9,8 +14,13 @@ import java.awt.Font;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 
-public class GameOverlay extends JPanel {
+public class GameOverlay extends JPanel implements ChangeListener {
 	private TowersMenu towers;
+	private JLabel labelLives;
+	private JLabel labelMoney;
+	private JLabel labelEnemiesRemaining;
+	private JLabel labelLevel;
+	private JLabel labelWave;
 	
 	public GameOverlay() {
 		setLayout(new BorderLayout(0, 0));
@@ -25,14 +35,15 @@ public class GameOverlay extends JPanel {
 		});
 		
 		towers = new TowersMenu(this);
+		Game.addChangeListener(this);
 		
 		JPanel leftMainPanel = new JPanel();
-		leftMainPanel.setBackground(Style.OVERLAY_MENU_MAIN);
+		leftMainPanel.setOpaque(false);
 		add(leftMainPanel, BorderLayout.WEST);
 		leftMainPanel.setLayout(new BorderLayout(0, 0));
 		
 		JPanel deflatedLeftPanel = new JPanel();
-		deflatedLeftPanel.setBackground(Style.OVERLAY_MENU_MAIN);
+		deflatedLeftPanel.setOpaque(false);
 		leftMainPanel.add(deflatedLeftPanel);
 		
 		JPanel inflatedLeftPanel = new JPanel();
@@ -56,12 +67,17 @@ public class GameOverlay extends JPanel {
 		topMainPanel.add(topPanel);
 		topPanel.setBackground(Style.OVERLAY_MENU_MAIN);
 		
-		JLabel labelLevel = new JLabel("Level ");
+		labelLevel = new JLabel("Level " + Game.getCurrentLevelNr() + ": " + Game.getCurrentLevel().getName());
 		labelLevel.setFont(new Font("Tahoma", Font.PLAIN, 14));
 		labelLevel.setForeground(Color.WHITE);
 		topPanel.add(labelLevel);
 		
-		JLabel labelEnemiesRemaining = new JLabel("Enemies: ");
+		labelWave = new JLabel("Wave " + Game.getCurrentWaveNr());
+		labelWave.setForeground(Color.WHITE);
+		labelWave.setFont(new Font("Tahoma", Font.PLAIN, 14));
+		topPanel.add(labelWave);
+		
+		labelEnemiesRemaining = new JLabel("Enemies: " + Game.getCurrentEnemies().size());
 		labelEnemiesRemaining.setFont(new Font("Tahoma", Font.PLAIN, 14));
 		labelEnemiesRemaining.setForeground(Color.WHITE);
 		topPanel.add(labelEnemiesRemaining);
@@ -74,17 +90,26 @@ public class GameOverlay extends JPanel {
 		southPanel.setBackground(new Color(9, 40, 71));
 		southMainPanel.add(southPanel);
 		
-		JLabel labelMoney = new JLabel("Money: ");
+		labelMoney = new JLabel("Money: " + Game.getMoneyAmount() + "$");
 		labelMoney.setForeground(Color.WHITE);
 		labelMoney.setFont(new Font("Tahoma", Font.PLAIN, 14));
 		southPanel.add(labelMoney);
 		
-		JLabel labelLives = new JLabel("Lives: ");
+		labelLives = new JLabel("Lives: " + Game.getLivesAmount());
 		labelLives.setForeground(Color.WHITE);
 		labelLives.setFont(new Font("Tahoma", Font.PLAIN, 14));
 		southPanel.add(labelLives);
 		
 		JPanel panel = new JPanel();
 		inflatedLeftPanel.add(panel, BorderLayout.NORTH);
+	}
+
+	@Override
+	public void stateChanged(ChangeEvent e) {
+		labelLevel.setText("Level " + Game.getCurrentLevelNr() + ": " + Game.getCurrentLevel().getName());
+		labelEnemiesRemaining.setText("Enemies: " + Game.getCurrentEnemies().size());
+		labelMoney.setText("Money: " + Game.getMoneyAmount() + "$");
+		labelLives.setText("Lives: " + Game.getLivesAmount());
+		labelWave.setText("Wave " + Game.getCurrentWaveNr());
 	}
 }

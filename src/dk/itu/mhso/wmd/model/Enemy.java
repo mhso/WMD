@@ -44,4 +44,12 @@ public abstract class Enemy extends Unit {
 	public void setHealth(int health) {
 		currentHealth = health;
 	}
+	
+	public void decrementHealth(int amount) {
+		currentHealth -= amount;
+		if(currentHealth <= 0) {
+			currentHealth = 0;
+			active = false;
+		}
+	}
 }

@@ -4,6 +4,8 @@ import java.awt.BorderLayout;
 import java.awt.Cursor;
 import java.awt.Dimension;
 import java.awt.GridLayout;
+import java.awt.event.KeyAdapter;
+import java.awt.event.KeyEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 
@@ -12,6 +14,7 @@ import javax.swing.JComponent;
 import javax.swing.JPanel;
 import javax.swing.JPopupMenu;
 
+import dk.itu.mhso.wmd.Main;
 import dk.itu.mhso.wmd.controller.Game;
 import dk.itu.mhso.wmd.controller.UnitFactory;
 import dk.itu.mhso.wmd.model.Ally;
@@ -28,19 +31,33 @@ public class TowersMenu extends JPopupMenu {
 		overlay.addMouseListener(new MouseAdapter() {
 			@Override
 			public void mouseClicked(MouseEvent e) {
-				if(selectedUnit != null) {
-					Game.addAlly(selectedUnit);
-					selectedUnit.setLocation(e.getPoint());
-					Cursor cursor = CursorImage.getDefault();
-					setCursor(cursor);
-					overlay.setCursor(cursor);
+				if(e.getButton() == MouseEvent.BUTTON1) {
+					if(selectedUnit != null && !Game.isWithinMainPath(e.getPoint())) {
+						Game.addAlly(selectedUnit);
+						selectedUnit.setLocation(e.getPoint());
+						unselectUnit();
+					}
 				}
+				else if(e.getButton() == MouseEvent.BUTTON3) {
+					if(selectedUnit != null) unselectUnit();
+				}
+				
 				if(WindowGame.canvas.getHighlighedUnit() != null) {
 					if(!WindowGame.canvas.isDrawingUnitRange()) WindowGame.canvas.drawUnitRange(true);
 					else WindowGame.canvas.drawUnitRange(false);
 				}
-				selectedUnit = null;
 			}
+		});
+		Main.window.addKeyListener(new KeyAdapter() {
+			@Override
+			public void keyPressed(KeyEvent e) {
+				if(e.getKeyCode() == KeyEvent.VK_ESCAPE) {
+					if(selectedUnit != null) unselectUnit();
+					if(WindowGame.canvas.getHighlighedUnit() != null) {
+						if(WindowGame.canvas.isDrawingUnitRange()) WindowGame.canvas.drawUnitRange(false);
+					}
+				}
+			}	
 		});
 		
 		JPanel topPanel = new JPanel();
@@ -76,6 +93,13 @@ public class TowersMenu extends JPopupMenu {
 		
 		JButton btnNewButton_5 = new JButton("Tower 6");
 		panelTowers.add(btnNewButton_5);
+	}
+	
+	private void unselectUnit() {
+		Cursor cursor = CursorImage.getDefault();
+		setCursor(cursor);
+		overlay.setCursor(cursor);
+		selectedUnit = null;
 	}
 	
 	private void addToSelected(String unitName) {

@@ -7,36 +7,44 @@ public class Projectile extends Unit {
 	private Point previousPoint;
 	private Enemy targetEnemy;
 	private int distPerTick = 5;
+	private int pointsTraveled;
+	private final int MAX_POINTS = 20;
+	private final int MARGIN_FOR_ERROR = 20;
 	
 	public Projectile(Ally ally, Enemy targetEnemy) {
 		this.ally = ally;
 		this.targetEnemy = targetEnemy;
 		location = new Point(ally.getLocation().x + ally.getWidth()/2, ally.getLocation().y + ally.getHeight()/2);
+		calculateAngle(targetEnemy.getLocation(), location);
 		loadIcons(null);
+	}
+	
+	public Ally getAlly() {
+		return ally;
+	}
+	
+	public Enemy getTarget() {
+		return targetEnemy;
 	}
 	
 	public void move() {
 		previousPoint = location;
 		
 		int deltaX = targetEnemy.getLocation().x - location.x;
+		int deltaY = targetEnemy.getLocation().y - location.y;
 		
-		if(deltaX == 0) {
-			active = false;
-			return;
-		}
-		if(deltaX < 0) distPerTick *= -1;
+		double desiredX = location.x + (deltaX/MAX_POINTS)*pointsTraveled;
+		double desiredY = location.y + (deltaY/MAX_POINTS)*pointsTraveled;
+		pointsTraveled++;
 		
-		double ratioX = distPerTick/deltaX;
-		double desiredX = location.x + distPerTick;
-		double desiredY = location.y += location.y * ratioX;
 		location = new Point((int)desiredX, (int)desiredY);
 		
-		calculateAngle(previousPoint, location);
+		calculateAngle(location, previousPoint);
 	}
 	
 	public boolean hasHit() {
-		return location.x > targetEnemy.getLocation().x-3 && location.x < targetEnemy.getLocation().x+3
-				&& location.y > targetEnemy.getLocation().y-3 && location.y < targetEnemy.getLocation().y+3;
+		return location.x > targetEnemy.getLocation().x-MARGIN_FOR_ERROR && location.x < targetEnemy.getLocation().x+MARGIN_FOR_ERROR
+				&& location.y > targetEnemy.getLocation().y-MARGIN_FOR_ERROR && location.y < targetEnemy.getLocation().y+MARGIN_FOR_ERROR;
 	}
 
 	@Override

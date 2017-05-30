@@ -65,6 +65,7 @@ public class Canvas extends JPanel {
 	
 	private void drawLevel(Graphics2D g2d) {
 		g2d.drawImage(level.getBGImage(), 0, 0, null);
+		if(Main.DEBUG) g2d.draw(level.getMainPathArea());
 	}
 	
 	private void drawAllies(Graphics2D g2d) {
@@ -81,8 +82,11 @@ public class Canvas extends JPanel {
 	
 	private void drawProjectiles(Graphics2D g2d) {
 		if(Game.getCurrentProjectiles() == null || Game.getCurrentProjectiles().isEmpty()) return;
-		for(Projectile projectile : Game.getCurrentProjectiles()) 
+		for(Projectile projectile : Game.getCurrentProjectiles()) {
 			transformAndDrawImage(projectile, projectile.getIcon(), 0, 0, g2d);
+			if(Main.DEBUG) g2d.drawLine(projectile.getLocation().x, projectile.getLocation().y,
+					projectile.getTarget().getLocation().x, projectile.getTarget().getLocation().y);
+		}
 	}
 	
 	private void drawEnemies(Graphics2D g2d) {

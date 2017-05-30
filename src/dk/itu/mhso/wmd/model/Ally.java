@@ -40,6 +40,10 @@ public abstract class Ally extends Unit {
 				range, range);
 	}
 	
+	public int getDamage() {
+		return damage;
+	}
+	
 	public BufferedImage getHighlightedIcon() {
 		return highlightIcon;
 	}

@@ -9,6 +9,7 @@ import java.util.List;
 
 import dk.itu.mhso.wmd.model.Entrance;
 import dk.itu.mhso.wmd.model.Exit;
+import dk.itu.mhso.wmd.model.Passage;
 import dk.itu.mhso.wmd.model.UnitPath;
 
 public class PathParser {
@@ -20,6 +21,7 @@ public class PathParser {
 	private BufferedImage pathImage;
 	private List<Entrance> entrances = new ArrayList<>();
 	private List<Exit> exits = new ArrayList<>();
+	private List<Passage> connectedPassages = new ArrayList<>();
 	private Path2D mainPath;
 	private UnitPath unitPath;
 	
@@ -74,6 +76,7 @@ public class PathParser {
 			y = entrancePoints.get(i).y;
 			traversedPoints.add(entrancePoints.get(i));
 			Path2D path = new Path2D.Double();
+			path.setWindingRule(Path2D.WIND_EVEN_ODD);
 			path.moveTo(x, y);
 			finished = false;
 			while(!finished) {
@@ -96,13 +99,15 @@ public class PathParser {
 					}
 				}
 			}
-			if(i % 2 == 0) {
-				path.moveTo(entrances.get(i/2).getStartPoint().x, entrances.get(i/2).getStartPoint().y);
-				path.lineTo(entrances.get(i/2).getEndPoint().x, entrances.get(i/2).getEndPoint().y);
-			}
-			else {
+			if(!connectedPassages.contains(exits.get(i/2))) {
 				path.moveTo(exits.get(i/2).getStartPoint().x, exits.get(i/2).getStartPoint().y);
 				path.lineTo(exits.get(i/2).getEndPoint().x, exits.get(i/2).getEndPoint().y);
+				connectedPassages.add(exits.get(i/2));
+			}
+			if(!connectedPassages.contains(entrances.get(i/2))) {
+				path.moveTo(entrances.get(i/2).getStartPoint().x, entrances.get(i/2).getStartPoint().y);
+				path.lineTo(entrances.get(i/2).getEndPoint().x, entrances.get(i/2).getEndPoint().y);
+				connectedPassages.add(entrances.get(i/2));
 			}
 		}
 		Path2D firstPath = paths.get(0);

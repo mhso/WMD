@@ -1,5 +1,6 @@
 package dk.itu.mhso.wmd.model;
 
+import java.awt.geom.Path2D;
 import java.awt.image.BufferedImage;
 import java.io.BufferedReader;
 import java.io.File;
@@ -21,8 +22,11 @@ public class Level {
 	private List<Exit> exits;
 	private List<Entrance> entrances;
 	private BufferedImage bgImage;
+	private String name;
+	private Path2D pathArea;
 	
 	public Level(String pathName) {
+		name = new File(pathName).getName();
 		parseWaves(pathName, parsePath(pathName));
 		loadBGImage(pathName);
 	}
@@ -37,6 +41,7 @@ public class Level {
 		PathParser parser = new PathParser(image);
 		exits = parser.getExits();
 		entrances = parser.getEntrances();
+		pathArea = parser.getMainPath();
 		return parser.getUnitPath();
 	}
 	
@@ -71,6 +76,10 @@ public class Level {
 		}
 	}
 	
+	public String getName() {
+		return name;
+	}
+	
 	public BufferedImage getBGImage() {
 		return bgImage;
 	}
@@ -79,8 +88,16 @@ public class Level {
 		return exits;
 	}
 	
+	public Path2D getMainPathArea() {
+		return pathArea;
+	}
+	
 	public List<Entrance> getEntrances() {
 		return entrances;
+	}
+	
+	public int getCurrentWaveNr() {
+		return currentWave;
 	}
 	
 	public Wave getNextWave() {
