@@ -12,6 +12,7 @@ import java.awt.image.BufferedImage;
 import javax.swing.JPanel;
 
 import dk.itu.mhso.wmd.Main;
+import dk.itu.mhso.wmd.WMDConstants;
 import dk.itu.mhso.wmd.controller.Game;
 import dk.itu.mhso.wmd.model.Ally;
 import dk.itu.mhso.wmd.model.Enemy;
@@ -52,8 +53,9 @@ public class Canvas extends JPanel {
 		return drawUnitRange;
 	}
 	
-	public void drawExplosion() {
-		
+	public void drawExplosion(Point point) {
+		Graphics2D g2d = (Graphics2D) getGraphics();
+		g2d.drawImage(WMDConstants.EXPLOSION_IMAGE, point.x, point.y, null);
 	}
 	
 	protected void paintComponent(Graphics g) {

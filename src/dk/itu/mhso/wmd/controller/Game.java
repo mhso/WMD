@@ -180,6 +180,7 @@ public class Game {
 									projectile.getMiddlePoint().y - WMDConstants.AOE_RADIUS, 
 									WMDConstants.AOE_RADIUS*2, WMDConstants.AOE_RADIUS*2).contains(enemy.getLocation())) {
 								enemy.decrementHealth(projectile.getAlly().getAOEDamage());
+								WindowGame.canvas.drawExplosion(enemy.getLocation());
 							}
 						}
 					}

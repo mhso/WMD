@@ -4,10 +4,14 @@ import java.awt.BorderLayout;
 import java.awt.Cursor;
 import java.awt.Dimension;
 import java.awt.GridLayout;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 
 import javax.swing.BorderFactory;
 import javax.swing.ImageIcon;
@@ -20,6 +24,8 @@ import dk.itu.mhso.wmd.Main;
 import dk.itu.mhso.wmd.controller.Game;
 import dk.itu.mhso.wmd.controller.UnitFactory;
 import dk.itu.mhso.wmd.model.Ally;
+import dk.itu.mhso.wmd.model.Unit;
+import dk.itu.mhso.wmd.model.UnitType;
 
 public class TowersMenu extends JPopupMenu {
 	private Ally selectedUnit;
@@ -77,24 +83,15 @@ public class TowersMenu extends JPopupMenu {
 		add(panelTowers, BorderLayout.CENTER);
 		panelTowers.setLayout(new GridLayout(0, 2, 0, 0));
 		
-		JButton buttonSniper = new TowerButton((Ally)UnitFactory.createUnit("SNIPER"));
-		buttonSniper.addActionListener(e -> addToSelected("SNIPER"));
-		panelTowers.add(buttonSniper);
-		
-		JButton btnNewButton_1 = new JButton("Tower 2");
-		panelTowers.add(btnNewButton_1);
-		
-		JButton btnNewButton_2 = new JButton("Tower 3");
-		panelTowers.add(btnNewButton_2);
-		
-		JButton btnNewButton_3 = new JButton("Tower 4");
-		panelTowers.add(btnNewButton_3);
-		
-		JButton btnNewButton_4 = new JButton("Tower 5");
-		panelTowers.add(btnNewButton_4);
-		
-		JButton btnNewButton_5 = new JButton("Tower 6");
-		panelTowers.add(btnNewButton_5);
+		for(UnitType ut : UnitType.values()) {
+			Unit unit = UnitFactory.createUnit(ut.toString());
+			if(unit instanceof Ally) {
+				Ally ally = (Ally)UnitFactory.createUnit(ut.toString());
+				JButton unitButton = new TowerButton(ally);
+				unitButton.addActionListener(e -> addToSelected(ally));
+				panelTowers.add(unitButton);
+			}
+		}
 	}
 	
 	private void unselectUnit() {
@@ -104,8 +101,8 @@ public class TowersMenu extends JPopupMenu {
 		selectedUnit = null;
 	}
 	
-	private void addToSelected(String unitName) {
-		selectedUnit = (Ally) UnitFactory.createUnit(unitName);
+	private void addToSelected(Ally unit) {
+		selectedUnit = unit;
 		Cursor cursor = CursorImage.getCursor(selectedUnit.getIcon(), this);
 		setCursor(cursor);
 		overlay.setCursor(cursor);
@@ -113,5 +110,12 @@ public class TowersMenu extends JPopupMenu {
 	
 	public void showDropdown(JComponent source) {
 		show(source, source.getLocation().x, source.getLocation().y);
+	}
+	
+	private class TowerListener implements ActionListener {
+		@Override
+		public void actionPerformed(ActionEvent e) {
+			
+		}	
 	}
 }
