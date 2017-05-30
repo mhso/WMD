@@ -15,6 +15,7 @@ public abstract class Ally extends Unit {
 	protected int range;
 	protected int damage;
 	protected int fireRate;
+	protected int aoeDamage;
 	protected boolean isHighlighted;
 	protected BufferedImage highlightIcon;
 	protected List<Enemy> enemiesInRange = new ArrayList<>();
@@ -31,6 +32,10 @@ public abstract class Ally extends Unit {
 		}
 	}
 	
+	public int getCost() {
+		return cost;
+	}
+	
 	public int getRange() {
 		return range;
 	}
@@ -42,6 +47,10 @@ public abstract class Ally extends Unit {
 	
 	public int getDamage() {
 		return damage;
+	}
+	
+	public int getAOEDamage() {
+		return aoeDamage;
 	}
 	
 	public BufferedImage getHighlightedIcon() {

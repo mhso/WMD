@@ -9,6 +9,8 @@ import java.awt.event.KeyEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 
+import javax.swing.BorderFactory;
+import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JComponent;
 import javax.swing.JPanel;
@@ -75,9 +77,9 @@ public class TowersMenu extends JPopupMenu {
 		add(panelTowers, BorderLayout.CENTER);
 		panelTowers.setLayout(new GridLayout(0, 2, 0, 0));
 		
-		JButton btnNewButton = new JButton("Tower 1");
-		btnNewButton.addActionListener(e -> addToSelected("SNIPER"));
-		panelTowers.add(btnNewButton);
+		JButton buttonSniper = new TowerButton((Ally)UnitFactory.createUnit("SNIPER"));
+		buttonSniper.addActionListener(e -> addToSelected("SNIPER"));
+		panelTowers.add(buttonSniper);
 		
 		JButton btnNewButton_1 = new JButton("Tower 2");
 		panelTowers.add(btnNewButton_1);

@@ -52,6 +52,10 @@ public class Canvas extends JPanel {
 		return drawUnitRange;
 	}
 	
+	public void drawExplosion() {
+		
+	}
+	
 	protected void paintComponent(Graphics g) {
 		drawLevel((Graphics2D) g);
 		drawAllies((Graphics2D) g);

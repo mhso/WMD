@@ -3,6 +3,7 @@ package dk.itu.mhso.wmd.controller;
 import java.awt.Point;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.geom.Ellipse2D;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -15,6 +16,7 @@ import javax.swing.Timer;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 
+import dk.itu.mhso.wmd.WMDConstants;
 import dk.itu.mhso.wmd.model.Ally;
 import dk.itu.mhso.wmd.model.Enemy;
 import dk.itu.mhso.wmd.model.Exit;
@@ -73,7 +75,7 @@ public class Game {
 	}
 	
 	private static void enemyDead(Enemy enemy) {
-		money += enemy.getMaxHealth();
+		money += 10 * enemy.getMaxHealth();
 	}
 	
 	public static boolean isWithinMainPath(Point point) {
@@ -172,6 +174,15 @@ public class Game {
 				
 				if(!projectile.isActive()) {
 					projectile.getTarget().decrementHealth(projectile.getAlly().getDamage());
+					if(projectile.getAlly().getAOEDamage() > 0) {
+						for(Enemy enemy : currentEnemies) {
+							if(new Ellipse2D.Double(projectile.getMiddlePoint().x - WMDConstants.AOE_RADIUS, 
+									projectile.getMiddlePoint().y - WMDConstants.AOE_RADIUS, 
+									WMDConstants.AOE_RADIUS*2, WMDConstants.AOE_RADIUS*2).contains(enemy.getLocation())) {
+								enemy.decrementHealth(projectile.getAlly().getAOEDamage());
+							}
+						}
+					}
 					it.remove();
 				}
 			}

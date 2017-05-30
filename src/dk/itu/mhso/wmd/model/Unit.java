@@ -13,6 +13,10 @@ public abstract class Unit {
 		return location;
 	}
 	
+	public Point getMiddlePoint() {
+		return new Point(location.x + getWidth()/2, location.y + getHeight()/2);
+	}
+	
 	public void setLocation(Point point) {
 		location = point;
 	}
