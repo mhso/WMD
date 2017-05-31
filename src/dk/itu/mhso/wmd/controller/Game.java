@@ -9,8 +9,10 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 
 import javax.swing.Timer;
 import javax.swing.event.ChangeEvent;
@@ -35,9 +37,9 @@ public class Game {
 	private static List<Projectile> activeProjectiles = new ArrayList<>();
 	private static GameTimer gameTimer;
 	private static WindowGame window;
-	private static List<ChangeListener> changeListeners = new ArrayList<>();
+	private static Map<String, ChangeListener> changeListeners = new HashMap<>();
 	
-	private static int money;
+	private static int money = 200;
 	private static int lives = 20;
 	
 	public static void loadLevels() {
@@ -58,12 +60,12 @@ public class Game {
 		levelNr = level;
 		currentLevel = levels.get(level);
 		window = new WindowGame(levels.get(level));
-		addChangeListener(window);
+		addChangeListener("window", window);
 		gameTimer = new GameTimer(10);
 	}
 	
-	public static void addChangeListener(ChangeListener l) {
-		changeListeners.add(l);
+	public static void addChangeListener(String name, ChangeListener l) {
+		changeListeners.put(name, l);
 	}
 	
 	public static List<Ally> getAllies() {
@@ -74,8 +76,18 @@ public class Game {
 		allies.add(ally);
 	}
 	
+	public static void decrementMoney(int amount) {
+		money -= amount;
+		if(money < 0) money = 0;
+	}
+	
+	public static void incrementMoney(int amount) {
+		money += amount;
+	}
+	
 	private static void enemyDead(Enemy enemy) {
-		money += 10 * enemy.getMaxHealth();
+		setChanged(Game.class, "menu");
+		setChanged(Game.class, "overlay");
 	}
 	
 	public static boolean isWithinMainPath(Point point) {
@@ -103,6 +115,12 @@ public class Game {
 		if(ally.getEnemiesInRange().isEmpty()) ally.setCurrentlyTargetedEnemy(null);
 	}
 	
+	public static void setChanged(Object source, String reciever) {
+		ChangeListener listener = changeListeners.get(reciever);
+		if(listener != null) listener.stateChanged(new ChangeEvent(source));
+		else for(ChangeListener l : changeListeners.values()) l.stateChanged(new ChangeEvent(source));
+	}
+	
 	public static int getMoneyAmount() { return money; }
 	
 	public static int getLivesAmount() { return lives; }
@@ -120,7 +138,7 @@ public class Game {
 	private static class GameTimer implements ActionListener {
 		private Timer timer;
 		private int enemyDelay;
-		private final int ENEMY_SPAWN_MOD = 250;
+		private final int ENEMY_SPAWN_MOD = 200;
 		private final int ENEMY_MOVE_MOD = 2;
 		private final int PROJECTILE_MOVE_MOD = 10;
 		
@@ -135,10 +153,11 @@ public class Game {
 			if(!currentWave.isEmpty() && enemyDelay % ENEMY_SPAWN_MOD == 0) {
 				Enemy nextEnemy = currentWave.getNextEnemy();
 				if(nextEnemy != null) currentEnemies.add(nextEnemy);
+				setChanged(this, "overlay");
 			}
 			enemyDelay++;
 			if(enemyDelay < 0) enemyDelay = 0;
-			for(ChangeListener l : changeListeners) l.stateChanged(new ChangeEvent(this));
+			setChanged(this, "window");
 			
 			if(enemyDelay % PROJECTILE_MOVE_MOD == 0) moveProjectiles();
 			
@@ -180,7 +199,6 @@ public class Game {
 									projectile.getMiddlePoint().y - WMDConstants.AOE_RADIUS, 
 									WMDConstants.AOE_RADIUS*2, WMDConstants.AOE_RADIUS*2).contains(enemy.getLocation())) {
 								enemy.decrementHealth(projectile.getAlly().getAOEDamage());
-								WindowGame.canvas.drawExplosion(enemy.getLocation());
 							}
 						}
 					}
@@ -196,6 +214,7 @@ public class Game {
 				enemy.move();
 				
 				if(!enemy.isActive()) {
+					incrementMoney(10 * enemy.getMaxHealth());
 					enemyDead(enemy);
 					it.remove();
 				}
@@ -203,6 +222,7 @@ public class Game {
 					for(Exit exit : currentLevel.getExits()) if(exit.hasExited(enemy)) {
 						lives--;
 						enemy.setActive(false);
+						enemyDead(enemy);
 						it.remove();
 						continue;
 					}

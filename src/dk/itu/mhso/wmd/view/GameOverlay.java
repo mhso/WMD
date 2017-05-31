@@ -35,7 +35,7 @@ public class GameOverlay extends JPanel implements ChangeListener {
 		});
 		
 		towers = new TowersMenu(this);
-		Game.addChangeListener(this);
+		Game.addChangeListener("overlay", this);
 		
 		JPanel leftMainPanel = new JPanel();
 		leftMainPanel.setOpaque(false);
@@ -51,6 +51,9 @@ public class GameOverlay extends JPanel implements ChangeListener {
 		inflatedLeftPanel.setLayout(new BorderLayout(0, 10));
 		
 		JButton buttonInflateLeft = new JButton(">");
+		buttonInflateLeft.setFont(new Font(buttonInflateLeft.getFont().getName(), Font.PLAIN, 15));
+		buttonInflateLeft.setForeground(Color.WHITE);
+		buttonInflateLeft.setBackground(Style.OVERLAY_MENU_MAIN);
 		buttonInflateLeft.addActionListener(e -> towers.showDropdown(leftMainPanel));
 		deflatedLeftPanel.add(buttonInflateLeft);
 		

@@ -1,24 +1,24 @@
 package dk.itu.mhso.wmd.view;
 
 import java.awt.BorderLayout;
+import java.awt.Color;
 import java.awt.Cursor;
 import java.awt.Dimension;
+import java.awt.Font;
 import java.awt.GridLayout;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
-import java.nio.file.Files;
-import java.nio.file.Paths;
+import java.util.ArrayList;
+import java.util.List;
 
-import javax.swing.BorderFactory;
-import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JComponent;
 import javax.swing.JPanel;
 import javax.swing.JPopupMenu;
+import javax.swing.event.ChangeEvent;
+import javax.swing.event.ChangeListener;
 
 import dk.itu.mhso.wmd.Main;
 import dk.itu.mhso.wmd.controller.Game;
@@ -27,14 +27,16 @@ import dk.itu.mhso.wmd.model.Ally;
 import dk.itu.mhso.wmd.model.Unit;
 import dk.itu.mhso.wmd.model.UnitType;
 
-public class TowersMenu extends JPopupMenu {
+public class TowersMenu extends JPopupMenu implements ChangeListener {
 	private Ally selectedUnit;
 	private GameOverlay overlay;
+	private List<TowerButton> towerButtons = new ArrayList<>();
 	
 	public TowersMenu(GameOverlay overlay) {
 		this.overlay = overlay;
 		setLayout(new BorderLayout(0, 0));
 		setBackground(Style.OVERLAY_MENU_MAIN);
+		Game.addChangeListener("menu", this);
 		
 		overlay.addMouseListener(new MouseAdapter() {
 			@Override
@@ -42,6 +44,8 @@ public class TowersMenu extends JPopupMenu {
 				if(e.getButton() == MouseEvent.BUTTON1) {
 					if(selectedUnit != null && !Game.isWithinMainPath(e.getPoint())) {
 						Game.addAlly(selectedUnit);
+						Game.decrementMoney(selectedUnit.getCost());
+						Game.setChanged(this, "overlay");
 						selectedUnit.setLocation(e.getPoint());
 						unselectUnit();
 					}
@@ -73,6 +77,9 @@ public class TowersMenu extends JPopupMenu {
 		add(topPanel, BorderLayout.NORTH);
 		
 		JButton buttonDeflateLeft = new JButton("<");
+		buttonDeflateLeft.setFont(new Font(buttonDeflateLeft.getFont().getName(), Font.PLAIN, 15));
+		buttonDeflateLeft.setForeground(Color.WHITE);
+		buttonDeflateLeft.setBackground(Style.OVERLAY_MENU_MAIN);
 		buttonDeflateLeft.addActionListener(e -> setVisible(false));
 		topPanel.add(buttonDeflateLeft);
 		buttonDeflateLeft.setPreferredSize(new Dimension(41, 23));
@@ -87,9 +94,12 @@ public class TowersMenu extends JPopupMenu {
 			Unit unit = UnitFactory.createUnit(ut.toString());
 			if(unit instanceof Ally) {
 				Ally ally = (Ally)UnitFactory.createUnit(ut.toString());
-				JButton unitButton = new TowerButton(ally);
-				unitButton.addActionListener(e -> addToSelected(ally));
+				TowerButton unitButton = new TowerButton(ally);
+				
+				unitButton.addActionListener(e -> addToSelected((Ally)UnitFactory.createUnit(ut.toString())));
+				if(Game.getMoneyAmount() < ally.getCost()) unitButton.setEnabled(false);
 				panelTowers.add(unitButton);
+				towerButtons.add(unitButton);
 			}
 		}
 	}
@@ -111,11 +121,9 @@ public class TowersMenu extends JPopupMenu {
 	public void showDropdown(JComponent source) {
 		show(source, source.getLocation().x, source.getLocation().y);
 	}
-	
-	private class TowerListener implements ActionListener {
-		@Override
-		public void actionPerformed(ActionEvent e) {
-			
-		}	
+
+	@Override
+	public void stateChanged(ChangeEvent e) {
+		for(TowerButton button : towerButtons) button.stateChanged(e);
 	}
 }
