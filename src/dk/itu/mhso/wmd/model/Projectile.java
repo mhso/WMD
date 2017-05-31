@@ -2,6 +2,8 @@ package dk.itu.mhso.wmd.model;
 
 import java.awt.Point;
 
+import dk.itu.mhso.wmd.Util;
+
 public class Projectile extends Unit {
 	private Ally ally;
 	private Point previousPoint;
@@ -15,7 +17,7 @@ public class Projectile extends Unit {
 		this.ally = ally;
 		this.targetEnemy = targetEnemy;
 		location = new Point(ally.getLocation().x + ally.getWidth()/2, ally.getLocation().y + ally.getHeight()/2);
-		calculateAngle(targetEnemy.getLocation(), location);
+		angle = Util.calculateAngle(targetEnemy.getLocation(), location);
 		loadIcons(null);
 	}
 	
@@ -39,7 +41,7 @@ public class Projectile extends Unit {
 		
 		location = new Point((int)desiredX, (int)desiredY);
 		
-		calculateAngle(location, previousPoint);
+		angle = Util.calculateAngle(location, previousPoint);
 	}
 	
 	public boolean hasHit() {

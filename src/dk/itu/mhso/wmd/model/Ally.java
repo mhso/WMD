@@ -10,13 +10,14 @@ import java.util.List;
 
 import javax.imageio.ImageIO;
 
+import dk.itu.mhso.wmd.Util;
+
 public abstract class Ally extends Unit {
 	protected int cost;
 	protected int range;
 	protected int damage;
 	protected int fireRate;
 	protected int aoeDamage;
-	protected boolean isHighlighted;
 	protected BufferedImage highlightIcon;
 	protected List<Enemy> enemiesInRange = new ArrayList<>();
 	protected Enemy currentlyTargetedEnemy;
@@ -61,14 +62,6 @@ public abstract class Ally extends Unit {
 		return projectileIcon;
 	}
 	
-	public boolean isHighlighted() {
-		return isHighlighted;
-	}
-	
-	public void setHighlighted(boolean highlight) {
-		isHighlighted = highlight;
-	}
-	
 	public List<Enemy> getEnemiesInRange() {
 		return enemiesInRange;
 	}
@@ -83,7 +76,7 @@ public abstract class Ally extends Unit {
 	
 	public void setCurrentlyTargetedEnemy(Enemy enemy) {
 		if(enemy == null) angle = 0;
-		else calculateAngle(enemy.getLocation(), location);
+		else angle = Util.calculateAngle(enemy.getLocation(), location);
 		currentlyTargetedEnemy = enemy;
 	}
 	

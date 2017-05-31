@@ -4,6 +4,7 @@ import java.awt.Point;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.geom.Ellipse2D;
+import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -14,6 +15,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
+import javax.imageio.ImageIO;
 import javax.swing.Timer;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
@@ -25,6 +27,7 @@ import dk.itu.mhso.wmd.model.Exit;
 import dk.itu.mhso.wmd.model.Level;
 import dk.itu.mhso.wmd.model.Projectile;
 import dk.itu.mhso.wmd.model.Wave;
+import dk.itu.mhso.wmd.model.Explosion;
 import dk.itu.mhso.wmd.view.WindowGame;
 
 public class Game {
@@ -35,9 +38,12 @@ public class Game {
 	private static Wave currentWave;
 	private static List<Ally> allies = new ArrayList<>();
 	private static List<Projectile> activeProjectiles = new ArrayList<>();
+	private static List<Explosion> explosions = new ArrayList<>();
+	private static BufferedImage[] explosionImages;
 	private static GameTimer gameTimer;
 	private static WindowGame window;
 	private static Map<String, ChangeListener> changeListeners = new HashMap<>();
+	private static int waveCountdown = 20;
 	
 	private static int money = 200;
 	private static int lives = 20;
@@ -47,6 +53,7 @@ public class Game {
 			for(Iterator<Path> it = Files.list(Paths.get("resources/levels")).iterator(); it.hasNext(); ) {
 				levels.add(new Level(it.next().toString()));
 			}
+			loadExplosionImages();
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
@@ -68,6 +75,21 @@ public class Game {
 		changeListeners.put(name, l);
 	}
 	
+	private static void loadExplosionImages() throws IOException {
+		explosionImages = new BufferedImage[30];
+		Iterator<Path> imagePaths = Files.list(Paths.get("resources/sprites/explosion")).iterator();
+		int i = 0;
+		while(imagePaths.hasNext()) {
+			Path path = imagePaths.next();
+			explosionImages[i] = ImageIO.read(path.toFile());
+			i++;
+		}
+	}
+	
+	public static List<Explosion> getExplosions() {
+		return explosions;
+	}
+	
 	public static List<Ally> getAllies() {
 		return allies;
 	}
@@ -85,9 +107,13 @@ public class Game {
 		money += amount;
 	}
 	
-	private static void enemyDead(Enemy enemy) {
+	private static void updateOverlayAndMenu() {
 		setChanged(Game.class, "menu");
 		setChanged(Game.class, "overlay");
+	}
+	
+	public static boolean isWaveOver() {
+		return currentWave.isEmpty() && currentEnemies.isEmpty();
 	}
 	
 	public static boolean isWithinMainPath(Point point) {
@@ -125,6 +151,8 @@ public class Game {
 	
 	public static int getLivesAmount() { return lives; }
 	
+	public static int getWaveCountdown() { return waveCountdown; }
+	
 	public static List<Projectile> getCurrentProjectiles() { return activeProjectiles; }
 	
 	public static List<Enemy> getCurrentEnemies() { return currentEnemies; }
@@ -137,7 +165,7 @@ public class Game {
 	
 	private static class GameTimer implements ActionListener {
 		private Timer timer;
-		private int enemyDelay;
+		private int gameTick;
 		private final int ENEMY_SPAWN_MOD = 200;
 		private final int ENEMY_MOVE_MOD = 2;
 		private final int PROJECTILE_MOVE_MOD = 10;
@@ -150,20 +178,30 @@ public class Game {
 		
 		@Override
 		public void actionPerformed(ActionEvent e) {
-			if(!currentWave.isEmpty() && enemyDelay % ENEMY_SPAWN_MOD == 0) {
+			if(!currentWave.isEmpty() && gameTick % ENEMY_SPAWN_MOD == 0) {
 				Enemy nextEnemy = currentWave.getNextEnemy();
 				if(nextEnemy != null) currentEnemies.add(nextEnemy);
 				setChanged(this, "overlay");
 			}
-			enemyDelay++;
-			if(enemyDelay < 0) enemyDelay = 0;
+			gameTick++;
+			if(gameTick < 0) gameTick = 0;
 			setChanged(this, "window");
 			
-			if(enemyDelay % PROJECTILE_MOVE_MOD == 0) moveProjectiles();
-			
-			fireAllies();
-			
-			if(enemyDelay % ENEMY_MOVE_MOD == 0) moveEnemies();
+			if(!isWaveOver()) {
+				if(gameTick % PROJECTILE_MOVE_MOD == 0) moveProjectiles();
+				
+				fireAllies();
+				
+				if(gameTick % ENEMY_MOVE_MOD == 0) moveEnemies();
+			}
+			else if(gameTick % 100 == 0) {
+				updateOverlayAndMenu();
+				if(waveCountdown == 0) {
+					currentWave = currentLevel.getNextWave();
+					waveCountdown = 20;
+				}
+				else waveCountdown--;
+			}
 		}
 		
 		private void fireAllies() {
@@ -172,12 +210,12 @@ public class Game {
 				Ally ally = it.next();
 				checkEnemiesInRange(ally);
 				for(Enemy enemy : ally.getEnemiesInRange()) {
-					if(ally.getCurrentlyTargetedEnemy() == null || enemy.getCurrentHealth() > ally.getCurrentlyTargetedEnemy().getCurrentHealth()) {
+					if(ally.getCurrentlyTargetedEnemy() == null) {
 						ally.setCurrentlyTargetedEnemy(enemy);
 					}
 				}
 				if(ally.getCurrentlyTargetedEnemy() != null) {
-					if(enemyDelay % ally.getFireRate() == 0) 
+					if(gameTick % ally.getFireRate() == 0) 
 						activeProjectiles.add(new Projectile(ally, ally.getCurrentlyTargetedEnemy()));
 				}
 			}
@@ -194,8 +232,10 @@ public class Game {
 				if(!projectile.isActive()) {
 					projectile.getTarget().decrementHealth(projectile.getAlly().getDamage());
 					if(projectile.getAlly().getAOEDamage() > 0) {
+						explosions.add(new Explosion(explosionImages, new Point(projectile.getTarget().getLocation().x - explosionImages[0].getWidth()/2, 
+								projectile.getTarget().getLocation().y - explosionImages[0].getHeight()/2)));
 						for(Enemy enemy : currentEnemies) {
-							if(new Ellipse2D.Double(projectile.getMiddlePoint().x - WMDConstants.AOE_RADIUS, 
+							if(enemy != projectile.getTarget() && new Ellipse2D.Double(projectile.getMiddlePoint().x - WMDConstants.AOE_RADIUS, 
 									projectile.getMiddlePoint().y - WMDConstants.AOE_RADIUS, 
 									WMDConstants.AOE_RADIUS*2, WMDConstants.AOE_RADIUS*2).contains(enemy.getLocation())) {
 								enemy.decrementHealth(projectile.getAlly().getAOEDamage());
@@ -215,15 +255,15 @@ public class Game {
 				
 				if(!enemy.isActive()) {
 					incrementMoney(10 * enemy.getMaxHealth());
-					enemyDead(enemy);
 					it.remove();
+					updateOverlayAndMenu();
 				}
 				else {
 					for(Exit exit : currentLevel.getExits()) if(exit.hasExited(enemy)) {
 						lives--;
 						enemy.setActive(false);
-						enemyDead(enemy);
 						it.remove();
+						updateOverlayAndMenu();
 						continue;
 					}
 				}

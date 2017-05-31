@@ -27,7 +27,7 @@ public class TowerButton extends JButton implements ChangeListener {
 		super.paintComponent(g);
 		g.setColor(Color.WHITE);
 		String drawString = ""+ally.getCost()+"$";
-		g.drawString(drawString, getLocation().x+getWidth()-drawString.length()*8, getLocation().y+getHeight()-5);
+		g.drawString(drawString, getWidth()-drawString.length()*8, getHeight()-5);
 		g.setColor(Color.BLACK);
 	}
 

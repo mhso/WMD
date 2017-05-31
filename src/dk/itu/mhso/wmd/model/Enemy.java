@@ -30,7 +30,7 @@ public abstract class Enemy extends Unit {
 		previousPoint = location;
 		pointNr++;
 		location = path.getPoint(pointNr);
-		calculateAngle(previousPoint, location);
+		angle = path.getCurrentAngle(pointNr);
 	}
 	
 	public int getMaxHealth() {

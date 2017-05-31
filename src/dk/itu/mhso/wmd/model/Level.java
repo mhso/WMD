@@ -55,6 +55,7 @@ public class Level {
 					waves.add(new Wave(currentWaveEnemies));
 					currentWaveEnemies = new ArrayList<>();
 				}
+				else if(line.startsWith("//")) {}
 				else {
 					Enemy enemy = (Enemy)UnitFactory.createUnit(line);
 					enemy.setUnitPath(unitPath);

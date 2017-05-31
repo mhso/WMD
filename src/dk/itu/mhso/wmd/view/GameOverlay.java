@@ -13,6 +13,8 @@ import java.awt.Color;
 import java.awt.Font;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.awt.FlowLayout;
+import javax.swing.border.LineBorder;
 
 public class GameOverlay extends JPanel implements ChangeListener {
 	private TowersMenu towers;
@@ -67,23 +69,36 @@ public class GameOverlay extends JPanel implements ChangeListener {
 		centerPanel.add(topMainPanel, BorderLayout.NORTH);
 		
 		JPanel topPanel = new JPanel();
+		FlowLayout flowLayout = (FlowLayout) topPanel.getLayout();
+		flowLayout.setVgap(0);
+		flowLayout.setHgap(0);
 		topMainPanel.add(topPanel);
 		topPanel.setBackground(Style.OVERLAY_MENU_MAIN);
+		
+		JLabel[] topPanelLabels = new JLabel[3];
 		
 		labelLevel = new JLabel("Level " + Game.getCurrentLevelNr() + ": " + Game.getCurrentLevel().getName());
 		labelLevel.setFont(new Font("Tahoma", Font.PLAIN, 14));
 		labelLevel.setForeground(Color.WHITE);
-		topPanel.add(labelLevel);
+		topPanelLabels[0] = labelLevel;
 		
 		labelWave = new JLabel("Wave " + Game.getCurrentWaveNr());
 		labelWave.setForeground(Color.WHITE);
 		labelWave.setFont(new Font("Tahoma", Font.PLAIN, 14));
-		topPanel.add(labelWave);
+		topPanelLabels[1] = labelWave;
 		
 		labelEnemiesRemaining = new JLabel("Enemies: " + Game.getCurrentEnemies().size());
 		labelEnemiesRemaining.setFont(new Font("Tahoma", Font.PLAIN, 14));
 		labelEnemiesRemaining.setForeground(Color.WHITE);
-		topPanel.add(labelEnemiesRemaining);
+		topPanelLabels[2] = labelEnemiesRemaining;
+		
+		for(JLabel label : topPanelLabels) {
+			JPanel panel = new JPanel();
+			panel.setOpaque(false);
+			panel.setBorder(new LineBorder(Color.WHITE));
+			panel.add(label);
+			topPanel.add(panel);
+		}
 		
 		JPanel southMainPanel = new JPanel();
 		southMainPanel.setOpaque(false);
@@ -109,10 +124,16 @@ public class GameOverlay extends JPanel implements ChangeListener {
 
 	@Override
 	public void stateChanged(ChangeEvent e) {
-		labelLevel.setText("Level " + Game.getCurrentLevelNr() + ": " + Game.getCurrentLevel().getName());
-		labelEnemiesRemaining.setText("Enemies: " + Game.getCurrentEnemies().size());
+		if(!Game.isWaveOver()) {
+			labelWave.setText("Wave " + Game.getCurrentWaveNr());
+			labelEnemiesRemaining.setText("Enemies: " + Game.getCurrentEnemies().size());
+			labelLevel.setText("Level " + Game.getCurrentLevelNr() + ": " + Game.getCurrentLevel().getName());
+		}
+		else {
+			labelEnemiesRemaining.setText("Click To Start");
+			labelWave.setText("Next Wave Starting In: " + Game.getWaveCountdown());
+		}
 		labelMoney.setText("Money: " + Game.getMoneyAmount() + "$");
 		labelLives.setText("Lives: " + Game.getLivesAmount());
-		labelWave.setText("Wave " + Game.getCurrentWaveNr());
 	}
 }

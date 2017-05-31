@@ -13,6 +13,7 @@ import java.awt.event.MouseEvent;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.swing.BorderFactory;
 import javax.swing.JButton;
 import javax.swing.JComponent;
 import javax.swing.JPanel;
@@ -36,6 +37,7 @@ public class TowersMenu extends JPopupMenu implements ChangeListener {
 		this.overlay = overlay;
 		setLayout(new BorderLayout(0, 0));
 		setBackground(Style.OVERLAY_MENU_MAIN);
+		setBorder(BorderFactory.createEmptyBorder(5, 5, 5, 5));
 		Game.addChangeListener("menu", this);
 		
 		overlay.addMouseListener(new MouseAdapter() {
@@ -47,26 +49,28 @@ public class TowersMenu extends JPopupMenu implements ChangeListener {
 						Game.decrementMoney(selectedUnit.getCost());
 						Game.setChanged(this, "overlay");
 						selectedUnit.setLocation(e.getPoint());
-						unselectUnit();
+						deselectUnit();
 					}
 				}
 				else if(e.getButton() == MouseEvent.BUTTON3) {
-					if(selectedUnit != null) unselectUnit();
+					if(selectedUnit != null) deselectUnit();
 				}
 				
 				if(WindowGame.canvas.getHighlighedUnit() != null) {
-					if(!WindowGame.canvas.isDrawingUnitRange()) WindowGame.canvas.drawUnitRange(true);
-					else WindowGame.canvas.drawUnitRange(false);
+					if(!WindowGame.canvas.isDrawingUnitRange()) 
+						WindowGame.canvas.setUnitRangeCircle(WindowGame.canvas.getHighlighedUnit().getRangeCircle());
+					else WindowGame.canvas.setUnitRangeCircle(null);
 				}
+				else WindowGame.canvas.setUnitRangeCircle(null);
 			}
 		});
 		Main.window.addKeyListener(new KeyAdapter() {
 			@Override
 			public void keyPressed(KeyEvent e) {
 				if(e.getKeyCode() == KeyEvent.VK_ESCAPE) {
-					if(selectedUnit != null) unselectUnit();
+					if(selectedUnit != null) deselectUnit();
 					if(WindowGame.canvas.getHighlighedUnit() != null) {
-						if(WindowGame.canvas.isDrawingUnitRange()) WindowGame.canvas.drawUnitRange(false);
+						if(WindowGame.canvas.isDrawingUnitRange()) WindowGame.canvas.setUnitRangeCircle(null);
 					}
 				}
 			}	
@@ -82,8 +86,6 @@ public class TowersMenu extends JPopupMenu implements ChangeListener {
 		buttonDeflateLeft.setBackground(Style.OVERLAY_MENU_MAIN);
 		buttonDeflateLeft.addActionListener(e -> setVisible(false));
 		topPanel.add(buttonDeflateLeft);
-		buttonDeflateLeft.setPreferredSize(new Dimension(41, 23));
-		buttonDeflateLeft.setEnabled(true);
 		
 		JPanel panelTowers = new JPanel();
 		panelTowers.setBackground(Style.OVERLAY_MENU_MAIN);
@@ -104,7 +106,7 @@ public class TowersMenu extends JPopupMenu implements ChangeListener {
 		}
 	}
 	
-	private void unselectUnit() {
+	private void deselectUnit() {
 		Cursor cursor = CursorImage.getDefault();
 		setCursor(cursor);
 		overlay.setCursor(cursor);
