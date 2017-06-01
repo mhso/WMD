@@ -11,6 +11,7 @@ import java.util.List;
 import javax.imageio.ImageIO;
 
 import dk.itu.mhso.wmd.Util;
+import dk.itu.mhso.wmd.view.UnitUpgradeWindow;
 
 public abstract class Ally extends Unit {
 	protected int cost;
@@ -18,10 +19,17 @@ public abstract class Ally extends Unit {
 	protected int damage;
 	protected int fireRate;
 	protected int aoeDamage;
+	protected int enemiesKilled;
+	protected int goldEarned;
 	protected BufferedImage highlightIcon;
 	protected List<Enemy> enemiesInRange = new ArrayList<>();
 	protected Enemy currentlyTargetedEnemy;
 	protected BufferedImage projectileIcon;
+	protected UnitUpgradeWindow upgradeWindow;
+	
+	public Ally(String name) {
+		super(name);
+	}
 	
 	public void loadIcons(String unitName) {
 		try {
@@ -31,6 +39,22 @@ public abstract class Ally extends Unit {
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
+	}
+	
+	public void createUpgradeWindow() {
+		upgradeWindow = new UnitUpgradeWindow(this);
+	}
+	
+	public UnitUpgradeWindow getUpgradeWindow() {
+		return upgradeWindow;
+	}
+	
+	public void incrementGoldEarned(int amount) {
+		goldEarned += amount;
+	}
+	
+	public void incrementEnemiesKilled(int amount) {
+		enemiesKilled += amount;
 	}
 	
 	public int getCost() {
@@ -78,6 +102,14 @@ public abstract class Ally extends Unit {
 		if(enemy == null) angle = 0;
 		else angle = Util.calculateAngle(enemy.getLocation(), location);
 		currentlyTargetedEnemy = enemy;
+	}
+	
+	public int getEnemiesKilled() {
+		return enemiesKilled;
+	}
+
+	public int getGoldEarned() {
+		return goldEarned;
 	}
 	
 	public int getFireRate() {

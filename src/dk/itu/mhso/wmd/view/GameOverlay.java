@@ -8,9 +8,13 @@ import dk.itu.mhso.wmd.controller.Game;
 
 import java.awt.BorderLayout;
 import javax.swing.JButton;
+import javax.swing.JComponent;
 import javax.swing.JLabel;
 import java.awt.Color;
+import java.awt.Dimension;
 import java.awt.Font;
+import java.awt.event.ComponentAdapter;
+import java.awt.event.ComponentEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.FlowLayout;
@@ -90,6 +94,11 @@ public class GameOverlay extends JPanel implements ChangeListener {
 		labelEnemiesRemaining = new JLabel("Enemies: " + Game.getCurrentEnemies().size());
 		labelEnemiesRemaining.setFont(new Font("Tahoma", Font.PLAIN, 14));
 		labelEnemiesRemaining.setForeground(Color.WHITE);
+		labelEnemiesRemaining.addMouseListener(new MouseAdapter() {
+			public void mousePressed(MouseEvent e) {
+				if(Game.isWaveOver()) Game.setWaveCountdown(0);
+			}		
+		});
 		topPanelLabels[2] = labelEnemiesRemaining;
 		
 		for(JLabel label : topPanelLabels) {
@@ -120,6 +129,11 @@ public class GameOverlay extends JPanel implements ChangeListener {
 		
 		JPanel panel = new JPanel();
 		inflatedLeftPanel.add(panel, BorderLayout.NORTH);
+	}
+	
+	private void updateEnenmyButtonCauseSwingSucks() {
+		if(labelEnemiesRemaining.getPreferredSize() != labelEnemiesRemaining.getMinimumSize()) 
+			labelEnemiesRemaining.setPreferredSize(labelEnemiesRemaining.getMinimumSize());
 	}
 
 	@Override

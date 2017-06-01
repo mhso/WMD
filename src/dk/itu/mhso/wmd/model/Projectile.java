@@ -13,7 +13,8 @@ public class Projectile extends Unit {
 	private final int MAX_POINTS = 20;
 	private final int MARGIN_FOR_ERROR = 20;
 	
-	public Projectile(Ally ally, Enemy targetEnemy) {
+	public Projectile(String name, Ally ally, Enemy targetEnemy) {
+		super(name);
 		this.ally = ally;
 		this.targetEnemy = targetEnemy;
 		location = new Point(ally.getLocation().x + ally.getWidth()/2, ally.getLocation().y + ally.getHeight()/2);

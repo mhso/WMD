@@ -43,12 +43,18 @@ public class TowersMenu extends JPopupMenu implements ChangeListener {
 		overlay.addMouseListener(new MouseAdapter() {
 			@Override
 			public void mouseClicked(MouseEvent e) {
+				if(e.getClickCount() == 2 && WindowGame.canvas.getHighlighedUnit() != null) {
+					WindowGame.canvas.getHighlighedUnit().getUpgradeWindow().showDropdown();
+					return;
+				}
 				if(e.getButton() == MouseEvent.BUTTON1) {
 					if(selectedUnit != null && !Game.isWithinMainPath(e.getPoint())) {
 						Game.addAlly(selectedUnit);
 						Game.decrementMoney(selectedUnit.getCost());
 						Game.setChanged(this, "overlay");
+						Game.setChanged(this, "menu");
 						selectedUnit.setLocation(e.getPoint());
+						selectedUnit.createUpgradeWindow();
 						deselectUnit();
 					}
 				}

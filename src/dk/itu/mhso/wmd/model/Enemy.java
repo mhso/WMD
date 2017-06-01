@@ -13,6 +13,10 @@ public abstract class Enemy extends Unit {
 	protected int maxHealth;
 	protected int currentHealth;
 	
+	public Enemy(String name) {
+		super(name);
+	}
+	
 	public void setUnitPath(UnitPath path) {
 		this.path = path;
 		location = path.getPoint(pointNr);

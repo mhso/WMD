@@ -28,9 +28,12 @@ import dk.itu.mhso.wmd.model.Level;
 import dk.itu.mhso.wmd.model.Projectile;
 import dk.itu.mhso.wmd.model.Wave;
 import dk.itu.mhso.wmd.model.Explosion;
+import dk.itu.mhso.wmd.view.UnitUpgradeWindow;
 import dk.itu.mhso.wmd.view.WindowGame;
 
 public class Game {
+	public static WindowGame window;
+	
 	private static List<Level> levels = new ArrayList<>();
 	private static Level currentLevel;
 	private static int levelNr;
@@ -41,7 +44,6 @@ public class Game {
 	private static List<Explosion> explosions = new ArrayList<>();
 	private static BufferedImage[] explosionImages;
 	private static GameTimer gameTimer;
-	private static WindowGame window;
 	private static Map<String, ChangeListener> changeListeners = new HashMap<>();
 	private static int waveCountdown = 20;
 	
@@ -107,6 +109,11 @@ public class Game {
 		money += amount;
 	}
 	
+	private static void enemyKilled(Enemy enemy) {
+		incrementMoney(10 * enemy.getMaxHealth());
+		updateOverlayAndMenu();
+	}
+	
 	private static void updateOverlayAndMenu() {
 		setChanged(Game.class, "menu");
 		setChanged(Game.class, "overlay");
@@ -152,6 +159,8 @@ public class Game {
 	public static int getLivesAmount() { return lives; }
 	
 	public static int getWaveCountdown() { return waveCountdown; }
+	
+	public static void setWaveCountdown(int value) { waveCountdown = value; }
 	
 	public static List<Projectile> getCurrentProjectiles() { return activeProjectiles; }
 	
@@ -216,8 +225,9 @@ public class Game {
 				}
 				if(ally.getCurrentlyTargetedEnemy() != null) {
 					if(gameTick % ally.getFireRate() == 0) 
-						activeProjectiles.add(new Projectile(ally, ally.getCurrentlyTargetedEnemy()));
+						activeProjectiles.add(new Projectile(null, ally, ally.getCurrentlyTargetedEnemy()));
 				}
+				ally.getUpgradeWindow().stateChanged(new ChangeEvent(this));
 			}
 		}
 		
@@ -231,14 +241,29 @@ public class Game {
 				
 				if(!projectile.isActive()) {
 					projectile.getTarget().decrementHealth(projectile.getAlly().getDamage());
+					if(!projectile.getTarget().isActive()) {
+						projectile.getAlly().incrementEnemiesKilled(1);
+						projectile.getAlly().incrementGoldEarned(projectile.getTarget().getMaxHealth() * 10);
+						currentEnemies.remove(projectile.getTarget());
+						enemyKilled(projectile.getTarget());
+					}
+					
 					if(projectile.getAlly().getAOEDamage() > 0) {
 						explosions.add(new Explosion(explosionImages, new Point(projectile.getTarget().getLocation().x - explosionImages[0].getWidth()/2, 
 								projectile.getTarget().getLocation().y - explosionImages[0].getHeight()/2)));
-						for(Enemy enemy : currentEnemies) {
+						Iterator<Enemy> itEnemy = currentEnemies.iterator();
+						while(itEnemy.hasNext()) {
+							Enemy enemy = itEnemy.next();
 							if(enemy != projectile.getTarget() && new Ellipse2D.Double(projectile.getMiddlePoint().x - WMDConstants.AOE_RADIUS, 
 									projectile.getMiddlePoint().y - WMDConstants.AOE_RADIUS, 
 									WMDConstants.AOE_RADIUS*2, WMDConstants.AOE_RADIUS*2).contains(enemy.getLocation())) {
 								enemy.decrementHealth(projectile.getAlly().getAOEDamage());
+								if(!enemy.isActive()) {
+									projectile.getAlly().incrementEnemiesKilled(1);
+									projectile.getAlly().incrementGoldEarned(enemy.getMaxHealth() * 10);
+									it.remove();
+									enemyKilled(enemy);
+								}
 							}
 						}
 					}
@@ -253,19 +278,12 @@ public class Game {
 				Enemy enemy = it.next();
 				enemy.move();
 				
-				if(!enemy.isActive()) {
-					incrementMoney(10 * enemy.getMaxHealth());
+				for(Exit exit : currentLevel.getExits()) if(exit.hasExited(enemy)) {
+					lives--;
+					enemy.setActive(false);
 					it.remove();
 					updateOverlayAndMenu();
-				}
-				else {
-					for(Exit exit : currentLevel.getExits()) if(exit.hasExited(enemy)) {
-						lives--;
-						enemy.setActive(false);
-						it.remove();
-						updateOverlayAndMenu();
-						continue;
-					}
+					continue;
 				}
 			}
 		}

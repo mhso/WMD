@@ -8,6 +8,15 @@ public abstract class Unit {
 	protected Point location;
 	protected boolean active = true;
 	protected double angle;
+	protected String name;
+	
+	public Unit(String name) {
+		this.name = name;
+	}
+	
+	public String getName() {
+		return name;
+	}
 	
 	public Point getLocation() {
 		return location;
