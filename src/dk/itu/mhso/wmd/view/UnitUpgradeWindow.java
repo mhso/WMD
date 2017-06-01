@@ -5,7 +5,9 @@ import java.awt.Dimension;
 import java.awt.Point;
 
 import javax.swing.BorderFactory;
+import javax.swing.JButton;
 import javax.swing.JPopupMenu;
+import javax.swing.JTextArea;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 
@@ -23,7 +25,7 @@ public class UnitUpgradeWindow extends JPopupMenu implements ChangeListener {
 	private JLabel labelEnemiesKilled;
 	private JLabel labelGoldEarned;
 	
-	private final int WIDTH = 120;
+	private final int WIDTH = 140;
 	private final int HEIGHT = 180;
 	
 	public UnitUpgradeWindow(Ally ally) {
@@ -48,6 +50,41 @@ public class UnitUpgradeWindow extends JPopupMenu implements ChangeListener {
 		JPanel panelCenter = new JPanel();
 		panelCenter.setOpaque(false);
 		add(panelCenter);
+		panelCenter.setLayout(new BorderLayout(0, 0));
+		
+		JPanel panelIcons = new JPanel();
+		panelIcons.setOpaque(false);
+		panelCenter.add(panelIcons, BorderLayout.NORTH);
+		panelIcons.setLayout(new GridLayout(0, 2, 0, 0));
+		
+		JButton upgradeButton1 = new JButton("Upg 1");
+		upgradeButton1.setForeground(Color.WHITE);
+		upgradeButton1.setBackground(getBackground());
+		panelIcons.add(upgradeButton1);
+		
+		JButton upgradeButton2 = new JButton("Upg 2");
+		upgradeButton2.setForeground(Color.WHITE);
+		upgradeButton2.setBackground(getBackground());
+		panelIcons.add(upgradeButton2);
+		
+		JPanel panelExplanations = new JPanel();
+		panelExplanations.setOpaque(false);
+		panelCenter.add(panelExplanations, BorderLayout.CENTER);
+		panelExplanations.setLayout(new GridLayout(0, 2, 0, 0));
+		
+		JTextArea updateDescription1 = new JTextArea("Description 1");
+		updateDescription1.setBackground(getBackground());
+		updateDescription1.setLineWrap(true);
+		updateDescription1.setEditable(false);
+		updateDescription1.setForeground(Color.WHITE);
+		panelExplanations.add(updateDescription1);
+		
+		JTextArea updateDescription2 = new JTextArea("Description 2");
+		updateDescription2.setBackground(getBackground());
+		updateDescription2.setLineWrap(true);
+		updateDescription2.setEditable(false);
+		updateDescription2.setForeground(Color.WHITE);
+		panelExplanations.add(updateDescription2);
 		
 		JPanel panelSouth = new JPanel();
 		panelSouth.setOpaque(false);

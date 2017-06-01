@@ -261,7 +261,7 @@ public class Game {
 								if(!enemy.isActive()) {
 									projectile.getAlly().incrementEnemiesKilled(1);
 									projectile.getAlly().incrementGoldEarned(enemy.getMaxHealth() * 10);
-									it.remove();
+									itEnemy.remove();
 									enemyKilled(enemy);
 								}
 							}
