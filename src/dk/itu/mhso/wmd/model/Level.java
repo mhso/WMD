@@ -1,5 +1,6 @@
 package dk.itu.mhso.wmd.model;
 
+import java.awt.Color;
 import java.awt.geom.Path2D;
 import java.awt.image.BufferedImage;
 import java.io.BufferedReader;
@@ -72,6 +73,8 @@ public class Level {
 	private void loadBGImage(String pathName) {
 		try {
 			bgImage = ImageIO.read(new File(pathName+"/bg.png"));
+			for(int x = 0; x < bgImage.getWidth(); x++) 
+				for(int y = 0; y < bgImage.getHeight(); y++) bgImage.setRGB(x, y, new Color(bgImage.getRGB(x, y)).darker().darker().getRGB());
 		} catch (IOException e) {
 			e.printStackTrace();
 		}

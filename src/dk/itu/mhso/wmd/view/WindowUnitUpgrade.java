@@ -50,8 +50,8 @@ public class WindowUnitUpgrade extends JPopupMenu implements ChangeListener {
 		panelTop.setLayout(new BorderLayout(0, 0));
 		
 		JLabel labelHeader = new JLabel(ally.getName());
-		labelHeader.setForeground(Color.WHITE);
-		labelHeader.setFont(new Font("Tahoma", Font.PLAIN, 14));
+		labelHeader.setForeground(Style.UPGRADE_MENU_HEADER);
+		labelHeader.setFont(new Font("Tahoma", Font.BOLD, 15));
 		labelHeader.setHorizontalAlignment(SwingConstants.CENTER);
 		panelTop.add(labelHeader, BorderLayout.NORTH);
 		
