@@ -74,7 +74,7 @@ public class Level {
 		try {
 			bgImage = ImageIO.read(new File(pathName+"/bg.png"));
 			for(int x = 0; x < bgImage.getWidth(); x++) 
-				for(int y = 0; y < bgImage.getHeight(); y++) bgImage.setRGB(x, y, new Color(bgImage.getRGB(x, y)).darker().darker().getRGB());
+				for(int y = 0; y < bgImage.getHeight(); y++) bgImage.setRGB(x, y, new Color(bgImage.getRGB(x, y)).darker().getRGB());
 		} catch (IOException e) {
 			e.printStackTrace();
 		}

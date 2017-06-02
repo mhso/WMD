@@ -3,7 +3,6 @@ package dk.itu.mhso.wmd.view;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Cursor;
-import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.GridLayout;
 import java.awt.event.KeyAdapter;
@@ -64,7 +63,8 @@ public class TowersMenu extends JPopupMenu implements ChangeListener {
 				
 				if(WindowGame.canvas.getHighlighedUnit() != null) {
 					if(!WindowGame.canvas.isDrawingUnitRange()) 
-						WindowGame.canvas.setUnitRangeCircle(WindowGame.canvas.getHighlighedUnit().getRangeCircle());
+						WindowGame.canvas.setUnitRangeCircle(WindowGame.canvas.getHighlighedUnit()
+								.getRangeCircle());
 					else WindowGame.canvas.setUnitRangeCircle(null);
 				}
 				else WindowGame.canvas.setUnitRangeCircle(null);
@@ -83,6 +83,7 @@ public class TowersMenu extends JPopupMenu implements ChangeListener {
 		});
 		
 		JPanel topPanel = new JPanel();
+		topPanel.setLayout(new BorderLayout());
 		topPanel.setBackground(Style.OVERLAY_MENU_MAIN);
 		add(topPanel, BorderLayout.NORTH);
 		
@@ -91,7 +92,7 @@ public class TowersMenu extends JPopupMenu implements ChangeListener {
 		buttonDeflateLeft.setForeground(Color.WHITE);
 		buttonDeflateLeft.setBackground(Style.OVERLAY_MENU_MAIN);
 		buttonDeflateLeft.addActionListener(e -> setVisible(false));
-		topPanel.add(buttonDeflateLeft);
+		topPanel.add(buttonDeflateLeft, BorderLayout.WEST);
 		
 		JPanel panelTowers = new JPanel();
 		panelTowers.setBackground(Style.OVERLAY_MENU_MAIN);
@@ -131,7 +132,5 @@ public class TowersMenu extends JPopupMenu implements ChangeListener {
 	}
 
 	@Override
-	public void stateChanged(ChangeEvent e) {
-		for(TowerButton button : towerButtons) button.stateChanged(e);
-	}
+	public void stateChanged(ChangeEvent e) { for(TowerButton button : towerButtons) button.stateChanged(e); }
 }

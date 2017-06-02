@@ -23,7 +23,7 @@ public class UnitPath {
 		if(lastAverages < 0) lastAverages = 0;
 		double angleSum = 0;
 		for(int i = lastAverages; i < currentPoint; i++) {
-			angleSum += Util.calculateAngle(points.get(i), points.get(i+1));
+			angleSum += Util.calculateAngle(points.get(i+1), points.get(i));
 		}
 		return angleSum/(currentPoint-lastAverages);
 	}

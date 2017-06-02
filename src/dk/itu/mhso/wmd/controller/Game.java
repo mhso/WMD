@@ -21,6 +21,7 @@ import javax.swing.Timer;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 
+import dk.itu.mhso.wmd.Resources;
 import dk.itu.mhso.wmd.WMDConstants;
 import dk.itu.mhso.wmd.model.Ally;
 import dk.itu.mhso.wmd.model.Enemy;
@@ -29,7 +30,6 @@ import dk.itu.mhso.wmd.model.Level;
 import dk.itu.mhso.wmd.model.Projectile;
 import dk.itu.mhso.wmd.model.Wave;
 import dk.itu.mhso.wmd.model.Explosion;
-import dk.itu.mhso.wmd.view.WindowUnitUpgrade;
 import dk.itu.mhso.wmd.view.WindowGame;
 
 public class Game {
@@ -53,7 +53,7 @@ public class Game {
 	
 	public static void loadLevels() {
 		try {
-			for(Iterator<Path> it = Files.list(Paths.get("resources/levels")).iterator(); it.hasNext(); ) {
+			for(Iterator<Path> it = Files.list(Paths.get(Resources.getLevelsPath())).iterator(); it.hasNext(); ) {
 				levels.add(new Level(it.next().toString()));
 			}
 			loadExplosionImages();
@@ -80,7 +80,7 @@ public class Game {
 	
 	private static void loadExplosionImages() throws IOException {
 		BufferedImage[] originalImages = new BufferedImage[30];
-		Iterator<Path> imagePaths = Files.list(Paths.get("resources/sprites/explosion")).iterator();
+		Iterator<Path> imagePaths = Files.list(Paths.get(Resources.getSpritesPath()+"/explosion")).iterator();
 		int i = 0;
 		while(imagePaths.hasNext()) {
 			Path path = imagePaths.next();
@@ -118,13 +118,9 @@ public class Game {
 		return allies;
 	}
 	
-	public static void addAlly(Ally ally) {
-		allies.add(ally);
-	}
+	public static void addAlly(Ally ally) {	allies.add(ally); }
 	
-	public static void removeAlly(Ally ally) {
-		allies.remove(ally);
-	}
+	public static void removeAlly(Ally ally) { allies.remove(ally); }
 	
 	public static void decrementMoney(int amount) {
 		money -= amount;
@@ -203,7 +199,7 @@ public class Game {
 	private static class GameTimer implements ActionListener {
 		private Timer timer;
 		private int gameTick;
-		private final int ENEMY_SPAWN_MOD = 200;
+		private final int ENEMY_SPAWN_MOD = 180;
 		private final int ENEMY_MOVE_MOD = 2;
 		private final int PROJECTILE_MOVE_MOD = 10;
 		

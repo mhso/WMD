@@ -6,6 +6,8 @@ import dk.itu.mhso.wmd.view.WindowMainMenu;
 
 public class Main {
 	public static final boolean DEBUG = false;
+	public static final boolean PRODUCTION = false;
+	
 	public static WindowMainMenu window;
 	
 	public static void main(String[] args) {

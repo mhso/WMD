@@ -18,7 +18,7 @@ public class Projectile extends Unit {
 		this.ally = ally;
 		this.targetEnemy = targetEnemy;
 		location = new Point(ally.getLocation().x + ally.getWidth()/2, ally.getLocation().y + ally.getHeight()/2);
-		angle = Util.calculateAngle(targetEnemy.getLocation(), location);
+		angle = Util.calculateAngle(location, targetEnemy.getLocation());
 		loadIcons(null);
 	}
 	
@@ -42,7 +42,7 @@ public class Projectile extends Unit {
 		
 		location = new Point((int)desiredX, (int)desiredY);
 		
-		angle = Util.calculateAngle(location, previousPoint);
+		angle = Util.calculateAngle(previousPoint, location);
 	}
 	
 	public boolean hasHit() {

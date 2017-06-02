@@ -1,13 +1,11 @@
 package dk.itu.mhso.wmd.view;
 
 import java.awt.BorderLayout;
-import java.awt.Dimension;
 import java.awt.Point;
 
 import javax.swing.BorderFactory;
 import javax.swing.JButton;
 import javax.swing.JPopupMenu;
-import javax.swing.JTextArea;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 

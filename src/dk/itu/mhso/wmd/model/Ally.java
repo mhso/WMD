@@ -150,7 +150,7 @@ public abstract class Ally extends Unit {
 	
 	public void setCurrentlyTargetedEnemy(Enemy enemy) {
 		if(enemy == null) angle = 0;
-		else angle = Util.calculateAngle(enemy.getLocation(), location);
+		else angle = Util.calculateAngle(location, enemy.getLocation());
 		currentlyTargetedEnemy = enemy;
 	}
 	
