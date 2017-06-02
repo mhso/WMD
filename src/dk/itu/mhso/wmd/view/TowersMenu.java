@@ -44,7 +44,7 @@ public class TowersMenu extends JPopupMenu implements ChangeListener {
 			@Override
 			public void mouseClicked(MouseEvent e) {
 				if(e.getClickCount() == 2 && WindowGame.canvas.getHighlighedUnit() != null) {
-					WindowGame.canvas.getHighlighedUnit().getUpgradeWindow().showDropdown();
+					WindowGame.canvas.getHighlighedUnit().showUpgradeWindow();
 					return;
 				}
 				if(e.getButton() == MouseEvent.BUTTON1) {

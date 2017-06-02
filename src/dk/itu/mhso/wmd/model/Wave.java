@@ -16,8 +16,6 @@ public class Wave {
 	
 	public Enemy getNextEnemy() {
 		if(currentEnemy == enemies.size()) return null;
-		Enemy enemy = enemies.get(currentEnemy);
-		currentEnemy++;
-		return enemy;
+		return enemies.get(currentEnemy++);
 	}
 }

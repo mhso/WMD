@@ -11,7 +11,7 @@ import java.util.List;
 import javax.imageio.ImageIO;
 
 import dk.itu.mhso.wmd.Util;
-import dk.itu.mhso.wmd.view.UnitUpgradeWindow;
+import dk.itu.mhso.wmd.view.WindowUnitUpgrade;
 
 public abstract class Ally extends Unit {
 	protected int cost;
@@ -19,13 +19,17 @@ public abstract class Ally extends Unit {
 	protected int damage;
 	protected int fireRate;
 	protected int aoeDamage;
-	protected int enemiesKilled;
-	protected int goldEarned;
-	protected BufferedImage highlightIcon;
-	protected List<Enemy> enemiesInRange = new ArrayList<>();
-	protected Enemy currentlyTargetedEnemy;
-	protected BufferedImage projectileIcon;
-	protected UnitUpgradeWindow upgradeWindow;
+	protected int aoeRadius;
+	protected int upgradeLevel = 1;
+	protected UpgradeInfo upgradeInfo;
+	
+	private int enemiesKilled;
+	private int goldEarned;
+	private BufferedImage highlightIcon;
+	private List<Enemy> enemiesInRange = new ArrayList<>();
+	private Enemy currentlyTargetedEnemy;
+	private BufferedImage projectileIcon;
+	private WindowUnitUpgrade upgradeWindow;
 	
 	public Ally(String name) {
 		super(name);
@@ -41,12 +45,29 @@ public abstract class Ally extends Unit {
 		}
 	}
 	
-	public void createUpgradeWindow() {
-		upgradeWindow = new UnitUpgradeWindow(this);
+	public void loadUpgradeInfo(String fileName) { 
+		upgradeInfo = (UpgradeInfo) Util.readObjectFromFile("resources/unitinfo/" + fileName + "_upginf.bin"); 
+		if(upgradeInfo != null) upgradeInfo.setAlly(this);
 	}
 	
-	public UnitUpgradeWindow getUpgradeWindow() {
+	public UpgradeInfo getUpgradeInfo() {
+		return upgradeInfo;
+	}
+	
+	public void upgrade() {
+		upgradeLevel++;
+	}
+	
+	public void createUpgradeWindow() {
+		upgradeWindow = new WindowUnitUpgrade(this);
+	}
+	
+	public WindowUnitUpgrade getUpgradeWindow() {
 		return upgradeWindow;
+	}
+	
+	public void showUpgradeWindow() {
+		upgradeWindow.showDropdown();
 	}
 	
 	public void incrementGoldEarned(int amount) {
@@ -61,8 +82,16 @@ public abstract class Ally extends Unit {
 		return cost;
 	}
 	
+	public void setCost(int cost) {
+		this.cost = cost;
+	}
+	
 	public int getRange() {
 		return range;
+	}
+	
+	public void setRange(int range) {
+		this.range = range;
 	}
 	
 	public Ellipse2D getRangeCircle() {
@@ -74,8 +103,24 @@ public abstract class Ally extends Unit {
 		return damage;
 	}
 	
+	public void setDamage(int damage) {
+		this.damage = damage;
+	}
+	
 	public int getAOEDamage() {
 		return aoeDamage;
+	}
+	
+	public int getAOERadius() {
+		return aoeRadius;
+	}
+	
+	public void setAOERadius(int radius) {
+		aoeRadius = radius;
+	}
+	
+	public void setAOEDamage(int aoeDamage) {
+		this.aoeDamage = aoeDamage;
 	}
 	
 	public BufferedImage getHighlightedIcon() {
@@ -114,6 +159,10 @@ public abstract class Ally extends Unit {
 	
 	public int getFireRate() {
 		return fireRate;
+	}
+	
+	public void setFireRate(int fireRate) {
+		this.fireRate = fireRate;
 	}
 	
 	public Enemy getCurrentlyTargetedEnemy() {

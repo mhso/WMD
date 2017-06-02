@@ -103,8 +103,6 @@ public class Level {
 	
 	public Wave getNextWave() {
 		if(currentWave == waves.size()) return null;
-		Wave wave = waves.get(currentWave);
-		currentWave++;
-		return wave;
+		return waves.get(currentWave++);
 	}
 }

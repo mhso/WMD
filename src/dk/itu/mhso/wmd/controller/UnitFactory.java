@@ -1,5 +1,6 @@
 package dk.itu.mhso.wmd.controller;
 
+import dk.itu.mhso.wmd.model.Ally;
 import dk.itu.mhso.wmd.model.Unit;
 import dk.itu.mhso.wmd.model.UnitType;
 import dk.itu.mhso.wmd.model.allyunits.MissileBattery;
@@ -20,6 +21,10 @@ public class UnitFactory {
 	
 	private static Unit initializeUnit(Unit unit, String unitName) {
 		unit.loadIcons(unitName);
+		if(unit instanceof Ally) {
+			unit = (Ally) unit;
+			((Ally) unit).loadUpgradeInfo(unitName.toLowerCase());
+		}
 		return unit;
 	}
 }

@@ -28,7 +28,7 @@ import dk.itu.mhso.wmd.model.Level;
 import dk.itu.mhso.wmd.model.Projectile;
 import dk.itu.mhso.wmd.model.Wave;
 import dk.itu.mhso.wmd.model.Explosion;
-import dk.itu.mhso.wmd.view.UnitUpgradeWindow;
+import dk.itu.mhso.wmd.view.WindowUnitUpgrade;
 import dk.itu.mhso.wmd.view.WindowGame;
 
 public class Game {
@@ -254,10 +254,11 @@ public class Game {
 						Iterator<Enemy> itEnemy = currentEnemies.iterator();
 						while(itEnemy.hasNext()) {
 							Enemy enemy = itEnemy.next();
-							if(enemy != projectile.getTarget() && new Ellipse2D.Double(projectile.getMiddlePoint().x - WMDConstants.AOE_RADIUS, 
-									projectile.getMiddlePoint().y - WMDConstants.AOE_RADIUS, 
-									WMDConstants.AOE_RADIUS*2, WMDConstants.AOE_RADIUS*2).contains(enemy.getLocation())) {
+							if(enemy != projectile.getTarget() && new Ellipse2D.Double(projectile.getMiddlePoint().x - projectile.getAlly().getAOERadius(), 
+									projectile.getMiddlePoint().y - projectile.getAlly().getAOERadius(), 
+									projectile.getAlly().getAOERadius()*2, projectile.getAlly().getAOERadius()*2).contains(enemy.getLocation())) {
 								enemy.decrementHealth(projectile.getAlly().getAOEDamage());
+								System.out.println(projectile.getAlly().getAOEDamage());
 								if(!enemy.isActive()) {
 									projectile.getAlly().incrementEnemiesKilled(1);
 									projectile.getAlly().incrementGoldEarned(enemy.getMaxHealth() * 10);
