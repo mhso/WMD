@@ -3,6 +3,7 @@ package dk.itu.mhso.wmd.view;
 import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
+import java.awt.Image;
 import java.awt.Point;
 import java.awt.geom.AffineTransform;
 import java.awt.geom.Ellipse2D;
@@ -100,7 +101,7 @@ public class Canvas extends JPanel {
 		Iterator<Explosion> it = Game.getExplosions().iterator();
 		while(it.hasNext()) {
 			Explosion exp = it.next();
-			BufferedImage image = exp.getNextImage();
+			Image image = exp.getNextImage();
 			if(image == null) it.remove();
 			else g2d.drawImage(image, exp.getLocation().x, exp.getLocation().y, null);
 		}

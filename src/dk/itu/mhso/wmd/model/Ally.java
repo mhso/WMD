@@ -21,6 +21,7 @@ public abstract class Ally extends Unit {
 	protected int aoeDamage;
 	protected int aoeRadius;
 	protected int upgradeLevel = 1;
+	protected int worth;
 	protected UpgradeInfo upgradeInfo;
 	
 	private int enemiesKilled;
@@ -123,6 +124,10 @@ public abstract class Ally extends Unit {
 		this.aoeDamage = aoeDamage;
 	}
 	
+	public void incrementWorth(int amount) {
+		worth += amount;
+	}
+	
 	public BufferedImage getHighlightedIcon() {
 		return highlightIcon;
 	}
@@ -155,6 +160,10 @@ public abstract class Ally extends Unit {
 
 	public int getGoldEarned() {
 		return goldEarned;
+	}
+	
+	public int getWorth() {
+		return worth;
 	}
 	
 	public int getFireRate() {

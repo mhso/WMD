@@ -1,10 +1,11 @@
 package dk.itu.mhso.wmd.model;
 
+import java.awt.Image;
 import java.awt.Point;
 import java.awt.image.BufferedImage;
 
 public class Explosion {
-	private BufferedImage[] images;
+	private Image[] images;
 	private int currentImage;
 	private Point location;
 	
@@ -12,10 +13,10 @@ public class Explosion {
 		this.images = images;
 		this.location = location;
 	}
-	
-	public BufferedImage getNextImage() {
+
+	public Image getNextImage() {
 		if(currentImage == images.length) return null;
-		BufferedImage image = images[currentImage];
+		Image image = images[currentImage];
 		currentImage++;
 		return image;
 	}

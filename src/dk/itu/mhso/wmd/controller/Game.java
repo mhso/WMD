@@ -1,5 +1,6 @@
 package dk.itu.mhso.wmd.controller;
 
+import java.awt.Image;
 import java.awt.Point;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -42,12 +43,12 @@ public class Game {
 	private static List<Ally> allies = new ArrayList<>();
 	private static List<Projectile> activeProjectiles = new ArrayList<>();
 	private static List<Explosion> explosions = new ArrayList<>();
-	private static BufferedImage[] explosionImages;
+	private static Map<Integer, BufferedImage[]> explosionImages = new HashMap<>();
 	private static GameTimer gameTimer;
 	private static Map<String, ChangeListener> changeListeners = new HashMap<>();
 	private static int waveCountdown = 20;
 	
-	private static int money = 200;
+	private static int money = 20000;
 	private static int lives = 20;
 	
 	public static void loadLevels() {
@@ -78,14 +79,35 @@ public class Game {
 	}
 	
 	private static void loadExplosionImages() throws IOException {
-		explosionImages = new BufferedImage[30];
+		BufferedImage[] originalImages = new BufferedImage[30];
 		Iterator<Path> imagePaths = Files.list(Paths.get("resources/sprites/explosion")).iterator();
 		int i = 0;
 		while(imagePaths.hasNext()) {
 			Path path = imagePaths.next();
-			explosionImages[i] = ImageIO.read(path.toFile());
+			originalImages[i] = ImageIO.read(path.toFile());
 			i++;
 		}
+		explosionImages.put(100, originalImages);
+		final double widthRatio = (double)originalImages[0].getWidth()/(double)originalImages[0].getHeight();
+		BufferedImage[] images = getResizedExplosionImages(originalImages, widthRatio, 125);
+		explosionImages.put(125, images);
+		images = getResizedExplosionImages(originalImages, widthRatio, 175);
+		explosionImages.put(175, images);
+		images = getResizedExplosionImages(originalImages, widthRatio, 250);
+		explosionImages.put(250, images);
+		images = getResizedExplosionImages(originalImages, widthRatio, 350);
+		explosionImages.put(350, images);
+	}
+	
+	private static BufferedImage[] getResizedExplosionImages(BufferedImage[] originals, double widthRatio, int radius) {
+		BufferedImage[] resizedImages = new BufferedImage[originals.length];
+		for(int i = 0; i < originals.length; i++) {
+			Image image = originals[i].getScaledInstance((int)(radius*2 * widthRatio), radius*2, Image.SCALE_SMOOTH);
+			BufferedImage bfImage = new BufferedImage((int)(radius*2 * widthRatio), radius*2, BufferedImage.TYPE_INT_ARGB);
+			bfImage.getGraphics().drawImage(image, 0, 0, null);
+			resizedImages[i] = bfImage;
+		}
+		return resizedImages;
 	}
 	
 	public static List<Explosion> getExplosions() {
@@ -100,13 +122,19 @@ public class Game {
 		allies.add(ally);
 	}
 	
+	public static void removeAlly(Ally ally) {
+		allies.remove(ally);
+	}
+	
 	public static void decrementMoney(int amount) {
 		money -= amount;
 		if(money < 0) money = 0;
+		updateOverlayAndMenu();
 	}
 	
 	public static void incrementMoney(int amount) {
 		money += amount;
+		updateOverlayAndMenu();
 	}
 	
 	private static void enemyKilled(Enemy enemy) {
@@ -224,7 +252,7 @@ public class Game {
 					}
 				}
 				if(ally.getCurrentlyTargetedEnemy() != null) {
-					if(gameTick % ally.getFireRate() == 0) 
+					if(gameTick % (WMDConstants.FIRE_RATE_INVERTION-ally.getFireRate()) == 0) 
 						activeProjectiles.add(new Projectile(null, ally, ally.getCurrentlyTargetedEnemy()));
 				}
 				ally.getUpgradeWindow().stateChanged(new ChangeEvent(this));
@@ -249,8 +277,10 @@ public class Game {
 					}
 					
 					if(projectile.getAlly().getAOEDamage() > 0) {
-						explosions.add(new Explosion(explosionImages, new Point(projectile.getTarget().getLocation().x - explosionImages[0].getWidth()/2, 
-								projectile.getTarget().getLocation().y - explosionImages[0].getHeight()/2)));
+						int radius = projectile.getAlly().getAOERadius();
+						explosions.add(new Explosion(explosionImages.get(radius), new Point(projectile.getTarget().getLocation().x - 
+								explosionImages.get(radius)[0].getWidth()/2, 
+								projectile.getTarget().getLocation().y - explosionImages.get(radius)[0].getHeight()/2)));
 						Iterator<Enemy> itEnemy = currentEnemies.iterator();
 						while(itEnemy.hasNext()) {
 							Enemy enemy = itEnemy.next();
@@ -258,7 +288,6 @@ public class Game {
 									projectile.getMiddlePoint().y - projectile.getAlly().getAOERadius(), 
 									projectile.getAlly().getAOERadius()*2, projectile.getAlly().getAOERadius()*2).contains(enemy.getLocation())) {
 								enemy.decrementHealth(projectile.getAlly().getAOEDamage());
-								System.out.println(projectile.getAlly().getAOEDamage());
 								if(!enemy.isActive()) {
 									projectile.getAlly().incrementEnemiesKilled(1);
 									projectile.getAlly().incrementGoldEarned(enemy.getMaxHealth() * 10);

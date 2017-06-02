@@ -22,18 +22,19 @@ import java.awt.Color;
 import java.awt.GridLayout;
 
 public class WindowUnitUpgrade extends JPopupMenu implements ChangeListener {
-	private Ally ally;
+	private final Ally ally;
 	private JLabel labelEnemiesKilled;
 	private JLabel labelGoldEarned;
 	
-	private final int WIDTH = 200;
-	private final int HEIGHT = 200;
 	private JButton buttonUpgRange;
 	private JButton buttonUpgDamage;
 	private JLabel labelDamage;
 	private JLabel labelRange;
 	private JLabel labelAOEsize;
 	private JButton buttonUpgAOEsize;
+	private JButton buttonUpgFireRate;
+	private JLabel labelFireRate;
+	private JButton buttonSell;
 	
 	public WindowUnitUpgrade(Ally ally) {
 		this.ally = ally;
@@ -57,7 +58,7 @@ public class WindowUnitUpgrade extends JPopupMenu implements ChangeListener {
 		JPanel panelCenter = new JPanel();
 		panelCenter.setOpaque(false);
 		add(panelCenter);
-		panelCenter.setLayout(new BorderLayout(0, 0));
+		panelCenter.setLayout(new BorderLayout(0, 5));
 		
 		JPanel panelIcons = new JPanel();
 		panelIcons.setOpaque(false);
@@ -73,7 +74,7 @@ public class WindowUnitUpgrade extends JPopupMenu implements ChangeListener {
 		JPanel panelStats = new JPanel();
 		panelStats.setOpaque(false);
 		panelCenter.add(panelStats, BorderLayout.CENTER);
-		panelStats.setLayout(new GridLayout(0, 2, 0, 0));
+		panelStats.setLayout(new GridLayout(0, 2, 10, 0));
 		
 		labelDamage = new JLabel("Damage: " + ally.getDamage());
 		labelDamage.setForeground(Color.WHITE);
@@ -82,13 +83,30 @@ public class WindowUnitUpgrade extends JPopupMenu implements ChangeListener {
 		
 		buttonUpgDamage = new JButton("<html><body>Upgrade<br>(" + (ally.getUpgradeInfo().getCurrentDamageCost()) +"$)</body></html>");
 		buttonUpgDamage.addActionListener(e -> {
+			int cost = ally.getUpgradeInfo().getCurrentDamageCost();
 			ally.getUpgradeInfo().upgradeDamage();
-			statUpdated();
+			statUpdated(cost);
 		});
 		buttonUpgDamage.setBackground(getBackground());
 		buttonUpgDamage.setForeground(Color.WHITE);
 		buttonUpgDamage.setFont(new Font("Tahoma", Font.PLAIN, 12));
 		panelStats.add(buttonUpgDamage);
+		
+		labelFireRate = new JLabel("Fire Rate: " + ally.getFireRate());
+		labelFireRate.setForeground(Color.WHITE);
+		labelFireRate.setFont(new Font("Tahoma", Font.PLAIN, 12));
+		panelStats.add(labelFireRate);
+		
+		buttonUpgFireRate = new JButton("<html><body>Upgrade<br>(" + (ally.getUpgradeInfo().getCurrentFireRateCost()) +"$)</body></html>");
+		buttonUpgFireRate.addActionListener(e -> {
+			int cost = ally.getUpgradeInfo().getCurrentFireRateCost();
+			ally.getUpgradeInfo().upgradeFireRate();
+			statUpdated(cost);
+		});
+		buttonUpgFireRate.setBackground(getBackground());
+		buttonUpgFireRate.setForeground(Color.WHITE);
+		buttonUpgFireRate.setFont(new Font("Tahoma", Font.PLAIN, 12));
+		panelStats.add(buttonUpgFireRate);
 		
 		labelRange = new JLabel("Range: " + ally.getRange());
 		labelRange.setForeground(Color.WHITE);
@@ -97,8 +115,9 @@ public class WindowUnitUpgrade extends JPopupMenu implements ChangeListener {
 		
 		buttonUpgRange = new JButton("<html><body>Upgrade<br>(" + (ally.getUpgradeInfo().getCurrentRangeCost()) +"$)</body></html>");
 		buttonUpgRange.addActionListener(e -> {
+			int cost = ally.getUpgradeInfo().getCurrentRangeCost();
 			ally.getUpgradeInfo().upgradeRange();
-			statUpdated();
+			statUpdated(cost);
 		});
 		buttonUpgRange.setBackground(getBackground());
 		buttonUpgRange.setForeground(Color.WHITE);
@@ -113,8 +132,9 @@ public class WindowUnitUpgrade extends JPopupMenu implements ChangeListener {
 			
 			buttonUpgAOEsize = new JButton("<html><body>Upgrade<br>(" + (ally.getUpgradeInfo().getCurrentAOERadiusCost()) +"$)</body></html>");
 			buttonUpgAOEsize.addActionListener(e -> {
+				int cost = ally.getUpgradeInfo().getCurrentAOERadiusCost();
 				ally.getUpgradeInfo().upgradeAOERadius();
-				statUpdated();
+				statUpdated(cost);
 			});
 			buttonUpgAOEsize.setBackground(getBackground());
 			buttonUpgAOEsize.setForeground(Color.WHITE);
@@ -137,16 +157,54 @@ public class WindowUnitUpgrade extends JPopupMenu implements ChangeListener {
 		labelGoldEarned.setForeground(Color.WHITE);
 		panelSouth.add(labelGoldEarned);
 		
+		buttonSell = new JButton("Sell (+"+ (int)(ally.getWorth()*WMDConstants.SELL_RETURN_PERCENTAGE) +"$)");
+		buttonSell.addActionListener(e -> sellUnit());
+		buttonSell.setBackground(getBackground());
+		buttonSell.setForeground(Color.WHITE);
+		buttonSell.setFont(new Font("Tahoma", Font.PLAIN, 12));
+		buttonSell.setHorizontalAlignment(SwingConstants.LEFT);
+		panelSouth.add(buttonSell);
+		
 		pack();
 	}
 	
-	private void statUpdated() {
-		buttonUpgDamage.setText("<html><body>Upgrade<br>(" + (ally.getUpgradeInfo().getCurrentDamageCost()) +"$)</body></html>");
-		buttonUpgRange.setText("<html><body>Upgrade<br>(" + (ally.getUpgradeInfo().getCurrentRangeCost()) +"$)</body></html>");
-		buttonUpgAOEsize.setText("<html><body>Upgrade<br>(" + (ally.getUpgradeInfo().getCurrentAOERadiusCost()) +"$)</body></html>");
+	private void statUpdated(int cost) {
+		Game.decrementMoney(cost);
+		
+		if(!ally.getUpgradeInfo().isDamageMaxed()) buttonUpgDamage.setText("<html><body>Upgrade<br>(" + (ally.getUpgradeInfo().getCurrentDamageCost()) +"$)</body></html>");
+		else {
+			buttonUpgDamage.setText("Maxed");
+			buttonUpgDamage.setEnabled(false);
+		}
+		
+		if(!ally.getUpgradeInfo().isRangeMaxed()) buttonUpgRange.setText("<html><body>Upgrade<br>(" + (ally.getUpgradeInfo().getCurrentRangeCost()) +"$)</body></html>");
+		else {
+			buttonUpgRange.setText("Maxed");
+			buttonUpgRange.setEnabled(false);
+		}
+		
+		if(!ally.getUpgradeInfo().isFireRateMaxed()) buttonUpgFireRate.setText("<html><body>Upgrade<br>(" + (ally.getUpgradeInfo().getCurrentFireRateCost()) +"$)</body></html>");
+		else {
+			buttonUpgFireRate.setText("Maxed");
+			buttonUpgFireRate.setEnabled(false);
+		}
+		
+		if(ally.getAOEDamage() > 0) {
+			if(!ally.getUpgradeInfo().isAOERadiusMaxed()) buttonUpgAOEsize.setText("<html><body>Upgrade<br>(" + (ally.getUpgradeInfo().getCurrentAOERadiusCost()) +"$)</body></html>");
+			else {
+				buttonUpgAOEsize.setText("Maxed");
+				buttonUpgAOEsize.setEnabled(false);
+			}
+			
+			labelAOEsize.setText("AOE Radius: " + ally.getAOERadius());
+		}
+		
 		labelDamage.setText("Damage: " + ally.getDamage());
 		labelRange.setText("Range: " + ally.getRange());
-		labelAOEsize.setText("AOE Radius: " + ally.getAOERadius());
+		labelFireRate.setText("Fire Rate: " + ally.getFireRate());
+		
+		buttonSell.setText("Sell (+"+ getSellValue() +"$)");
+		
 		WindowGame.canvas.setUnitRangeCircle(ally.getRangeCircle());
 	}
 	
@@ -157,8 +215,19 @@ public class WindowUnitUpgrade extends JPopupMenu implements ChangeListener {
 		int y = ally.getMiddlePoint().y - width/2;
 		if(ally.getMiddlePoint().x < Game.window.getContentPane().getWidth()/2) x = ally.getMiddlePoint().x + 40;
 		if(y < 0) y = 0;
-		else if(y > Game.window.getContentPane().getHeight() - width) y = Game.window.getContentPane().getHeight() - width;
+		else if(y > Game.window.getContentPane().getHeight() - width) y = Game.window.getContentPane().getHeight() - height;
 		return new Point(x, y);
+	}
+	
+	private void sellUnit() {
+		Game.incrementMoney(getSellValue());
+		WindowGame.canvas.setUnitRangeCircle(null);
+		setVisible(false);
+		Game.removeAlly(ally);
+	}
+	
+	private int getSellValue() {
+		return (int)(ally.getWorth()*WMDConstants.SELL_RETURN_PERCENTAGE);
 	}
 	
 	public void showDropdown() {
@@ -170,10 +239,24 @@ public class WindowUnitUpgrade extends JPopupMenu implements ChangeListener {
 		labelEnemiesKilled.setText("Enemies Killed: " + ally.getEnemiesKilled());
 		labelGoldEarned.setText("Gold Earned: " + ally.getGoldEarned());
 		
-		if(buttonUpgDamage.isEnabled() && Game.getMoneyAmount() < ally.getUpgradeInfo().getCurrentDamageCost()) buttonUpgDamage.setEnabled(false);
-		else if(!buttonUpgDamage.isEnabled() && Game.getMoneyAmount() >= ally.getUpgradeInfo().getCurrentDamageCost()) buttonUpgDamage.setEnabled(true);
+		if(!ally.getUpgradeInfo().isDamageMaxed()) {
+			if(buttonUpgDamage.isEnabled() && Game.getMoneyAmount() < ally.getUpgradeInfo().getCurrentDamageCost()) buttonUpgDamage.setEnabled(false);
+			else if(!buttonUpgDamage.isEnabled() && Game.getMoneyAmount() >= ally.getUpgradeInfo().getCurrentDamageCost()) buttonUpgDamage.setEnabled(true);
+		}
 		
-		if(buttonUpgRange.isEnabled() && Game.getMoneyAmount() < ally.getUpgradeInfo().getCurrentRangeCost()) buttonUpgRange.setEnabled(false);
-		else if(!buttonUpgRange.isEnabled() && Game.getMoneyAmount() >= ally.getUpgradeInfo().getCurrentRangeCost()) buttonUpgRange.setEnabled(true);
+		if(!ally.getUpgradeInfo().isFireRateMaxed()) {
+			if(buttonUpgFireRate.isEnabled() && Game.getMoneyAmount() < ally.getUpgradeInfo().getCurrentFireRateCost()) buttonUpgFireRate.setEnabled(false);
+			else if(!buttonUpgFireRate.isEnabled() && Game.getMoneyAmount() >= ally.getUpgradeInfo().getCurrentFireRateCost()) buttonUpgFireRate.setEnabled(true);
+		}
+		
+		if(!ally.getUpgradeInfo().isRangeMaxed()) {
+			if(buttonUpgRange.isEnabled() && Game.getMoneyAmount() < ally.getUpgradeInfo().getCurrentRangeCost()) buttonUpgRange.setEnabled(false);
+			else if(!buttonUpgRange.isEnabled() && Game.getMoneyAmount() >= ally.getUpgradeInfo().getCurrentRangeCost()) buttonUpgRange.setEnabled(true);
+		}
+		
+		if(ally.getAOEDamage() > 0 && !ally.getUpgradeInfo().isAOERadiusMaxed()) {
+			if(buttonUpgAOEsize.isEnabled() && Game.getMoneyAmount() < ally.getUpgradeInfo().getCurrentAOERadiusCost()) buttonUpgAOEsize.setEnabled(false);
+			else if(!buttonUpgAOEsize.isEnabled() && Game.getMoneyAmount() >= ally.getUpgradeInfo().getCurrentAOERadiusCost()) buttonUpgAOEsize.setEnabled(true);
+		}
 	}
 }

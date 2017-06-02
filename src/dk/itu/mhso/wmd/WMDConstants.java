@@ -8,6 +8,10 @@ public class WMDConstants {
 	public static final double AOE_DAMAGE_RATIO = 0.4;
 	public static final Image EXPLOSION_IMAGE = Toolkit.getDefaultToolkit().getImage("resources/sprites/explosion.gif");
 	
+	public static final int FIRE_RATE_INVERTION = 300;
+	
+	public static final double SELL_RETURN_PERCENTAGE = 0.75;
+	
 	public static final double RANGE_COST_UPGRADE_FACTOR = 0.3;
 	public static final double RANGE_COST_INCREMENT_FACTOR = 1.5;
 	

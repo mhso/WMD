@@ -13,18 +13,23 @@ public class UpgradeInfo implements Serializable {
 	private int[] rangeCosts;
 	private int[] damageIncrements;
 	private int[] damageCosts;
+	private int[] fireRateIncrements;
+	private int[] fireRateCosts;
 	private int[] aoeRadiusIncrements;
 	private int[] aoeRadiusCosts;
 	
 	private short currentRangeIndex;
 	private short currentDamageIndex;
+	private short currentFireRateIndex;
 	private short currentAOERadiusIndex;
 	
-	public UpgradeInfo(int[] rangeIncrements, int[] rangeCosts, int[] damageIncrements, int[] damageCosts) {
+	public UpgradeInfo(int[] rangeIncrements, int[] rangeCosts, int[] damageIncrements, int[] damageCosts, int[] fireRateIncrements, int[] fireRateCosts) {
 		this.rangeIncrements = rangeIncrements;
 		this.rangeCosts = rangeCosts;
 		this.damageIncrements = damageIncrements;
 		this.damageCosts = damageCosts;
+		this.fireRateIncrements = fireRateIncrements;
+		this.fireRateCosts = fireRateCosts;
 	}
 	
 	public void setAlly(Ally ally) {
@@ -32,6 +37,7 @@ public class UpgradeInfo implements Serializable {
 	}
 	
 	public void upgradeRange() {
+		ally.incrementWorth(rangeCosts[currentRangeIndex]);
 		ally.setRange(ally.getRange() + rangeIncrements[currentRangeIndex++]);
 	}
 	
@@ -40,6 +46,7 @@ public class UpgradeInfo implements Serializable {
 	}
 	
 	public void upgradeDamage() {
+		ally.incrementWorth(damageCosts[currentDamageIndex]);
 		if(ally.getAOEDamage() > 0) ally.setAOEDamage(ally.getAOEDamage() + 
 				(int)Math.floor((double)damageIncrements[currentDamageIndex]*WMDConstants.AOE_DAMAGE_RATIO));
 		ally.setDamage(ally.getDamage() + damageIncrements[currentDamageIndex++]);
@@ -47,6 +54,15 @@ public class UpgradeInfo implements Serializable {
 	
 	public int getCurrentDamageCost() {
 		return damageCosts[currentDamageIndex];
+	}
+	
+	public void upgradeFireRate() {
+		ally.incrementWorth(fireRateCosts[currentFireRateIndex]);
+		ally.setFireRate(ally.getFireRate() + fireRateIncrements[currentFireRateIndex++]);
+	}
+	
+	public int getCurrentFireRateCost() {
+		return fireRateCosts[currentFireRateIndex];
 	}
 	
 	public void setAOERadiusIncrements(int[] aoeRadiusIncrements) {
@@ -58,6 +74,7 @@ public class UpgradeInfo implements Serializable {
 	}
 	
 	public void upgradeAOERadius() {
+		ally.incrementWorth(aoeRadiusCosts[currentAOERadiusIndex]);
 		ally.setAOERadius(ally.getAOERadius() + aoeRadiusIncrements[currentAOERadiusIndex++]);
 	}
 	
@@ -65,11 +82,29 @@ public class UpgradeInfo implements Serializable {
 		return aoeRadiusCosts[currentAOERadiusIndex];
 	}
 	
+	public boolean isDamageMaxed() {
+		return damageIncrements.length == currentDamageIndex;
+	}
+	
+	public boolean isRangeMaxed() {
+		return rangeIncrements.length == currentRangeIndex;
+	}
+	
+	public boolean isAOERadiusMaxed() {
+		return aoeRadiusIncrements.length == currentAOERadiusIndex;
+	}
+	
+	public boolean isFireRateMaxed() {
+		return fireRateIncrements.length == currentFireRateIndex;
+	}
+	
 	public static void main(String[] args) {
-		UpgradeInfo uiSniper = new UpgradeInfo(new int[]{100, 150, 250}, new int[]{50, 75, 150}, new int[]{1, 1, 2, 2}, new int[]{75, 125, 200, 300});
+		UpgradeInfo uiSniper = new UpgradeInfo(new int[]{100, 150, 250}, new int[]{50, 75, 150}, new int[]{1, 1, 2, 2}, new int[]{75, 125, 200, 300},
+				new int[]{20, 20, 25, 25}, new int[]{50, 75, 150, 250});
 		Util.writeObjectToFile(uiSniper, "resources/unitinfo/sniper_upginf.bin");
 		
-		UpgradeInfo uiMissile = new UpgradeInfo(new int[]{50, 75, 150}, new int[]{200, 300, 400}, new int[]{3, 3, 4, 4}, new int[]{250, 400, 600, 900});
+		UpgradeInfo uiMissile = new UpgradeInfo(new int[]{50, 75, 150}, new int[]{200, 300, 400}, new int[]{3, 3, 4, 4}, new int[]{250, 400, 600, 900},
+				new int[]{15, 15, 20, 20}, new int[]{200, 300, 400, 550});
 		uiMissile.setAOERadiusIncrements(new int[]{25, 50, 75, 100});
 		uiMissile.setAOERadiusCosts(new int[]{250, 350, 550, 850});
 		Util.writeObjectToFile(uiMissile, "resources/unitinfo/missile_battery_upginf.bin");
