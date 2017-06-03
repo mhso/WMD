@@ -17,7 +17,9 @@ import javax.swing.JFileChooser;
 import dk.itu.mhso.wmd.Resources;
 import dk.itu.mhso.wmd.Util;
 import dk.itu.mhso.wmd.WMDConstants;
+import dk.itu.mhso.wmd.controller.Game;
 import dk.itu.mhso.wmd.controller.PathParserNew;
+import dk.itu.mhso.wmd.model.Level;
 import dk.itu.mhso.wmd.model.UnitPath;
 import java.awt.Font;
 import java.awt.Point;
@@ -172,6 +174,8 @@ public class WindowLevelEditor extends JFrame {
 				Util.writeObjectToFile(paths.get(j), pathName + "/path" + (j+1) + ".bin");
 				Util.writeObjectToFile(areas.get(j), pathName + "/area" + (j+1) + ".bin");
 			}
+			
+			Game.addLevel(new Level(pathName));
 		} catch (IOException e) {
 			e.printStackTrace();
 		}

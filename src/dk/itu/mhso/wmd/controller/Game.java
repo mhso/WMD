@@ -52,6 +52,10 @@ public class Game {
 	private static int money = 20000;
 	private static int lives = 20;
 	
+	public static void addLevel(Level level) {
+		levels.add(level);
+	}
+	
 	public static void loadLevels() {
 		try {
 			for(Iterator<Path> it = Files.list(Paths.get(Resources.getLevelsPath())).iterator(); it.hasNext(); ) {
@@ -61,6 +65,10 @@ public class Game {
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
+	}
+	
+	public static List<Level> getLevels() {
+		return levels;
 	}
 	
 	public static void startGame() {
@@ -73,6 +81,11 @@ public class Game {
 		window = new WindowGame(levels.get(level));
 		addChangeListener("window", window);
 		gameTimer = new GameTimer(10);
+	}
+	
+	public static void setPaused(boolean paused) {
+		if(paused) gameTimer.stop();
+		else gameTimer.start();
 	}
 	
 	public static void addChangeListener(String name, ChangeListener l) {
@@ -210,6 +223,14 @@ public class Game {
 		public GameTimer(int delay) {
 			timer = new Timer(delay, this);
 			currentWave = currentLevel.getNextWave();
+			timer.start();
+		}
+		
+		public void stop() {
+			timer.stop();
+		}
+		
+		public void start() {
 			timer.start();
 		}
 		
