@@ -3,6 +3,7 @@ package dk.itu.mhso.wmd.model;
 import java.awt.Point;
 import java.io.File;
 import java.io.IOException;
+import java.util.Random;
 
 import javax.imageio.ImageIO;
 
@@ -22,12 +23,21 @@ public abstract class Enemy extends Unit {
 		location = path.getPoint(pointNr);
 	}
 	
+	public void setUnitPaths(UnitPath[] pathArr) {
+		path = pathArr[new Random().nextInt(pathArr.length)];
+		location = path.getPoint(pointNr);
+	}
+	
 	public void loadIcons(String unitName) {
 		try {
 			icon = ImageIO.read(new File("resources/sprites/enemy/"+unitName+".png"));
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
+	}
+	
+	public boolean hasEscaped() {
+		return path.size() == pointNr;
 	}
 	
 	public void move() {

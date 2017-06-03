@@ -122,7 +122,7 @@ public class TowersMenu extends JPopupMenu implements ChangeListener {
 	
 	private void addToSelected(Ally unit) {
 		selectedUnit = unit;
-		Cursor cursor = CursorImage.getCursor(selectedUnit.getIcon(), this);
+		Cursor cursor = CursorImage.getCursor(selectedUnit.getIcon(), getLocation());
 		setCursor(cursor);
 		overlay.setCursor(cursor);
 	}

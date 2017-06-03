@@ -1,6 +1,7 @@
 package dk.itu.mhso.wmd.view;
 
 import java.awt.BorderLayout;
+import java.awt.Dimension;
 
 import javax.swing.JFrame;
 import javax.swing.JPanel;
@@ -38,7 +39,7 @@ public class WindowGame extends JFrame implements ChangeListener {
 		
 		add(overlayPanel);
 		
-		setPreferredSize(WMDConstants.WINDOW_SIZE_BASE);
+		setPreferredSize(new Dimension(level.getBGImage().getWidth(), level.getBGImage().getHeight()));
 		pack();
 		
 		setLocationRelativeTo(null);

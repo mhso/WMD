@@ -9,6 +9,8 @@ public class WMDConstants {
 	public static final Image EXPLOSION_IMAGE = Toolkit.getDefaultToolkit().getImage("resources/sprites/explosion.gif");
 	
 	public static final int FIRE_RATE_INVERTION = 300;
+	public static final int LEVEL_EDITOR_CURSOR_SIZE = 17;
+	public static final int ENEMY_AREA_WIDTH = 50;
 	
 	public static final double SELL_RETURN_PERCENTAGE = 0.75;
 	

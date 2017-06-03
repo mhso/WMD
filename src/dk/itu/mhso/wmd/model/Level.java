@@ -8,65 +8,88 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.charset.Charset;
 import java.nio.file.Files;
+import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 
 import javax.imageio.ImageIO;
 
-import dk.itu.mhso.wmd.controller.PathParser;
+import com.sun.crypto.provider.AESParameters;
+
+import dk.itu.mhso.wmd.Resources;
+import dk.itu.mhso.wmd.Util;
 import dk.itu.mhso.wmd.controller.UnitFactory;
 
 public class Level {
 	private List<Wave> waves = new ArrayList<>();
 	private int currentWave;
-	private List<Exit> exits;
-	private List<Entrance> entrances;
 	private BufferedImage bgImage;
 	private String name;
-	private Path2D pathArea;
+	private Path2D[] pathAreas;
 	
 	public Level(String pathName) {
 		name = new File(pathName).getName();
-		parseWaves(pathName, parsePath(pathName));
+		parseUnitData(pathName);
 		loadBGImage(pathName);
 	}
 
-	private UnitPath parsePath(String pathName) {
-		BufferedImage image = null;
+	private void parseUnitData(String pathName) {
 		try {
-			image = ImageIO.read(new File(pathName + "/path.png"));
+			List<UnitPath> paths = new ArrayList<>();
+			List<Path2D> areas = new ArrayList<>();
+			Iterator<Path> files = Files.list(Paths.get(pathName)).iterator();
+			while(files.hasNext()) {
+				Path path = files.next();
+				if(path.toString().contains("path")) paths.add((UnitPath) Util.readObjectFromFile(path.toString()));
+				else if(path.toString().contains("area")) areas.add((Path2D) Util.readObjectFromFile(path.toString()));
+			}
+			pathAreas = areas.toArray(new Path2D[areas.size()]);
+			parseWaves(pathName, paths.toArray(new UnitPath[paths.size()]));
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
-		PathParser parser = new PathParser(image);
-		exits = parser.getExits();
-		entrances = parser.getEntrances();
-		pathArea = parser.getMainPath();
-		return parser.getUnitPath();
 	}
 	
-	private void parseWaves(String pathName, UnitPath unitPath) {
-		Charset charset = Charset.forName("UNICODE");
-		try(BufferedReader reader = Files.newBufferedReader(Paths.get(pathName + "/enemies.txt"), charset)) {
-			String line = reader.readLine();
-			List<Enemy> currentWaveEnemies = new ArrayList<>();
-			while(line != null) {
-				if(line.equals("-")) {
+	private void parseWaves(String pathName, UnitPath[] unitPaths) {
+		List<Enemy> currentWaveEnemies = new ArrayList<>();
+		if(!Files.exists(Paths.get(pathName + "/enemies.txt"))) {
+			String[] arr = Resources.getDefaultEnemies();
+			for(String s : arr) {
+				if(s.equals("-")) {
 					waves.add(new Wave(currentWaveEnemies));
 					currentWaveEnemies = new ArrayList<>();
 				}
-				else if(line.startsWith("//")) {}
+				else if(s.startsWith("//")) {}
 				else {
-					Enemy enemy = (Enemy)UnitFactory.createUnit(line);
-					enemy.setUnitPath(unitPath);
+					Enemy enemy = (Enemy)UnitFactory.createUnit(s);
+					enemy.setUnitPaths(unitPaths);
 					currentWaveEnemies.add(enemy);
 				}
-				line = reader.readLine();
 			}
 		}
-		catch(IOException e) {
-			e.printStackTrace();
+		else {
+			Charset charset = Charset.forName("UNICODE");
+			try(BufferedReader reader = Files.newBufferedReader(Paths.get(pathName + "/enemies.txt"), charset)) {
+				String line = reader.readLine();
+				while(line != null) {
+					if(line.equals("-")) {
+						waves.add(new Wave(currentWaveEnemies));
+						currentWaveEnemies = new ArrayList<>();
+					}
+					else if(line.startsWith("//")) {}
+					else {
+						Enemy enemy = (Enemy)UnitFactory.createUnit(line);
+						enemy.setUnitPaths(unitPaths);
+						currentWaveEnemies.add(enemy);
+					}
+					line = reader.readLine();
+				}
+			}
+			catch(IOException e) {
+				e.printStackTrace();
+			}
 		}
 	}
 	
@@ -88,16 +111,8 @@ public class Level {
 		return bgImage;
 	}
 	
-	public List<Exit> getExits() {
-		return exits;
-	}
-	
-	public Path2D getMainPathArea() {
-		return pathArea;
-	}
-	
-	public List<Entrance> getEntrances() {
-		return entrances;
+	public Path2D[] getMainPathAreas() {
+		return pathAreas;
 	}
 	
 	public int getCurrentWaveNr() {

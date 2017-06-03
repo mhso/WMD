@@ -7,6 +7,7 @@ import java.awt.Image;
 import java.awt.Point;
 import java.awt.geom.AffineTransform;
 import java.awt.geom.Ellipse2D;
+import java.awt.geom.Path2D;
 import java.awt.geom.Rectangle2D;
 import java.awt.image.AffineTransformOp;
 import java.awt.image.BufferedImage;
@@ -73,7 +74,9 @@ public class Canvas extends JPanel {
 	
 	private void drawLevel(Graphics2D g2d) {
 		g2d.drawImage(level.getBGImage(), 0, 0, null);
-		if(Main.DEBUG) g2d.draw(level.getMainPathArea());
+		if(Main.DEBUG) {
+			for(Path2D path : level.getMainPathAreas()) g2d.draw(path);
+		}
 	}
 	
 	private void drawAllies(Graphics2D g2d) {

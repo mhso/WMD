@@ -42,6 +42,13 @@ public class WindowMainMenu extends JFrame {
 		buttonNewGame.addActionListener(e -> Game.startGame());
 		centerPanel.add(buttonNewGame);
 		
+		JButton buttonLevelEditor = new JButton("Level Editor");
+		buttonLevelEditor.addActionListener(e -> {
+			new WindowLevelEditor();
+			dispose();
+		});
+		centerPanel.add(buttonLevelEditor);
+		
 		JButton buttonExit = new JButton("Exit");
 		centerPanel.add(buttonExit);
 		
