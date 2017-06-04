@@ -23,7 +23,6 @@ public class PathParserNew {
 			traversedPoints.add(nextPoint);
 			
 			if(nextPoint.equals(end)) {
-				traversedPoints.add(nextPoint);
 				finished = true;
 			}
 		}

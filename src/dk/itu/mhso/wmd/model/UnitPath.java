@@ -24,7 +24,7 @@ public class UnitPath implements Serializable {
 	
 	public void addPoint(Point point) { points.add(point); }
 
-	public void addAllPoints(List<Point> points) { points.addAll(points); }
+	public void addAllPoints(List<Point> newPoints) { points.addAll(newPoints); }
 	
 	public int size() {
 		return points.size();

@@ -5,6 +5,7 @@ import java.awt.Color;
 import java.awt.Cursor;
 import java.awt.Dimension;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 
 import javax.swing.JFrame;
@@ -197,11 +198,16 @@ public class WindowLevelEditor extends JFrame {
 		JDialog dialog = new JDialog(this);
 		JPanel dc = (JPanel) dialog.getContentPane();
 		dc.setLayout(new BorderLayout());
-		Path[] files = Files.list(Paths.get("resources/editor")).toArray(Path[]::new);
+		List<Path> files = new ArrayList<>();
+		Iterator<Path> it = Files.list(Paths.get("resources/editor")).iterator();
+		while(it.hasNext()) {
+			Path p = it.next();
+			if(p.toString().endsWith(".bin")) files.add(p);
+		}
 		
-		String[] fileNames = new String[files.length];
-		for(int i = 0; i < files.length; i++) {
-			fileNames[i] = files[i].toFile().getName();
+		String[] fileNames = new String[files.size()];
+		for(int i = 0; i < files.size(); i++) {
+			fileNames[i] = files.get(i).toFile().getName();
 		}
 		
 		JList<String> list = new JList<>(fileNames);
@@ -210,7 +216,7 @@ public class WindowLevelEditor extends JFrame {
 			public void mouseClicked(MouseEvent e) {
 				if(e.getClickCount() == 2) {
 					int index = list.getSelectedIndex();
-					if(index > -1) loadLevel(files[index].toString());
+					if(index > -1) loadLevel(files.get(index).toString());
 				}
 			}
 		});
