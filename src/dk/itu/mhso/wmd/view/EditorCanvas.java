@@ -21,20 +21,26 @@ import javax.swing.JPanel;
 
 import dk.itu.mhso.wmd.Main;
 import dk.itu.mhso.wmd.WMDConstants;
+import dk.itu.mhso.wmd.controller.PathParserNew;
+import dk.itu.mhso.wmd.model.UnitPath;
 
 public class EditorCanvas extends JPanel {
+	private static final long serialVersionUID = -1238851349734038022L;
 	public static final int PENCIL_TOOL = 0;
 	public static final int LINE_TOOL = 1;
 	
 	private int currentTool = 1;
 	private Color currentDrawColor = Color.BLACK;
-	private WindowLevelEditor window;
-	private BufferedImage bgImage;
+	private transient WindowLevelEditor window;
+	private transient BufferedImage bgImage;
 	private Line2D line;
-	private Path2D unitPath;
+	private Path2D path;
+	private Path2D completedParts;
 	private List<Path2D> completedPaths = new ArrayList<>();
 	private List<Path2D> completedAreas = new ArrayList<>();
+	private List<Point> currentPoints = new ArrayList<>();
 	private Path2D currentArea;
+	private UnitPath unitPath;
 	private Point firstPoint;
 	
 	public EditorCanvas(WindowLevelEditor window) {
@@ -44,6 +50,10 @@ public class EditorCanvas extends JPanel {
 		new LevelEditorMouseController();
 	}
 	
+	public void setWindow(WindowLevelEditor window) {
+		this.window = window;
+	}
+	
 	public void setBGImage(BufferedImage bgImage) {
 		this.bgImage = bgImage;
 	}
@@ -51,7 +61,7 @@ public class EditorCanvas extends JPanel {
 	public void pathCompleted() {
 		Path2D wall1 = new Path2D.Double(Path2D.WIND_EVEN_ODD);
 		Path2D wall2 = new Path2D.Double(Path2D.WIND_EVEN_ODD);
-		PathIterator pit = unitPath.getPathIterator(new AffineTransform());
+		PathIterator pit = completedParts.getPathIterator(new AffineTransform());
 		
 		double[] points = new double[6];
 		pit.currentSegment(points);
@@ -87,10 +97,11 @@ public class EditorCanvas extends JPanel {
 		
 		currentArea = wall1;
 		
-		completedPaths.add(unitPath);
+		completedPaths.add(completedParts);
 		completedAreas.add(wall1);
+		completedParts = null;
 		unitPath = null;
-		line = null;
+		path = null;
 	}
 	
 	private Point[] getPerpendicularPoints(double[] points) {
@@ -112,17 +123,21 @@ public class EditorCanvas extends JPanel {
 	
 	@Override
 	protected void paintComponent(Graphics g) {
-		window.repaint();
 		Graphics2D g2d = (Graphics2D) g;
 		g2d.setColor(Color.BLACK);
 		if(bgImage != null) drawBGImage(g2d);
-		if(line != null) g2d.draw(line);
-		if(unitPath != null) g2d.draw(unitPath);
 		if(!completedPaths.isEmpty()) {
 			g2d.setColor(Color.RED);
 			for(Path2D path : completedPaths) g2d.draw(path);
 			g2d.setColor(Color.BLACK);
 		}
+		if(completedParts != null) {
+			g2d.setColor(Color.GREEN);
+			g2d.draw(completedParts);
+			g2d.setColor(Color.BLACK);
+		}
+		if(line != null) g2d.draw(line);
+		if(path != null) g2d.draw(path);
 	}
 	
 	private void drawBGImage(Graphics2D g2d) {
@@ -159,6 +174,10 @@ public class EditorCanvas extends JPanel {
 	}
 
 	public Path2D getCurrentPath() {
+		return path;
+	}
+	
+	public UnitPath getUnitPath() {
 		return unitPath;
 	}
 	
@@ -182,33 +201,42 @@ public class EditorCanvas extends JPanel {
 		@Override
 		public void mousePressed(MouseEvent e) {
 			currentPoint = e.getPoint();
-			if(firstPoint == null) firstPoint = currentPoint;
-			if(unitPath != null) currentPoint = new Point((int)unitPath.getCurrentPoint().getX(), (int)unitPath.getCurrentPoint().getY());
+			firstPoint = currentPoint;
+			if(unitPath == null) unitPath = new UnitPath();
 			
-			if(unitPath == null) {
-				unitPath = new Path2D.Double(Path2D.WIND_EVEN_ODD);
-				window.pathStarted();
-			}
-			unitPath.moveTo(currentPoint.x, currentPoint.y);
-			if(currentTool == EditorCanvas.PENCIL_TOOL) unitPath.lineTo(e.getX(), e.getY());
-			repaint();
+			if(completedParts != null) currentPoint = new Point((int)completedParts.getCurrentPoint().getX(), (int)completedParts.getCurrentPoint().getY());
+			if(completedParts == null) completedParts = new Path2D.Double(Path2D.WIND_EVEN_ODD);
+			
+			path = new Path2D.Double(Path2D.WIND_EVEN_ODD);
+			
+			path.moveTo(currentPoint.x, currentPoint.y);
+			if(currentTool == EditorCanvas.PENCIL_TOOL) path.lineTo(e.getX(), e.getY());
+			window.repaint();
 		}
 
 		@Override
 		public void mouseReleased(MouseEvent e) {
-			if(line != null) unitPath.append(line, false);
-			repaint();
+			if(line != null) {
+				path.append(line, false);
+			}
+			window.pathStarted();
+			unitPath.addAllPoints(PathParserNew.parsePath(getMainImage(), firstPoint, e.getPoint()));
+			completedParts.append(path, false);
+			path = null;
+			line = null;
+			
+			window.repaint();
 		}
 
 		@Override
 		public void mouseDragged(MouseEvent e) {
 			if(currentTool == EditorCanvas.PENCIL_TOOL) {
-				unitPath.lineTo(e.getX(), e.getY());
+				path.lineTo(e.getX(), e.getY());
 			}
 			else if(currentTool == EditorCanvas.LINE_TOOL) {
 				line = new Line2D.Double(currentPoint.x, currentPoint.y, e.getX(), e.getY());
 			}
-			repaint();
+			window.repaint();
 		}
 	}
 }

@@ -22,7 +22,7 @@ public class Util {
 			oos.close();
 			return object;
 		} catch(Exception e) {
-			System.out.println("Could not find file: " + fileName);
+			e.printStackTrace();
 			return null;
 		}
 	}

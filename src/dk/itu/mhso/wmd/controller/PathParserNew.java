@@ -12,25 +12,22 @@ public class PathParserNew {
 	private static final int MOVE_RGB = Color.BLACK.getRGB();
 	private static BufferedImage pathImage;
 	
-	public static UnitPath parsePath(BufferedImage image, Point start, Point end) {
+	public static List<Point> parsePath(BufferedImage image, Point start, Point end) {
 		pathImage = image;
 		List<Point> traversedPoints = new ArrayList<>();
 		traversedPoints.add(start);
 		Point nextPoint = start;
-		UnitPath unitPath = new UnitPath();
-		unitPath.addPoint(start);
 		boolean finished = false;
 		while(!finished) {
 			nextPoint = getNextPathPoint(nextPoint, traversedPoints, MOVE_RGB);
 			traversedPoints.add(nextPoint);
-			unitPath.addPoint(nextPoint);
 			
 			if(nextPoint.equals(end)) {
-				unitPath.addPoint(end);
+				traversedPoints.add(nextPoint);
 				finished = true;
 			}
 		}
-		return unitPath;
+		return traversedPoints;
 	}
 	
 	private static Point getNextPathPoint(Point currentPoint, List<Point> traversedPoints, int SEARCH_RGB) {

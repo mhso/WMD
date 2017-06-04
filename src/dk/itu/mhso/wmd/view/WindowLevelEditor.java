@@ -2,16 +2,19 @@ package dk.itu.mhso.wmd.view;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
+import java.awt.Cursor;
 import java.awt.Dimension;
 import java.util.ArrayList;
 import java.util.List;
 
 import javax.swing.JFrame;
 import javax.swing.JPanel;
+import javax.swing.JScrollPane;
 import javax.imageio.ImageIO;
 import javax.swing.BorderFactory;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
+import javax.swing.JDialog;
 import javax.swing.JFileChooser;
 
 import dk.itu.mhso.wmd.Resources;
@@ -23,14 +26,20 @@ import dk.itu.mhso.wmd.model.Level;
 import dk.itu.mhso.wmd.model.UnitPath;
 import java.awt.Font;
 import java.awt.Point;
+import java.awt.event.KeyAdapter;
+import java.awt.event.KeyEvent;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 import java.awt.geom.Path2D;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
+import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.awt.FlowLayout;
 import javax.swing.JLabel;
+import javax.swing.JList;
 import javax.swing.JTextField;
 import javax.swing.filechooser.FileNameExtensionFilter;
 
@@ -50,6 +59,21 @@ public class WindowLevelEditor extends JFrame {
 		contentPane.setBorder(BorderFactory.createEmptyBorder(5, 5, 5, 5));
 		
 		canvas = new EditorCanvas(this);
+		contentPane.addKeyListener(new KeyAdapter() {
+			@Override
+			public void keyPressed(KeyEvent e) {
+				if(e.isControlDown()) {
+					if(e.getKeyCode() == KeyEvent.VK_S) saveLevel();
+					else if(e.getKeyCode() == KeyEvent.VK_O) {
+						try {
+							showSavedFiles();
+						} catch (IOException e1) {
+							e1.printStackTrace();
+						}
+					}
+				}
+			}
+		});
 		contentPane.add(canvas, BorderLayout.CENTER);
 		
 		JPanel panelTop = new JPanel();
@@ -94,15 +118,33 @@ public class WindowLevelEditor extends JFrame {
 		panelLevelName.add(labelLevelName);
 		
 		textFieldLevelName = new JTextField("Awesome Level");
+		textFieldLevelName.setFont(new Font("Tahoma", Font.PLAIN, 12));
 		panelLevelName.add(textFieldLevelName);
 		textFieldLevelName.setColumns(10);
+		
+		JPanel panelSaveLevel = new JPanel();
+		panelTop.add(panelSaveLevel, BorderLayout.EAST);
+		
+		JButton buttonSaveLevel = new JButton("Save (CTRL+S)");
+		buttonSaveLevel.addActionListener(e -> saveLevel());
+		panelSaveLevel.add(buttonSaveLevel);
+		
+		JButton buttonLoadLevel = new JButton("Load (CTRL+O)");
+		buttonLoadLevel.addActionListener(e -> {
+			try {
+				showSavedFiles();
+			} catch (IOException e1) {
+				e1.printStackTrace();
+			}
+		});
+		panelSaveLevel.add(buttonLoadLevel);
 		
 		JPanel panelBottom = new JPanel();
 		panelBottom.setOpaque(false);
 		getContentPane().add(panelBottom, BorderLayout.SOUTH);
 		panelBottom.setLayout(new BorderLayout(0, 0));
 		
-		buttonDone = new JButton("Level Complete");
+		buttonDone = new JButton("Export Level");
 		buttonDone.addActionListener(e -> levelDone());
 		buttonDone.setEnabled(false);
 		buttonDone.setFont(new Font("Tahoma", Font.PLAIN, 15));
@@ -123,6 +165,66 @@ public class WindowLevelEditor extends JFrame {
 		setVisible(true);
 	}
 	
+	private void saveLevel() {
+		Cursor cursor = canvas.getCursor();
+		canvas.setCursor(CursorImage.getDefault());
+		Util.writeObjectToFile(canvas, "resources/editor/" + textFieldLevelName.getText() + ".bin");
+		canvas.setCursor(cursor);
+		if(canvas.getBGImage() == null) return;
+		try {
+			ImageIO.write(canvas.getBGImage(), "png", new File("resources/editor/" + textFieldLevelName.getText() + "_bg.png"));
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+	}
+	
+	private void loadLevel(String fileName) {
+		getContentPane().remove(canvas);
+		canvas = (EditorCanvas) Util.readObjectFromFile(fileName);
+		canvas.setWindow(this);
+		getContentPane().add(canvas);
+		String imagePath = fileName.substring(0, fileName.length()-4);
+		imagePath += "_bg.png";
+		try {
+			canvas.setBGImage(ImageIO.read(new File(imagePath)));
+		} catch (IOException e) {
+			
+		}
+		canvas.repaint();
+	}
+	
+	private void showSavedFiles() throws IOException {
+		JDialog dialog = new JDialog(this);
+		JPanel dc = (JPanel) dialog.getContentPane();
+		dc.setLayout(new BorderLayout());
+		Path[] files = Files.list(Paths.get("resources/editor")).toArray(Path[]::new);
+		
+		String[] fileNames = new String[files.length];
+		for(int i = 0; i < files.length; i++) {
+			fileNames[i] = files[i].toFile().getName();
+		}
+		
+		JList<String> list = new JList<>(fileNames);
+		list.addMouseListener(new MouseAdapter() {
+			@Override
+			public void mouseClicked(MouseEvent e) {
+				if(e.getClickCount() == 2) {
+					int index = list.getSelectedIndex();
+					if(index > -1) loadLevel(files[index].toString());
+				}
+			}
+		});
+		
+		JScrollPane scroll = new JScrollPane(list);
+		scroll.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED);
+		dc.add(scroll);
+		
+		dialog.pack();
+		
+		dialog.setLocationRelativeTo(null);
+		dialog.setVisible(true);
+	}
+
 	private void loadImage() {
 		JFileChooser fileChooser = new JFileChooser("user.dir");
 		fileChooser.setFileFilter(new FileNameExtensionFilter("Image Files", "jpg", "png"));
@@ -133,6 +235,7 @@ public class WindowLevelEditor extends JFrame {
 				BufferedImage image = ImageIO.read(file);
 				canvas.setBGImage(image);
 				setPreferredSize(new Dimension(image.getWidth(), image.getHeight()));
+				repaint();
 			} catch (IOException e) {
 				e.printStackTrace();
 			}
@@ -144,12 +247,12 @@ public class WindowLevelEditor extends JFrame {
 	}
 	
 	private void addPath() {
-		paths.add(PathParserNew.parsePath(canvas.getMainImage(), canvas.getFirstPoint(),
-				new Point((int)canvas.getCurrentPath().getCurrentPoint().getX(), (int)canvas.getCurrentPath().getCurrentPoint().getY())));
+		paths.add(canvas.getUnitPath());
 		canvas.pathCompleted();
 		areas.add(canvas.getCurrentArea());
 		buttonPathDone.setEnabled(false);
 		buttonDone.setEnabled(true);
+		repaint();
 	}
 	
 	private void levelDone() {

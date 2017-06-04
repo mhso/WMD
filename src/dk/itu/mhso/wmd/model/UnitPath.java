@@ -14,8 +14,18 @@ public class UnitPath implements Serializable {
 	
 	private List<Point> points = new ArrayList<>();
 	
+	public UnitPath() {
+		
+	}
+	
+	public UnitPath(List<Point> points) {
+		this.points = points;
+	}
+	
 	public void addPoint(Point point) { points.add(point); }
 
+	public void addAllPoints(List<Point> points) { points.addAll(points); }
+	
 	public int size() {
 		return points.size();
 	}
