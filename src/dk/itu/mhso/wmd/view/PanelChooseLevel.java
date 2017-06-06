@@ -100,10 +100,10 @@ public class PanelChooseLevel extends JPanel {
 		if(levels.size() == 1) return;
 		CardLayout card = (CardLayout) cardPanel.getLayout();
 		currentIndex++;
-		if(currentIndex > levels.size() - 1) {
+		if(currentIndex == levels.size()) {
 			currentIndex = 0;
 			card.first(cardPanel);
 		}
-		card.next(cardPanel);
+		else card.next(cardPanel);
 	}
 }

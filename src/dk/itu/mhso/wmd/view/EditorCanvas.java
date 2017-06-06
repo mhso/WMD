@@ -21,7 +21,7 @@ import javax.swing.JPanel;
 
 import dk.itu.mhso.wmd.Main;
 import dk.itu.mhso.wmd.WMDConstants;
-import dk.itu.mhso.wmd.controller.PathParserNew;
+import dk.itu.mhso.wmd.controller.PathParser;
 import dk.itu.mhso.wmd.model.UnitPath;
 
 public class EditorCanvas extends JPanel {
@@ -38,10 +38,8 @@ public class EditorCanvas extends JPanel {
 	private Path2D completedParts;
 	private List<Path2D> completedPaths = new ArrayList<>();
 	private List<Path2D> completedAreas = new ArrayList<>();
-	private List<Point> currentPoints = new ArrayList<>();
 	private Path2D currentArea;
 	private UnitPath unitPath;
-	private Point firstPoint;
 	
 	public EditorCanvas(WindowLevelEditor window) {
 		this.window = window;
@@ -56,6 +54,10 @@ public class EditorCanvas extends JPanel {
 	
 	public void setBGImage(BufferedImage bgImage) {
 		this.bgImage = bgImage;
+	}
+	
+	public int paths() {
+		return completedPaths.size();
 	}
 	
 	public void pathCompleted() {
@@ -123,18 +125,19 @@ public class EditorCanvas extends JPanel {
 	
 	@Override
 	protected void paintComponent(Graphics g) {
+		super.paintComponent(g);
 		Graphics2D g2d = (Graphics2D) g;
-		g2d.setColor(Color.BLACK);
+		g2d.setColor(currentDrawColor);
 		if(bgImage != null) drawBGImage(g2d);
 		if(!completedPaths.isEmpty()) {
 			g2d.setColor(Color.RED);
 			for(Path2D path : completedPaths) g2d.draw(path);
-			g2d.setColor(Color.BLACK);
+			g2d.setColor(currentDrawColor);
 		}
 		if(completedParts != null) {
 			g2d.setColor(Color.GREEN);
 			g2d.draw(completedParts);
-			g2d.setColor(Color.BLACK);
+			g2d.setColor(currentDrawColor);
 		}
 		if(line != null) g2d.draw(line);
 		if(path != null) g2d.draw(path);
@@ -146,10 +149,6 @@ public class EditorCanvas extends JPanel {
 	
 	public BufferedImage getBGImage() {
 		return bgImage;
-	}
-	
-	public Point getFirstPoint() {
-		return firstPoint;
 	}
 	
 	public BufferedImage getMainImage() {
@@ -185,12 +184,43 @@ public class EditorCanvas extends JPanel {
 		return currentArea;
 	}
 	
+	public void toggleInvisTool() {
+		if(currentDrawColor == Color.BLACK) currentDrawColor = Color.GRAY;
+		else currentDrawColor = Color.BLACK;
+	}
+	
 	public void setCurrentDrawColor(Color color) {
 		currentDrawColor = color;
 	}
 	
+	public void undo() {
+		
+	}
+	
+	public void redo() {
+		
+	}
+	
+	private void checkEndPoint(Path2D currentPath, Point point) {
+		for(int y = 0; y <= getHeight(); y+= getHeight()) {
+			for(int x = 0; x < getWidth(); x++) {
+				if(currentPath.intersects(x, y, 1, 1)) {
+					point.setLocation(x, y);
+				}
+			}
+		}
+		for(int x = 0; x <= getWidth(); x += getWidth()) {
+			for(int y = 0; y < getHeight(); y++) {
+				if(currentPath.intersects(x, y, 1, 1)) {
+					point.setLocation(x, y);
+				}
+			}
+		}
+	}
+	
 	private class LevelEditorMouseController extends MouseAdapter {
 		private Point currentPoint;
+		private Point endPoint;
 		
 		public LevelEditorMouseController() {
 			addMouseListener(this);
@@ -201,10 +231,9 @@ public class EditorCanvas extends JPanel {
 		@Override
 		public void mousePressed(MouseEvent e) {
 			currentPoint = e.getPoint();
-			firstPoint = currentPoint;
 			if(unitPath == null) unitPath = new UnitPath();
 			
-			if(completedParts != null) currentPoint = new Point((int)completedParts.getCurrentPoint().getX(), (int)completedParts.getCurrentPoint().getY());
+			if(completedParts != null && window.isSnappingToLine()) currentPoint = endPoint;
 			if(completedParts == null) completedParts = new Path2D.Double(Path2D.WIND_EVEN_ODD);
 			
 			path = new Path2D.Double(Path2D.WIND_EVEN_ODD);
@@ -216,11 +245,18 @@ public class EditorCanvas extends JPanel {
 
 		@Override
 		public void mouseReleased(MouseEvent e) {
+			if(e.getPoint().equals(currentPoint) && currentTool == LINE_TOOL) {
+				currentPoint = null;
+				completedParts = null;
+				return;
+			}
 			if(line != null) {
 				path.append(line, false);
 			}
 			window.pathStarted();
-			unitPath.addAllPoints(PathParserNew.parsePath(getMainImage(), firstPoint, e.getPoint()));
+			endPoint = e.getPoint();
+			checkEndPoint(path, endPoint);
+			unitPath.addAllPoints(PathParser.parsePath(getMainImage(), currentPoint, endPoint));
 			completedParts.append(path, false);
 			path = null;
 			line = null;
@@ -230,9 +266,7 @@ public class EditorCanvas extends JPanel {
 
 		@Override
 		public void mouseDragged(MouseEvent e) {
-			if(currentTool == EditorCanvas.PENCIL_TOOL) {
-				path.lineTo(e.getX(), e.getY());
-			}
+			if(currentTool == EditorCanvas.PENCIL_TOOL) path.lineTo(e.getX(), e.getY());
 			else if(currentTool == EditorCanvas.LINE_TOOL) {
 				line = new Line2D.Double(currentPoint.x, currentPoint.y, e.getX(), e.getY());
 			}

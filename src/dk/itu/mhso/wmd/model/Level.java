@@ -13,6 +13,7 @@ import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Random;
 
 import javax.imageio.ImageIO;
 
@@ -28,32 +29,26 @@ public class Level {
 	private BufferedImage bgImage;
 	private String name;
 	private Path2D[] pathAreas;
+	private LevelInfo info;
 	
 	public Level(String pathName) {
 		name = new File(pathName).getName();
+		loadLevelInfo(pathName);
 		parseUnitData(pathName);
 		loadBGImage(pathName);
 	}
 
 	private void parseUnitData(String pathName) {
-		try {
-			List<UnitPath> paths = new ArrayList<>();
-			List<Path2D> areas = new ArrayList<>();
-			Iterator<Path> files = Files.list(Paths.get(pathName)).iterator();
-			while(files.hasNext()) {
-				Path path = files.next();
-				if(path.toString().contains("path")) paths.add((UnitPath) Util.readObjectFromFile(path.toString()));
-				else if(path.toString().contains("area")) areas.add((Path2D) Util.readObjectFromFile(path.toString()));
-			}
-			pathAreas = areas.toArray(new Path2D[areas.size()]);
-			parseWaves(pathName, paths.toArray(new UnitPath[paths.size()]));
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
+		List<UnitPath> paths = (List<UnitPath>) Util.readObjectFromFile(pathName + "/paths.bin");
+		List<Path2D> areas = (List<Path2D>) Util.readObjectFromFile(pathName + "/areas.bin");
+		pathAreas = areas.toArray(new Path2D[areas.size()]);
+		parseWaves(pathName, paths.toArray(new UnitPath[paths.size()]));
 	}
 	
 	private void parseWaves(String pathName, UnitPath[] unitPaths) {
 		List<Enemy> currentWaveEnemies = new ArrayList<>();
+		int counter = 0;
+		List<UnitPath> copyList = new ArrayList<>();
 		if(!Files.exists(Paths.get(pathName + "/enemies.txt"))) {
 			String[] arr = Resources.getDefaultEnemies();
 			for(String s : arr) {
@@ -64,7 +59,13 @@ public class Level {
 				else if(s.startsWith("//")) {}
 				else {
 					Enemy enemy = (Enemy)UnitFactory.createUnit(s);
-					enemy.setUnitPaths(unitPaths);
+					if(info.getEnemiesPerSpawn() == 1) enemy.setUnitPaths(unitPaths);
+					else {
+						if(counter % info.getEnemiesPerSpawn() == 0) for(int u = 0; u < unitPaths.length; u++) copyList.add(unitPaths[u]);
+						enemy.setUnitPath(copyList.remove(new Random().nextInt(copyList.size())));
+						
+						counter++;
+					}
 					currentWaveEnemies.add(enemy);
 				}
 			}
@@ -81,7 +82,13 @@ public class Level {
 					else if(line.startsWith("//")) {}
 					else {
 						Enemy enemy = (Enemy)UnitFactory.createUnit(line);
-						enemy.setUnitPaths(unitPaths);
+						if(info.getEnemiesPerSpawn() == 1) enemy.setUnitPaths(unitPaths);
+						else {
+							if(counter % info.getEnemiesPerSpawn() == 0) for(int u = 0; u < unitPaths.length; u++) copyList.add(unitPaths[u]);
+							enemy.setUnitPath(copyList.remove(new Random().nextInt(copyList.size())));
+							
+							counter++;
+						}
 						currentWaveEnemies.add(enemy);
 					}
 					line = reader.readLine();
@@ -91,6 +98,10 @@ public class Level {
 				e.printStackTrace();
 			}
 		}
+	}
+	
+	private void parseEnemyInfo(String enemyName) {
+		
 	}
 	
 	private void loadBGImage(String pathName) {
@@ -103,8 +114,16 @@ public class Level {
 		}
 	}
 	
+	private void loadLevelInfo(String pathName) {
+		info = (LevelInfo) Util.readObjectFromFile(pathName + "/config.bin");
+	}
+	
 	public String getName() {
 		return name;
+	}
+	
+	public LevelInfo getLevelInfo() {
+		return info;
 	}
 	
 	public BufferedImage getBGImage() {

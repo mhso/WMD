@@ -1,3 +1,5 @@
+editor/**
+
 *.class
 *.project
 .*classpath

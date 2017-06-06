@@ -24,8 +24,7 @@ public abstract class Enemy extends Unit {
 	}
 	
 	public void setUnitPaths(UnitPath[] pathArr) {
-		path = pathArr[new Random().nextInt(pathArr.length)];
-		location = path.getPoint(pointNr);
+		setUnitPath(pathArr[new Random().nextInt(pathArr.length)]);
 	}
 	
 	public void loadIcons(String unitName) {
@@ -38,6 +37,10 @@ public abstract class Enemy extends Unit {
 	
 	public boolean hasEscaped() {
 		return path.size() == pointNr;
+	}
+	
+	public boolean isVisible() {
+		return path.getPoint(pointNr).visible;
 	}
 	
 	public void move() {

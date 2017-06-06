@@ -100,17 +100,17 @@ public class UpgradeInfo implements Serializable {
 	
 	public static void main(String[] args) {
 		UpgradeInfo uiSniper = new UpgradeInfo(new int[]{100, 150, 250}, new int[]{50, 75, 150}, new int[]{1, 1, 2, 2}, new int[]{75, 125, 200, 300},
-				new int[]{20, 20, 25, 25}, new int[]{50, 75, 150, 250});
+				new int[]{10, 10, 12, 13}, new int[]{50, 75, 150, 250});
 		Util.writeObjectToFile(uiSniper, "resources/unitinfo/sniper_upginf.bin");
 		
 		UpgradeInfo uiMissile = new UpgradeInfo(new int[]{50, 75, 150}, new int[]{200, 300, 400}, new int[]{3, 3, 4, 4}, new int[]{250, 400, 600, 900},
-				new int[]{15, 15, 20, 20}, new int[]{200, 300, 400, 550});
+				new int[]{7, 8, 10, 10}, new int[]{200, 300, 400, 550});
 		uiMissile.setAOERadiusIncrements(new int[]{25, 50, 75, 100});
 		uiMissile.setAOERadiusCosts(new int[]{250, 350, 550, 850});
 		Util.writeObjectToFile(uiMissile, "resources/unitinfo/missile_battery_upginf.bin");
 		
 		UpgradeInfo uiChaingun = new UpgradeInfo(new int[]{50, 75, 150}, new int[]{150, 250, 350}, new int[]{1, 1, 1, 1}, new int[]{200, 350, 500, 800},
-				new int[]{5, 5, 5, 5}, new int[]{150, 250, 350, 500});
+				new int[]{2, 2, 3, 3}, new int[]{150, 250, 350, 500});
 		Util.writeObjectToFile(uiChaingun, "resources/unitinfo/chaingun_turret_upginf.bin");
 	}
 }

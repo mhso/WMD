@@ -19,6 +19,9 @@ public class Style {
 	public static final Image PENCIL_ICON = getImage("resources/icons/pencil.png");
 	public static final Image LINE_ICON =getImage("resources/icons/line.png");
 	public static final Image DRAW_CROSSHAIR = getImage("resources/icons/draw_cursor.png");
+	public static final Image UNDO_ICON  = getImage("resources/icons/undo.png");
+	public static final Image REDO_ICON  = getImage("resources/icons/redo.png");
+	public static final Image INVIS_ICON  = getImage("resources/icons/invis.png");
 	
 	private static Image getImage(String fileName) {
 		try {

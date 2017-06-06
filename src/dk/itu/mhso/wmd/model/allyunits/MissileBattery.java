@@ -8,7 +8,7 @@ public class MissileBattery extends Ally {
 		cost = 1000;
 		worth = cost;
 		range = 250;
-		fireRate = 50;
+		fireRate = 25;
 		damage = 5;
 		aoeDamage = 2;
 		aoeRadius = 100;

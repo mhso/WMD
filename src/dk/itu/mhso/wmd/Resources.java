@@ -24,6 +24,11 @@ public class Resources {
 		else return "resources/unitinfo";
 	}
 	
+	public static String getEditorPath() {
+		if(Main.PRODUCTION) return WMDConstants.class.getResource("/resources/editor").toString();
+		else return "resources/editor";
+	}
+	
 	public static String[] getDefaultEnemies() {
 		Charset charset = Charset.forName("UNICODE");
 		try(BufferedReader reader = Files.newBufferedReader(Paths.get("resources/default_enemies.txt"), charset)) {

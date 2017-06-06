@@ -1,6 +1,5 @@
 package dk.itu.mhso.wmd.model;
 
-import java.awt.Point;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
@@ -12,25 +11,27 @@ public class UnitPath implements Serializable {
 
 	private final int ANGLE_AVERAGE_AMOUNT = 10;
 	
-	private List<Point> points = new ArrayList<>();
+	private List<UnitPoint> points = new ArrayList<>();
 	
 	public UnitPath() {
 		
 	}
 	
-	public UnitPath(List<Point> points) {
+	public UnitPath(List<UnitPoint> points) {
 		this.points = points;
 	}
 	
-	public void addPoint(Point point) { points.add(point); }
+	public void addPoint(UnitPoint point) { points.add(point); }
 
-	public void addAllPoints(List<Point> newPoints) { points.addAll(newPoints); }
+	public void addAllPoints(List<UnitPoint> newPoints) { points.addAll(newPoints); }
+	
+	public void removeAll(List<UnitPoint> pointsToRemove) { points.removeAll(pointsToRemove); }
 	
 	public int size() {
 		return points.size();
 	}
 	
-	public Point getPoint(int index) {
+	public UnitPoint getPoint(int index) {
 		if(index >= points.size()) return null;
 		return points.get(index);
 	}

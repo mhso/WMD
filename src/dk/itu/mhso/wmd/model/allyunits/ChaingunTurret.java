@@ -8,7 +8,7 @@ public class ChaingunTurret extends Ally {
 		cost = 600;
 		worth = cost;
 		range = 200;
-		fireRate = 250;
+		fireRate = 125;
 		damage = 1;
 	}
 }

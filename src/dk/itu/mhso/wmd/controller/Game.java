@@ -26,7 +26,6 @@ import dk.itu.mhso.wmd.Resources;
 import dk.itu.mhso.wmd.WMDConstants;
 import dk.itu.mhso.wmd.model.Ally;
 import dk.itu.mhso.wmd.model.Enemy;
-import dk.itu.mhso.wmd.model.Exit;
 import dk.itu.mhso.wmd.model.Level;
 import dk.itu.mhso.wmd.model.Projectile;
 import dk.itu.mhso.wmd.model.Wave;
@@ -49,8 +48,8 @@ public class Game {
 	private static Map<String, ChangeListener> changeListeners = new HashMap<>();
 	private static int waveCountdown = 20;
 	
-	private static int money = 20000;
-	private static int lives = 20;
+	private static int money;
+	private static int lives;
 	
 	public static void addLevel(Level level) {
 		levels.add(level);
@@ -78,9 +77,11 @@ public class Game {
 	public static void startGame(int level) {
 		levelNr = level;
 		currentLevel = levels.get(level);
+		money = currentLevel.getLevelInfo().getStartingMoney();
+		lives = currentLevel.getLevelInfo().getLives();
 		window = new WindowGame(levels.get(level));
 		addChangeListener("window", window);
-		gameTimer = new GameTimer(10);
+		gameTimer = new GameTimer(5);
 	}
 	
 	public static void setPaused(boolean paused) {
@@ -216,9 +217,8 @@ public class Game {
 	private static class GameTimer implements ActionListener {
 		private Timer timer;
 		private int gameTick;
-		private final int ENEMY_SPAWN_MOD = 180;
-		private final int ENEMY_MOVE_MOD = 2;
-		private final int PROJECTILE_MOVE_MOD = 10;
+		private final int ENEMY_SPAWN_MOD = 360;
+		private final int PROJECTILE_MOVE_MOD = 20;
 		
 		public GameTimer(int delay) {
 			timer = new Timer(delay, this);
@@ -237,8 +237,11 @@ public class Game {
 		@Override
 		public void actionPerformed(ActionEvent e) {
 			if(!currentWave.isEmpty() && gameTick % ENEMY_SPAWN_MOD == 0) {
-				Enemy nextEnemy = currentWave.getNextEnemy();
-				if(nextEnemy != null) currentEnemies.add(nextEnemy);
+				for(int i = 0; i < currentLevel.getLevelInfo().getEnemiesPerSpawn(); i++) {
+					Enemy nextEnemy = currentWave.getNextEnemy();
+					if(nextEnemy != null) currentEnemies.add(nextEnemy);
+					else break;
+				}
 				setChanged(this, "overlay");
 			}
 			gameTick++;
@@ -250,9 +253,9 @@ public class Game {
 				
 				fireAllies();
 				
-				if(gameTick % ENEMY_MOVE_MOD == 0) moveEnemies();
+				if(gameTick % (WMDConstants.ENEMY_MOVE_TICK_INVERSION-currentLevel.getLevelInfo().getEnemySpeed()) == 0) moveEnemies();
 			}
-			else if(gameTick % 100 == 0) {
+			else if(gameTick % 200 == 0) {
 				updateOverlayAndMenu();
 				if(waveCountdown == 0) {
 					currentWave = currentLevel.getNextWave();

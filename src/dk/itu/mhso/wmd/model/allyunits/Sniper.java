@@ -8,7 +8,7 @@ public class Sniper extends Ally {
 		cost = 100;
 		worth = cost;
 		range = 300;
-		fireRate = 150;
+		fireRate = 75;
 		damage = 1;
 	}
 }
