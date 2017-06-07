@@ -8,16 +8,14 @@ import java.awt.event.KeyEvent;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.OverlayLayout;
-import javax.swing.event.ChangeEvent;
-import javax.swing.event.ChangeListener;
 
-import dk.itu.mhso.wmd.WMDConstants;
 import dk.itu.mhso.wmd.controller.Game;
+import dk.itu.mhso.wmd.controller.GameTickListener;
 import dk.itu.mhso.wmd.model.Level;
 import dk.itu.mhso.wmd.view.panels.Canvas;
 import dk.itu.mhso.wmd.view.panels.GameOverlay;
 
-public class WindowGame extends JFrame implements ChangeListener {
+public class WindowGame extends JFrame implements GameTickListener {
 	public static Canvas canvas;
 	private GameOverlay overlay;
 	
@@ -61,7 +59,7 @@ public class WindowGame extends JFrame implements ChangeListener {
 	}
 	
 	@Override
-	public void stateChanged(ChangeEvent ce) {
+	public void onGameTick() {
 		repaint();
 	}
 }

@@ -45,7 +45,7 @@ public class Game {
 	private static List<Projectile> activeProjectiles = new ArrayList<>();
 	private static List<Explosion> explosions = new ArrayList<>();
 	private static GameTimer gameTimer;
-	private static Map<String, ChangeListener> changeListeners = new HashMap<>();
+	private static Map<String, List<GameListener>> gameListeners = new HashMap<>();
 	private static int waveCountdown = 20;
 	
 	private static int money;
@@ -81,7 +81,7 @@ public class Game {
 		if(Main.CHEAT_MODE) money = 100_000;
 		lives = currentLevel.getLevelInfo().getLives();
 		window = new WindowGame(levels.get(level));
-		addChangeListener("window", window);
+		addGameListener("gameTick", window);
 		gameTimer = new GameTimer(1000/WMDConstants.DEFAULT_TICKRATE);
 	}
 	
@@ -90,8 +90,13 @@ public class Game {
 		else gameTimer.start();
 	}
 	
-	public static void addChangeListener(String name, ChangeListener l) {
-		changeListeners.put(name, l);
+	public static void addGameListener(String name, GameListener l) {
+		if(gameListeners.get(name) != null) gameListeners.get(name).add(l);
+		else {
+			List<GameListener> listenerList = new ArrayList<>();
+			listenerList.add(l);
+			gameListeners.put(name, listenerList);
+		}
 	}
 	
 	public static List<Explosion> getExplosions() {
@@ -109,22 +114,17 @@ public class Game {
 	public static void decrementMoney(int amount) {
 		money -= amount;
 		if(money < 0) money = 0;
-		updateOverlayAndMenu();
+		moneyChanged();
 	}
 	
 	public static void incrementMoney(int amount) {
 		money += amount;
-		updateOverlayAndMenu();
+		moneyChanged();
 	}
 	
 	private static void enemyKilled(Enemy enemy) {
 		incrementMoney(10 * enemy.getMaxHealth());
-		updateOverlayAndMenu();
-	}
-	
-	private static void updateOverlayAndMenu() {
-		setChanged(Game.class, "menu");
-		setChanged(Game.class, "overlay");
+		enemyDespawned();
 	}
 	
 	public static boolean isWaveOver() {
@@ -165,10 +165,53 @@ public class Game {
 		else gameTimer.setDelay(1000/WMDConstants.DEFAULT_TICKRATE);
 	}
 	
-	public static void setChanged(Object source, String reciever) {
-		ChangeListener listener = changeListeners.get(reciever);
-		if(listener != null) listener.stateChanged(new ChangeEvent(source));
-		else for(ChangeListener l : changeListeners.values()) l.stateChanged(new ChangeEvent(source));
+	private static void moneyChanged() {
+		for(GameListener listener : gameListeners.get("moneyChanged")) {
+			GameMoneyListener gsl = (GameMoneyListener) listener;
+			gsl.onMoneyChanged();
+		}
+	}
+	
+	private static void livesChanged() {
+		for(GameListener listener : gameListeners.get("livesChanged")) {
+			GameStateListener gsl = (GameStateListener) listener;
+			gsl.onLivesChanged();
+		}
+	}
+	
+	private static void enemySpawned() {
+		for(GameListener listener : gameListeners.get("enemySpawned")) {
+			GameStateListener gsl = (GameStateListener) listener;
+			gsl.onEnemySpawned();
+		}
+	}
+	
+	private static void enemyDespawned() {
+		for(GameListener listener : gameListeners.get("enemyDespawned")) {
+			GameStateListener gsl = (GameStateListener) listener;
+			gsl.onEnemyDespawned();
+		}
+	}
+	
+	private static void waveStarted() {
+		for(GameListener listener : gameListeners.get("waveStarted")) {
+			GameStateListener gsl = (GameStateListener) listener;
+			gsl.onWaveStarted();
+		}
+	}
+	
+	private static void waveEnded() {
+		for(GameListener listener : gameListeners.get("waveEnded")) {
+			GameStateListener gsl = (GameStateListener) listener;
+			gsl.onWaveEnded();
+		}
+	}
+	
+	private static void gameTick() {
+		for(GameListener listener : gameListeners.get("gameTick")) {
+			GameTickListener gsl = (GameTickListener) listener;
+			gsl.onGameTick();
+		}
 	}
 	
 	public static int getMoneyAmount() { return money; }
@@ -225,11 +268,11 @@ public class Game {
 					if(nextEnemy != null) currentEnemies.add(nextEnemy);
 					else break;
 				}
-				setChanged(this, "overlay");
+				enemySpawned();
 			}
 			gameTick++;
 			if(gameTick < 0) gameTick = 0;
-			setChanged(this, "window");
+			gameTick();
 			
 			if(!isWaveOver()) {
 				if(gameTick % PROJECTILE_MOVE_MOD == 0) moveProjectiles();
@@ -241,10 +284,11 @@ public class Game {
 			else {
 				if(getDelay() != WMDConstants.DEFAULT_TICKRATE) setDelay(1000/WMDConstants.DEFAULT_TICKRATE);
 				if(gameTick % 200 == 0) {
-					updateOverlayAndMenu();
+					waveEnded();
 					if(waveCountdown == 0) {
 						currentWave = currentLevel.getNextWave();
 						waveCountdown = 20;
+						waveStarted();
 					}
 					else waveCountdown--;
 				}
@@ -320,9 +364,10 @@ public class Game {
 				
 				if(enemy.hasEscaped()) {
 					lives--;
+					livesChanged();
 					enemy.setActive(false);
 					it.remove();
-					updateOverlayAndMenu();
+					enemyDespawned();
 					continue;
 				}
 			}

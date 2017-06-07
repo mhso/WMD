@@ -18,10 +18,9 @@ import javax.swing.JComponent;
 import javax.swing.JPanel;
 import javax.swing.JPopupMenu;
 import javax.swing.event.ChangeEvent;
-import javax.swing.event.ChangeListener;
-
 import dk.itu.mhso.wmd.Main;
 import dk.itu.mhso.wmd.controller.Game;
+import dk.itu.mhso.wmd.controller.GameMoneyListener;
 import dk.itu.mhso.wmd.controller.UnitFactory;
 import dk.itu.mhso.wmd.model.Ally;
 import dk.itu.mhso.wmd.model.Unit;
@@ -31,7 +30,7 @@ import dk.itu.mhso.wmd.view.Style;
 import dk.itu.mhso.wmd.view.components.TowerButton;
 import dk.itu.mhso.wmd.view.windows.WindowGame;
 
-public class TowersMenu extends JPopupMenu implements ChangeListener {
+public class TowersMenu extends JPopupMenu implements GameMoneyListener {
 	private Ally selectedUnit;
 	private GameOverlay overlay;
 	private List<TowerButton> towerButtons = new ArrayList<>();
@@ -41,7 +40,7 @@ public class TowersMenu extends JPopupMenu implements ChangeListener {
 		setLayout(new BorderLayout(0, 0));
 		setBackground(Style.OVERLAY_MENU_MAIN);
 		setBorder(BorderFactory.createEmptyBorder(5, 5, 5, 5));
-		Game.addChangeListener("menu", this);
+		Game.addGameListener("moneyChanged", this);
 		
 		overlay.addMouseListener(new MouseAdapter() {
 			@Override
@@ -54,8 +53,6 @@ public class TowersMenu extends JPopupMenu implements ChangeListener {
 					if(selectedUnit != null && !Game.isWithinMainPath(e.getPoint())) {
 						Game.addAlly(selectedUnit);
 						Game.decrementMoney(selectedUnit.getCost());
-						Game.setChanged(this, "overlay");
-						Game.setChanged(this, "menu");
 						selectedUnit.setLocation(e.getPoint());
 						selectedUnit.createUpgradeWindow();
 						deselectUnit();
@@ -134,7 +131,7 @@ public class TowersMenu extends JPopupMenu implements ChangeListener {
 	public void showDropdown(JComponent source) {
 		show(source, source.getLocation().x, source.getLocation().y);
 	}
-
+	
 	@Override
-	public void stateChanged(ChangeEvent e) { for(TowerButton button : towerButtons) button.stateChanged(e); }
+	public void onMoneyChanged() { for(TowerButton button : towerButtons) button.stateChanged(new ChangeEvent(this)); }
 }

@@ -1,10 +1,9 @@
 package dk.itu.mhso.wmd.view.panels;
 
 import javax.swing.JPanel;
-import javax.swing.event.ChangeEvent;
-import javax.swing.event.ChangeListener;
 
 import dk.itu.mhso.wmd.controller.Game;
+import dk.itu.mhso.wmd.controller.GameStateListener;
 import dk.itu.mhso.wmd.view.Style;
 import dk.itu.mhso.wmd.view.windows.WindowGame;
 
@@ -20,7 +19,7 @@ import java.awt.event.MouseEvent;
 import java.awt.FlowLayout;
 import javax.swing.border.LineBorder;
 
-public class GameOverlay extends JPanel implements ChangeListener {
+public class GameOverlay extends JPanel implements GameStateListener {
 	private TowersMenu towers;
 	private JLabel labelLives;
 	private JLabel labelMoney;
@@ -45,7 +44,12 @@ public class GameOverlay extends JPanel implements ChangeListener {
 		});
 		
 		towers = new TowersMenu(this);
-		Game.addChangeListener("overlay", this);
+		Game.addGameListener("waveStarted", this);
+		Game.addGameListener("waveEnded", this);
+		Game.addGameListener("enemySpawned", this);
+		Game.addGameListener("enemyDespawned", this);
+		Game.addGameListener("moneyChanged", this);
+		Game.addGameListener("livesChanged", this);
 		
 		JPanel leftMainPanel = new JPanel();
 		leftMainPanel.setOpaque(false);
@@ -152,19 +156,38 @@ public class GameOverlay extends JPanel implements ChangeListener {
 	}
 
 	@Override
-	public void stateChanged(ChangeEvent e) {
-		if(!Game.isWaveOver()) {
-			labelWave.setText("Wave " + Game.getCurrentWaveNr());
-			labelEnemiesRemaining.setText("Enemies: " + Game.getCurrentEnemies().size());
-			labelLevel.setText("Level " + Game.getCurrentLevelNr() + ": " + Game.getCurrentLevel().getName());
-			buttonSpeedUp.setEnabled(true);
-		}
-		else {
-			buttonSpeedUp.setEnabled(false);
-			labelEnemiesRemaining.setText("Click To Start");
-			labelWave.setText("Next Wave Starting In: " + Game.getWaveCountdown());
-		}
+	public void onWaveEnded() {
+		buttonSpeedUp.setEnabled(false);
+		buttonSpeedUp.setBorderPainted(false);
+		labelEnemiesRemaining.setText("Click To Start");
+		labelWave.setText("Next Wave Starting In: " + Game.getWaveCountdown());
+	}
+	
+	@Override
+	public void onWaveStarted() {
+		labelWave.setText("Wave " + Game.getCurrentWaveNr());
+		labelEnemiesRemaining.setText("Enemies: " + Game.getCurrentEnemies().size());
+		labelLevel.setText("Level " + Game.getCurrentLevelNr() + ": " + Game.getCurrentLevel().getName());
+		buttonSpeedUp.setEnabled(true);
+	}
+	
+	@Override
+	public void onEnemyDespawned() {
+		labelEnemiesRemaining.setText("Enemies: " + Game.getCurrentEnemies().size());
+	}
+	
+	@Override
+	public void onMoneyChanged() {
 		labelMoney.setText("Money: " + Game.getMoneyAmount() + "$");
+	}
+
+	@Override
+	public void onLivesChanged() {
 		labelLives.setText("Lives: " + Game.getLivesAmount());
+	}
+
+	@Override
+	public void onEnemySpawned() {
+		labelEnemiesRemaining.setText("Enemies: " + Game.getCurrentEnemies().size());
 	}
 }
