@@ -1,4 +1,4 @@
-package dk.itu.mhso.wmd.view;
+package dk.itu.mhso.wmd.view.components;
 
 import java.awt.Color;
 import java.awt.Graphics;
@@ -11,6 +11,7 @@ import javax.swing.event.ChangeListener;
 
 import dk.itu.mhso.wmd.controller.Game;
 import dk.itu.mhso.wmd.model.Ally;
+import dk.itu.mhso.wmd.view.Style;
 
 public class TowerButton extends JButton implements ChangeListener {
 	private Ally ally;

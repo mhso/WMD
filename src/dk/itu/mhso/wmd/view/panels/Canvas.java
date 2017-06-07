@@ -1,15 +1,13 @@
-package dk.itu.mhso.wmd.view;
+package dk.itu.mhso.wmd.view.panels;
 
 import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.Image;
 import java.awt.Point;
-import java.awt.geom.AffineTransform;
 import java.awt.geom.Ellipse2D;
 import java.awt.geom.Path2D;
 import java.awt.geom.Rectangle2D;
-import java.awt.image.AffineTransformOp;
 import java.awt.image.BufferedImage;
 import java.util.Iterator;
 
@@ -128,11 +126,7 @@ public class Canvas extends JPanel {
 	}
 	
 	private void transformAndDrawImage(Unit unit, BufferedImage image, Point point, Graphics2D g2d) {
-		double midX = unit.getWidth()/2;
-		double midY = unit.getHeight()/2;
-		AffineTransform transform = AffineTransform.getRotateInstance(unit.getAngle(), midX, midY);
-		AffineTransformOp op = new AffineTransformOp(transform, AffineTransformOp.TYPE_BILINEAR);
-		g2d.drawImage(op.filter(image, null), point.x, point.y, null);
+		g2d.drawImage(unit.transformIcon(image), point.x, point.y, null);
 	}
 
 	private void drawHealth(Graphics2D g2d, Enemy enemy) {

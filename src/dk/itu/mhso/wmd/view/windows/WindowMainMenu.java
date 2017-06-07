@@ -1,4 +1,4 @@
-package dk.itu.mhso.wmd.view;
+package dk.itu.mhso.wmd.view.windows;
 
 import java.awt.BorderLayout;
 import java.awt.CardLayout;
@@ -9,6 +9,7 @@ import javax.swing.JPanel;
 import javax.swing.border.EmptyBorder;
 
 import dk.itu.mhso.wmd.Main;
+import dk.itu.mhso.wmd.view.panels.PanelChooseLevel;
 
 import javax.swing.JButton;
 import javax.swing.JLabel;

@@ -1,12 +1,16 @@
-package dk.itu.mhso.wmd.view;
+package dk.itu.mhso.wmd.view.panels;
 
 import javax.swing.JPanel;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 
 import dk.itu.mhso.wmd.controller.Game;
+import dk.itu.mhso.wmd.view.Style;
+import dk.itu.mhso.wmd.view.windows.WindowGame;
 
 import java.awt.BorderLayout;
+
+import javax.swing.BorderFactory;
 import javax.swing.JButton;
 import javax.swing.JLabel;
 import java.awt.Color;
@@ -23,6 +27,10 @@ public class GameOverlay extends JPanel implements ChangeListener {
 	private JLabel labelEnemiesRemaining;
 	private JLabel labelLevel;
 	private JLabel labelWave;
+	private JButton speedUp;
+	
+	private final int FONT_SIZE = 15;
+	private JButton buttonSpeedUp;
 	
 	public GameOverlay() {
 		setLayout(new BorderLayout(0, 0));
@@ -53,7 +61,7 @@ public class GameOverlay extends JPanel implements ChangeListener {
 		inflatedLeftPanel.setLayout(new BorderLayout(0, 10));
 		
 		JButton buttonInflateLeft = new JButton(">");
-		buttonInflateLeft.setFont(new Font(buttonInflateLeft.getFont().getName(), Font.PLAIN, 15));
+		buttonInflateLeft.setFont(new Font(buttonInflateLeft.getFont().getName(), Font.PLAIN, FONT_SIZE));
 		buttonInflateLeft.setForeground(Color.WHITE);
 		buttonInflateLeft.setBackground(Style.OVERLAY_MENU_MAIN);
 		buttonInflateLeft.addActionListener(e -> towers.showDropdown(leftMainPanel));
@@ -78,17 +86,17 @@ public class GameOverlay extends JPanel implements ChangeListener {
 		JLabel[] topPanelLabels = new JLabel[3];
 		
 		labelLevel = new JLabel("Level " + Game.getCurrentLevelNr() + ": " + Game.getCurrentLevel().getName());
-		labelLevel.setFont(new Font("Tahoma", Font.PLAIN, 14));
+		labelLevel.setFont(new Font("Tahoma", Font.PLAIN, FONT_SIZE));
 		labelLevel.setForeground(Color.WHITE);
 		topPanelLabels[0] = labelLevel;
 		
 		labelWave = new JLabel("Wave " + Game.getCurrentWaveNr());
 		labelWave.setForeground(Color.WHITE);
-		labelWave.setFont(new Font("Tahoma", Font.PLAIN, 14));
+		labelWave.setFont(new Font("Tahoma", Font.PLAIN, FONT_SIZE));
 		topPanelLabels[1] = labelWave;
 		
 		labelEnemiesRemaining = new JLabel("Enemies: " + Game.getCurrentEnemies().size());
-		labelEnemiesRemaining.setFont(new Font("Tahoma", Font.PLAIN, 14));
+		labelEnemiesRemaining.setFont(new Font("Tahoma", Font.PLAIN, FONT_SIZE));
 		labelEnemiesRemaining.setForeground(Color.WHITE);
 		labelEnemiesRemaining.addMouseListener(new MouseAdapter() {
 			public void mousePressed(MouseEvent e) {
@@ -115,21 +123,32 @@ public class GameOverlay extends JPanel implements ChangeListener {
 		
 		labelMoney = new JLabel("Money: " + Game.getMoneyAmount() + "$");
 		labelMoney.setForeground(Color.WHITE);
-		labelMoney.setFont(new Font("Tahoma", Font.PLAIN, 14));
+		labelMoney.setFont(new Font("Tahoma", Font.PLAIN, FONT_SIZE));
 		southPanel.add(labelMoney);
 		
 		labelLives = new JLabel("Lives: " + Game.getLivesAmount());
 		labelLives.setForeground(Color.WHITE);
-		labelLives.setFont(new Font("Tahoma", Font.PLAIN, 14));
+		labelLives.setFont(new Font("Tahoma", Font.PLAIN, FONT_SIZE));
 		southPanel.add(labelLives);
+		
+		JPanel rightPanel = new JPanel();
+		rightPanel.setOpaque(false);
+		add(rightPanel, BorderLayout.EAST);
+		
+		buttonSpeedUp = new JButton(">>");
+		buttonSpeedUp.setBorder(BorderFactory.createLineBorder(Color.RED, 2));
+		buttonSpeedUp.setBackground(Style.OVERLAY_MENU_MAIN);
+		buttonSpeedUp.setBorderPainted(false);
+		buttonSpeedUp.setForeground(Color.WHITE);
+		buttonSpeedUp.setFont(new Font("Tahoma", Font.PLAIN, 20));
+		buttonSpeedUp.addActionListener(e -> {
+			buttonSpeedUp.setBorderPainted(!buttonSpeedUp.isBorderPainted());
+			Game.toggleSpeed();
+		});
+		rightPanel.add(buttonSpeedUp);
 		
 		JPanel panel = new JPanel();
 		inflatedLeftPanel.add(panel, BorderLayout.NORTH);
-	}
-	
-	private void updateEnenmyButtonCauseSwingSucks() {
-		if(labelEnemiesRemaining.getPreferredSize() != labelEnemiesRemaining.getMinimumSize()) 
-			labelEnemiesRemaining.setPreferredSize(labelEnemiesRemaining.getMinimumSize());
 	}
 
 	@Override
@@ -138,8 +157,10 @@ public class GameOverlay extends JPanel implements ChangeListener {
 			labelWave.setText("Wave " + Game.getCurrentWaveNr());
 			labelEnemiesRemaining.setText("Enemies: " + Game.getCurrentEnemies().size());
 			labelLevel.setText("Level " + Game.getCurrentLevelNr() + ": " + Game.getCurrentLevel().getName());
+			buttonSpeedUp.setEnabled(true);
 		}
 		else {
+			buttonSpeedUp.setEnabled(false);
 			labelEnemiesRemaining.setText("Click To Start");
 			labelWave.setText("Next Wave Starting In: " + Game.getWaveCountdown());
 		}

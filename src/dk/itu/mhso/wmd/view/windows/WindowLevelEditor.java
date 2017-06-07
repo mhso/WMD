@@ -1,4 +1,4 @@
-package dk.itu.mhso.wmd.view;
+package dk.itu.mhso.wmd.view.windows;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
@@ -27,6 +27,9 @@ import dk.itu.mhso.wmd.controller.Game;
 import dk.itu.mhso.wmd.model.Level;
 import dk.itu.mhso.wmd.model.LevelInfo;
 import dk.itu.mhso.wmd.model.UnitPath;
+import dk.itu.mhso.wmd.view.CursorImage;
+import dk.itu.mhso.wmd.view.Style;
+import dk.itu.mhso.wmd.view.panels.EditorCanvas;
 
 import java.awt.Font;
 import java.awt.event.ActionEvent;
@@ -77,11 +80,11 @@ public class WindowLevelEditor extends JFrame {
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		
 		JPanel contentPane = (JPanel) getContentPane();
+		contentPane.setBackground(Style.OVERLAY_MENU_MAIN);
 		contentPane.setLayout(new BorderLayout());
 		contentPane.setBorder(BorderFactory.createEmptyBorder(5, 5, 5, 5));
 		
 		canvas = new EditorCanvas(this);
-		canvas.setBackground(Color.WHITE);
 		contentPane.add(canvas, BorderLayout.CENTER);
 		canvas.addKeyListener(new KeyAdapter() {
 			@Override
@@ -100,6 +103,7 @@ public class WindowLevelEditor extends JFrame {
 		});
 		
 		JPanel panelTop = new JPanel();
+		panelTop.setBackground(Style.OVERLAY_MENU_MAIN);
 		contentPane.add(panelTop, BorderLayout.NORTH);
 		panelTop.setLayout(new BorderLayout(0, 0));
 		
@@ -109,12 +113,25 @@ public class WindowLevelEditor extends JFrame {
 		panelAddElements.setOpaque(false);
 		panelTop.add(panelAddElements, BorderLayout.WEST);
 		
+		JButton buttonBack = new JButton("Back");
+		buttonBack.setBackground(Style.TOWER_BUTTON_BG);
+		buttonBack.setForeground(Color.WHITE);
+		buttonBack.addActionListener(e -> {
+			new WindowMainMenu();
+			dispose();
+		});
+		panelAddElements.add(buttonBack);
+		
 		buttonPathDone = new JButton("Finish Path");
+		buttonPathDone.setBackground(Style.TOWER_BUTTON_BG);
+		buttonPathDone.setForeground(Color.WHITE);
 		panelAddElements.add(buttonPathDone);
 		buttonPathDone.setEnabled(false);
 		buttonPathDone.addActionListener(e -> addPath());
 		
 		JButton buttonSetBGImage = new JButton("Set BG Image");
+		buttonSetBGImage.setBackground(Style.TOWER_BUTTON_BG);
+		buttonSetBGImage.setForeground(Color.WHITE);
 		buttonSetBGImage.addActionListener(e -> loadImage());
 		panelAddElements.add(buttonSetBGImage);
 		
@@ -142,6 +159,8 @@ public class WindowLevelEditor extends JFrame {
 		panelAddElements.add(buttonInvis);
 		
 		JCheckBox checkEnableSnapping = new JCheckBox("Snap To Line");
+		checkEnableSnapping.setBackground(Style.TOWER_BUTTON_BG);
+		checkEnableSnapping.setForeground(Color.WHITE);
 		checkEnableSnapping.setSelected(snapToLine);
 		checkEnableSnapping.addActionListener(e -> snapToLine = checkEnableSnapping.isSelected());
 		panelAddElements.add(checkEnableSnapping);
@@ -153,36 +172,23 @@ public class WindowLevelEditor extends JFrame {
 		panelTop.add(panelLevelName, BorderLayout.CENTER);
 		
 		JLabel labelLevelName = new JLabel("Level Name:");
+		labelLevelName.setForeground(Color.WHITE);
 		labelLevelName.setFont(new Font("Tahoma", Font.PLAIN, 15));
 		panelLevelName.add(labelLevelName);
 		
 		textFieldLevelName = new JTextField("Awesome Level");
+		textFieldLevelName.setBackground(Style.TOWER_BUTTON_BG);
+		textFieldLevelName.setForeground(Color.WHITE);
 		textFieldLevelName.setFont(new Font("Tahoma", Font.PLAIN, 15));
 		panelLevelName.add(textFieldLevelName);
 		textFieldLevelName.setColumns(10);
 		
-		JPanel panelBottom = new JPanel();
-		panelBottom.setOpaque(false);
-		getContentPane().add(panelBottom, BorderLayout.SOUTH);
-		panelBottom.setLayout(new BorderLayout(0, 0));
-		
-		JButton buttonBack = new JButton("Back");
-		buttonBack.addActionListener(e -> {
-			new WindowMainMenu();
-			dispose();
-		});
-		buttonBack.setFont(new Font("Tahoma", Font.PLAIN, 15));
-		panelBottom.add(buttonBack, BorderLayout.WEST);
-		
-		JPanel panelEdit = new JPanel();
-		FlowLayout flowLayout_2 = (FlowLayout) panelEdit.getLayout();
-		flowLayout_2.setHgap(50);
-		panelBottom.add(panelEdit, BorderLayout.CENTER);
-		
 		JMenuBar menuBar = new JMenuBar();
+		menuBar.setBackground(Style.OVERLAY_MENU_MAIN);
 		setJMenuBar(menuBar);
 		
 		JMenu mnFile = new JMenu("File");
+		mnFile.setForeground(Color.WHITE);
 		menuBar.add(mnFile);
 		
 		JMenuItem miSaveLevel = new JMenuItem("Save");
@@ -213,6 +219,7 @@ public class WindowLevelEditor extends JFrame {
 		mnFile.add(miExportLevel);
 		
 		JMenu mnEdit = new JMenu("Edit");
+		mnEdit.setForeground(Color.WHITE);
 		menuBar.add(mnEdit);
 		
 		JMenuItem miConfig = new JMenuItem("Configurations");
@@ -230,6 +237,7 @@ public class WindowLevelEditor extends JFrame {
 		mnEdit.add(miRedo);
 		
 		JMenu mnHelp = new JMenu("Help");
+		mnHelp.setForeground(Color.WHITE);
 		menuBar.add(mnHelp);
 		
 		setPreferredSize(WMDConstants.WINDOW_SIZE_BASE);
@@ -361,8 +369,14 @@ public class WindowLevelEditor extends JFrame {
 	private void newLevel() {
 		getContentPane().remove(canvas);
 		canvas = new EditorCanvas(this);
+		canvas.setCursor(CursorImage.getDrawCursor(Color.BLACK));
+		buttonPathDone.setEnabled(false);
+		miExportLevel.setEnabled(false);
+		textFieldLevelName.setText("Awesome Level");
+		paths = new ArrayList<>();
+		areas = new ArrayList<>();
 		getContentPane().add(canvas);
-		repaint();
+		revalidate();
 	}
 	
 	private void saveLevel() {
@@ -463,7 +477,7 @@ public class WindowLevelEditor extends JFrame {
 	}
 	
 	private void checkResize(BufferedImage image) {
-		setPreferredSize(new Dimension(image.getWidth()+20, image.getHeight()+135));
+		setPreferredSize(new Dimension(image.getWidth()+20, image.getHeight()+105));
 		pack();
 		repaint();
 	}

@@ -1,4 +1,4 @@
-package dk.itu.mhso.wmd.view;
+package dk.itu.mhso.wmd.view.windows;
 
 import java.awt.BorderLayout;
 import java.awt.Point;
@@ -12,6 +12,8 @@ import javax.swing.event.ChangeListener;
 import dk.itu.mhso.wmd.WMDConstants;
 import dk.itu.mhso.wmd.controller.Game;
 import dk.itu.mhso.wmd.model.Ally;
+import dk.itu.mhso.wmd.view.Style;
+
 import javax.swing.JPanel;
 import javax.swing.JLabel;
 import javax.swing.SwingConstants;

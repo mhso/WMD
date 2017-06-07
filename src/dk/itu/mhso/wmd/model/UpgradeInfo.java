@@ -112,5 +112,9 @@ public class UpgradeInfo implements Serializable {
 		UpgradeInfo uiChaingun = new UpgradeInfo(new int[]{50, 75, 150}, new int[]{150, 250, 350}, new int[]{1, 1, 1, 1}, new int[]{200, 350, 500, 800},
 				new int[]{2, 2, 3, 3}, new int[]{150, 250, 350, 500});
 		Util.writeObjectToFile(uiChaingun, "resources/unitinfo/chaingun_turret_upginf.bin");
+		
+		UpgradeInfo uiParticle = new UpgradeInfo(new int[]{100, 150, 250}, new int[]{600, 900, 1200}, new int[]{8, 8, 9, 9}, new int[]{750, 1200, 1800, 2100}, 
+				new int[]{2, 2, 3, 3}, new int[]{600, 900, 1200, 1600});
+		Util.writeObjectToFile(uiParticle, "resources/unitinfo/particle_cannon_upginf.bin");
 	}
 }

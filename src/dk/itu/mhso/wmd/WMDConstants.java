@@ -12,6 +12,7 @@ public class WMDConstants {
 	public static final int LEVEL_EDITOR_CURSOR_SIZE = 17;
 	public static final int ENEMY_AREA_WIDTH = 50;
 	public static final int ENEMY_MOVE_TICK_INVERSION = 8;
+	public static final int DEFAULT_TICKRATE = 200;
 	
 	public static final double SELL_RETURN_PERCENTAGE = 0.75;
 	

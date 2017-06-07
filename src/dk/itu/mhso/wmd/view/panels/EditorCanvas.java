@@ -1,4 +1,4 @@
-package dk.itu.mhso.wmd.view;
+package dk.itu.mhso.wmd.view.panels;
 
 import java.awt.Color;
 import java.awt.Graphics;
@@ -23,6 +23,8 @@ import dk.itu.mhso.wmd.Main;
 import dk.itu.mhso.wmd.WMDConstants;
 import dk.itu.mhso.wmd.controller.PathParser;
 import dk.itu.mhso.wmd.model.UnitPath;
+import dk.itu.mhso.wmd.view.CursorImage;
+import dk.itu.mhso.wmd.view.windows.WindowLevelEditor;
 
 public class EditorCanvas extends JPanel {
 	private static final long serialVersionUID = -1238851349734038022L;
@@ -43,6 +45,7 @@ public class EditorCanvas extends JPanel {
 	
 	public EditorCanvas(WindowLevelEditor window) {
 		this.window = window;
+		setBackground(Color.WHITE);
 		setFocusable(true);
 		setCursor(CursorImage.getDrawCursor(Color.BLACK));
 		new LevelEditorMouseController();

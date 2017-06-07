@@ -1,4 +1,4 @@
-editor/**
+resources/editor/**
 
 *.class
 *.project

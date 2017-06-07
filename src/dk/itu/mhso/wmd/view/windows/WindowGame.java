@@ -1,4 +1,4 @@
-package dk.itu.mhso.wmd.view;
+package dk.itu.mhso.wmd.view.windows;
 
 import java.awt.BorderLayout;
 import java.awt.Dimension;
@@ -14,6 +14,8 @@ import javax.swing.event.ChangeListener;
 import dk.itu.mhso.wmd.WMDConstants;
 import dk.itu.mhso.wmd.controller.Game;
 import dk.itu.mhso.wmd.model.Level;
+import dk.itu.mhso.wmd.view.panels.Canvas;
+import dk.itu.mhso.wmd.view.panels.GameOverlay;
 
 public class WindowGame extends JFrame implements ChangeListener {
 	public static Canvas canvas;

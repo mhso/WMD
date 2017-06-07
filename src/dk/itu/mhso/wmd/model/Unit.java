@@ -1,6 +1,8 @@
 package dk.itu.mhso.wmd.model;
 
 import java.awt.Point;
+import java.awt.geom.AffineTransform;
+import java.awt.image.AffineTransformOp;
 import java.awt.image.BufferedImage;
 
 public abstract class Unit {
@@ -32,6 +34,14 @@ public abstract class Unit {
 	
 	public BufferedImage getIcon() {
 		return icon;
+	}
+	
+	public BufferedImage transformIcon(BufferedImage transformIcon) {
+		double midX = getWidth()/2;
+		double midY = getHeight()/2;
+		AffineTransform transform = AffineTransform.getRotateInstance(getAngle(), midX, midY);
+		AffineTransformOp op = new AffineTransformOp(transform, AffineTransformOp.TYPE_BILINEAR);
+		return op.filter(transformIcon, null);
 	}
 	
 	public int getWidth() {

@@ -1,4 +1,4 @@
-package dk.itu.mhso.wmd.view;
+package dk.itu.mhso.wmd.view.panels;
 
 import javax.swing.JPanel;
 import java.awt.BorderLayout;
@@ -59,6 +59,7 @@ public class PanelChooseLevel extends JPanel {
 		add(panelBottom, BorderLayout.SOUTH);
 		
 		JButton buttonStartGame = new JButton("Start Game");
+		if(Game.getLevels().isEmpty()) buttonStartGame.setEnabled(false);
 		buttonStartGame.addActionListener(e -> Game.startGame(currentIndex));
 		buttonStartGame.setFont(new Font("Tahoma", Font.PLAIN, 15));
 		panelBottom.add(buttonStartGame, BorderLayout.SOUTH);

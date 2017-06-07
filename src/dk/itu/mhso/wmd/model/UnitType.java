@@ -9,5 +9,6 @@ public enum UnitType {
 	// Allies
 	SNIPER,
 	MISSILE_BATTERY,
-	CHAINGUN_TURRET
+	CHAINGUN_TURRET,
+	PARTICLE_CANNON
 }

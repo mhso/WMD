@@ -1,4 +1,4 @@
-package dk.itu.mhso.wmd.view;
+package dk.itu.mhso.wmd.view.windows;
 
 import java.awt.BorderLayout;
 import javax.swing.JPanel;

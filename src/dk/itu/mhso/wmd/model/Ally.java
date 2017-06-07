@@ -11,7 +11,7 @@ import java.util.List;
 import javax.imageio.ImageIO;
 
 import dk.itu.mhso.wmd.Util;
-import dk.itu.mhso.wmd.view.WindowUnitUpgrade;
+import dk.itu.mhso.wmd.view.windows.WindowUnitUpgrade;
 
 public abstract class Ally extends Unit {
 	protected int cost;

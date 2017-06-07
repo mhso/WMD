@@ -1,4 +1,4 @@
-package dk.itu.mhso.wmd.view;
+package dk.itu.mhso.wmd.view.panels;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
@@ -26,6 +26,10 @@ import dk.itu.mhso.wmd.controller.UnitFactory;
 import dk.itu.mhso.wmd.model.Ally;
 import dk.itu.mhso.wmd.model.Unit;
 import dk.itu.mhso.wmd.model.UnitType;
+import dk.itu.mhso.wmd.view.CursorImage;
+import dk.itu.mhso.wmd.view.Style;
+import dk.itu.mhso.wmd.view.components.TowerButton;
+import dk.itu.mhso.wmd.view.windows.WindowGame;
 
 public class TowersMenu extends JPopupMenu implements ChangeListener {
 	private Ally selectedUnit;
