@@ -1,12 +1,10 @@
 package dk.itu.mhso.wmd.controller;
 
-import java.awt.Image;
 import java.awt.Point;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.geom.Ellipse2D;
 import java.awt.geom.Path2D;
-import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -17,10 +15,8 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
-import javax.imageio.ImageIO;
 import javax.swing.Timer;
 import javax.swing.event.ChangeEvent;
-import javax.swing.event.ChangeListener;
 
 import dk.itu.mhso.wmd.Main;
 import dk.itu.mhso.wmd.Resources;
@@ -35,14 +31,12 @@ import dk.itu.mhso.wmd.model.Explosion;
 
 public class Game {
 	public static WindowGame window;
-	
 	private static List<Level> levels = new ArrayList<>();
 	private static Level currentLevel;
 	private static int levelNr;
 	private static List<Enemy> currentEnemies = new ArrayList<>();
 	private static Wave currentWave;
 	private static List<Ally> allies = new ArrayList<>();
-	private static List<Projectile> activeProjectiles = new ArrayList<>();
 	private static List<Explosion> explosions = new ArrayList<>();
 	private static GameTimer gameTimer;
 	private static Map<String, List<GameListener>> gameListeners = new HashMap<>();
@@ -222,8 +216,6 @@ public class Game {
 	
 	public static void setWaveCountdown(int value) { waveCountdown = value; }
 	
-	public static List<Projectile> getCurrentProjectiles() { return activeProjectiles; }
-	
 	public static List<Enemy> getCurrentEnemies() { return currentEnemies; }
 
 	public static Level getCurrentLevel() { return currentLevel; }
@@ -275,8 +267,6 @@ public class Game {
 			gameTick();
 			
 			if(!isWaveOver()) {
-				if(gameTick % PROJECTILE_MOVE_MOD == 0) moveProjectiles();
-				
 				fireAllies();
 				
 				if(gameTick % (WMDConstants.ENEMY_MOVE_TICK_INVERSION-currentLevel.getLevelInfo().getEnemySpeed()) == 0) moveEnemies();
@@ -306,8 +296,9 @@ public class Game {
 					}
 				}
 				if(ally.getCurrentlyTargetedEnemy() != null) {
-					if(gameTick % (WMDConstants.FIRE_RATE_INVERTION-ally.getFireRate()) == 0) 
-						activeProjectiles.add(ProjectileFactory.createProjectile(ally));
+					if(gameTick % (WMDConstants.FIRE_RATE_INVERTION-ally.getFireRate()) == 0)  {
+						ally.addProjectile(ProjectileFactory.createProjectile(ally));
+					}
 				}
 				ally.getUpgradeWindow().stateChanged(new ChangeEvent(this));
 			}

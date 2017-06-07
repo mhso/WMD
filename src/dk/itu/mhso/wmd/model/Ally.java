@@ -28,6 +28,7 @@ public abstract class Ally extends Unit {
 	private int goldEarned;
 	private BufferedImage highlightIcon;
 	private List<Enemy> enemiesInRange = new ArrayList<>();
+	private List<Projectile> activeProjectiles = new ArrayList<>();
 	private Enemy currentlyTargetedEnemy;
 	private BufferedImage projectileIcon;
 	private WindowUnitUpgrade upgradeWindow;
@@ -78,6 +79,10 @@ public abstract class Ally extends Unit {
 	public void incrementEnemiesKilled(int amount) {
 		enemiesKilled += amount;
 	}
+	
+	public void addProjectile(Projectile projectile) { activeProjectiles.add(projectile); }
+	
+	public List<Projectile> getCurrentProjectiles() { return activeProjectiles; }
 	
 	public int getCost() {
 		return cost;
