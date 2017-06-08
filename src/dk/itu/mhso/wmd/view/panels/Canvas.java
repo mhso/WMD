@@ -61,7 +61,6 @@ public class Canvas extends JPanel {
 	protected void paintComponent(Graphics g) {
 		drawLevel((Graphics2D) g);
 		drawAllies((Graphics2D) g);
-		drawProjectiles((Graphics2D) g);
 		drawEnemies((Graphics2D) g);
 		if(!Game.getExplosions().isEmpty()) drawExplosions((Graphics2D) g);
 	}
@@ -81,6 +80,7 @@ public class Canvas extends JPanel {
 		for(Ally ally : Game.getAllies()) {
 			if(highlightedUnit != ally) transformAndDrawImage(ally, ally.getIcon(),ally.getLocation(), g2d);
 			else transformAndDrawImage(ally, ally.getHighlightedIcon(), ally.getLocation(), g2d);
+			drawProjectiles(ally, g2d);
 		}
 		if(isDrawingUnitRange()) {
 			g2d.setColor(new Color(230, 230, 230, 150));
@@ -89,9 +89,9 @@ public class Canvas extends JPanel {
 		}
 	}
 	
-	private void drawProjectiles(Graphics2D g2d) {
-		if(Game.getCurrentProjectiles() == null || Game.getCurrentProjectiles().isEmpty()) return;
-		for(Projectile projectile : Game.getCurrentProjectiles()) {
+	private void drawProjectiles(Ally ally, Graphics2D g2d) {
+		if(ally.getCurrentProjectiles().isEmpty()) return;
+		for(Projectile projectile : ally.getCurrentProjectiles()) {
 			transformAndDrawImage(projectile, projectile.getIcon(), projectile.getLocation(), g2d);
 			if(Main.DEBUG) g2d.drawLine(projectile.getLocation().x, projectile.getLocation().y,
 					projectile.getTarget().getLocation().x, projectile.getTarget().getLocation().y);

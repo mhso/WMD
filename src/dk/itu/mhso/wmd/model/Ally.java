@@ -11,6 +11,7 @@ import java.util.List;
 import javax.imageio.ImageIO;
 
 import dk.itu.mhso.wmd.Util;
+import dk.itu.mhso.wmd.WMDConstants;
 import dk.itu.mhso.wmd.view.windows.WindowUnitUpgrade;
 
 public abstract class Ally extends Unit {
@@ -20,12 +21,14 @@ public abstract class Ally extends Unit {
 	protected int fireRate;
 	protected int aoeDamage;
 	protected int aoeRadius;
+	protected int maxProjectiles;
 	protected int upgradeLevel = 1;
 	protected int worth;
 	protected UpgradeInfo upgradeInfo;
 	
 	private int enemiesKilled;
 	private int goldEarned;
+	private int tick;
 	private BufferedImage highlightIcon;
 	private List<Enemy> enemiesInRange = new ArrayList<>();
 	private List<Projectile> activeProjectiles = new ArrayList<>();
@@ -80,9 +83,31 @@ public abstract class Ally extends Unit {
 		enemiesKilled += amount;
 	}
 	
-	public void addProjectile(Projectile projectile) { activeProjectiles.add(projectile); }
+	public void addProjectile(Projectile projectile) {
+		if(maxProjectiles == 0) activeProjectiles.add(projectile);
+		else if(activeProjectiles.size() + 1 < maxProjectiles) activeProjectiles.add(projectile);
+	}
 	
 	public List<Projectile> getCurrentProjectiles() { return activeProjectiles; }
+	
+	public int getMaxProjectiles() { return maxProjectiles; }
+	
+	public boolean hasCapacity() {
+		return maxProjectiles == 0 || activeProjectiles.size() < maxProjectiles;
+	}
+	
+	public void incrementTick() {
+		tick++;
+		if(tick < 0) tick = 0;
+	}
+	
+	public boolean checkFireCooldown() {
+		return tick % (WMDConstants.FIRE_RATE_INVERTION - fireRate) == 0;
+	}
+	
+	public boolean canProjectilesMove() {
+		return tick % WMDConstants.PROJECTILE_MOVE_MOD == 0;
+	}
 	
 	public int getCost() {
 		return cost;

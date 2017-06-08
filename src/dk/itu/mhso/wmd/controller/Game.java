@@ -228,7 +228,6 @@ public class Game {
 		private Timer timer;
 		private int gameTick;
 		private final int ENEMY_SPAWN_MOD = 360;
-		private final int PROJECTILE_MOVE_MOD = 20;
 		
 		public GameTimer(int delay) {
 			timer = new Timer(delay, this);
@@ -289,23 +288,24 @@ public class Game {
 			Iterator<Ally> it = allies.iterator();
 			while(it.hasNext()) {
 				Ally ally = it.next();
+				ally.incrementTick();
+				if(ally.canProjectilesMove()) moveProjectiles(ally);
 				checkEnemiesInRange(ally);
 				for(Enemy enemy : ally.getEnemiesInRange()) {
 					if(ally.getCurrentlyTargetedEnemy() == null) {
 						ally.setCurrentlyTargetedEnemy(enemy);
 					}
 				}
-				if(ally.getCurrentlyTargetedEnemy() != null) {
-					if(gameTick % (WMDConstants.FIRE_RATE_INVERTION-ally.getFireRate()) == 0)  {
-						ally.addProjectile(ProjectileFactory.createProjectile(ally));
-					}
+				if(ally.getCurrentlyTargetedEnemy() != null && ally.hasCapacity() && 
+					ally.checkFireCooldown())  {
+					ally.addProjectile(ProjectileFactory.createProjectile(ally));
 				}
 				ally.getUpgradeWindow().stateChanged(new ChangeEvent(this));
 			}
 		}
 		
-		private void moveProjectiles() {
-			Iterator<Projectile> it = activeProjectiles.iterator();
+		private void moveProjectiles(Ally ally) {
+			Iterator<Projectile> it = ally.getCurrentProjectiles().iterator();
 			while(it.hasNext()) {
 				Projectile projectile = it.next();
 				projectile.move();

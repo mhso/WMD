@@ -8,7 +8,8 @@ public class ParticleCannon extends Ally {
 		cost = 3000;
 		worth = cost;
 		range = 350;
-		fireRate = 5;
+		fireRate = 15;
 		damage = 20;
+		maxProjectiles = 1;
 	}
 }

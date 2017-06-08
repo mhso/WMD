@@ -310,7 +310,7 @@ public class WindowLevelEditor extends JFrame {
 				info.setEnemiesSpeed(slider.getValue()-1);
 			}
 		});
-		slider.setValue(info.getEnemySpeed());
+		slider.setValue(info.getEnemySpeed()+1);
 		slider.setPaintLabels(true);
 		slider.setMaximum(8);
 		slider.setMinimum(1);
