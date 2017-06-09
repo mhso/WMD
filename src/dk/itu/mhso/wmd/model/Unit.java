@@ -65,4 +65,8 @@ public abstract class Unit {
 	}
 	
 	public abstract void loadIcons(String unitName);
+	
+	public String toString() {
+		return "[name=" + name + ", active=" + active + ", location=" + location + ", angle=" + angle;
+	}
 }

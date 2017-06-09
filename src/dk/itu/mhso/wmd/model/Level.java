@@ -47,61 +47,25 @@ public class Level {
 	
 	private void parseWaves(String pathName, UnitPath[] unitPaths) {
 		List<Enemy> currentWaveEnemies = new ArrayList<>();
-		int counter = 0;
-		List<UnitPath> copyList = new ArrayList<>();
-		if(!Files.exists(Paths.get(pathName + "/enemies.txt"))) {
-			String[] arr = Resources.getDefaultEnemies();
-			for(String s : arr) {
-				if(s.equals("-")) {
-					waves.add(new Wave(currentWaveEnemies));
-					currentWaveEnemies = new ArrayList<>();
-				}
-				else if(s.startsWith("//")) {}
+		List<UnitPath> copyList = new ArrayList<>(unitPaths.length);
+		for(int u = 0; u < unitPaths.length; u++) copyList.add(unitPaths[u]);
+		String[] arr = Resources.getEnemies(pathName);
+		for(String s : arr) {
+			if(s.equals("-")) {
+				waves.add(new Wave(currentWaveEnemies));
+				currentWaveEnemies = new ArrayList<>();
+			}
+			else if(s.startsWith("//")) {}
+			else {
+				Enemy enemy = (Enemy)UnitFactory.createUnit(s);
+				if(info.getEnemiesPerSpawn() == 1) enemy.setUnitPaths(unitPaths);
 				else {
-					Enemy enemy = (Enemy)UnitFactory.createUnit(s);
-					if(info.getEnemiesPerSpawn() == 1) enemy.setUnitPaths(unitPaths);
-					else {
-						if(counter % info.getEnemiesPerSpawn() == 0) for(int u = 0; u < unitPaths.length; u++) copyList.add(unitPaths[u]);
-						enemy.setUnitPath(copyList.remove(new Random().nextInt(copyList.size())));
-						
-						counter++;
-					}
-					currentWaveEnemies.add(enemy);
+					if(copyList.size() == 0) for(int u = 0; u < unitPaths.length; u++) copyList.add(unitPaths[u]);
+					enemy.setUnitPath(copyList.remove(new Random().nextInt(copyList.size())));
 				}
+				currentWaveEnemies.add(enemy);
 			}
 		}
-		else {
-			Charset charset = Charset.forName("UNICODE");
-			try(BufferedReader reader = Files.newBufferedReader(Paths.get(pathName + "/enemies.txt"), charset)) {
-				String line = reader.readLine();
-				while(line != null) {
-					if(line.equals("-")) {
-						waves.add(new Wave(currentWaveEnemies));
-						currentWaveEnemies = new ArrayList<>();
-					}
-					else if(line.startsWith("//")) {}
-					else {
-						Enemy enemy = (Enemy)UnitFactory.createUnit(line);
-						if(info.getEnemiesPerSpawn() == 1) enemy.setUnitPaths(unitPaths);
-						else {
-							if(counter % info.getEnemiesPerSpawn() == 0) for(int u = 0; u < unitPaths.length; u++) copyList.add(unitPaths[u]);
-							enemy.setUnitPath(copyList.remove(new Random().nextInt(copyList.size())));
-							
-							counter++;
-						}
-						currentWaveEnemies.add(enemy);
-					}
-					line = reader.readLine();
-				}
-			}
-			catch(IOException e) {
-				e.printStackTrace();
-			}
-		}
-	}
-	
-	private void parseEnemyInfo(String enemyName) {
-		
 	}
 	
 	private void loadBGImage(String pathName) {

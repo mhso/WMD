@@ -109,7 +109,7 @@ public class Canvas extends JPanel {
 	}
 	
 	private void drawEnemies(Graphics2D g2d) {
-		if(Game.getCurrentEnemies() == null || Game.getCurrentEnemies().isEmpty()) return;
+		if(Game.getCurrentEnemies().isEmpty()) return;
 		for(Enemy enemy : Game.getCurrentEnemies()) {
 			if(!enemy.isVisible()) continue;
 			transformAndDrawImage(enemy, enemy.getIcon(), new Point(enemy.getLocation().x - enemy.getWidth()/2, 

@@ -73,9 +73,14 @@ public class Resources {
 		else return "resources/editor";
 	}
 	
-	public static String[] getDefaultEnemies() {
+	public static String[] getEnemies(String pathName) {
+		if(!Files.exists(Paths.get(pathName + "/enemies.txt"))) return getEnemiesAsArray("resources/default_enemies.txt");
+		else return getEnemiesAsArray(pathName + "/enemies.txt");
+	}
+	
+	private static String[] getEnemiesAsArray(String pathName) {
 		Charset charset = Charset.forName("UNICODE");
-		try(BufferedReader reader = Files.newBufferedReader(Paths.get("resources/default_enemies.txt"), charset)) {
+		try(BufferedReader reader = Files.newBufferedReader(Paths.get(pathName), charset)) {
 			List<String> lines = new ArrayList<>();
 			String line = reader.readLine();
 			while(line != null) {

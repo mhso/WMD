@@ -5,7 +5,7 @@ import dk.itu.mhso.wmd.view.windows.WindowMainMenu;
 
 public class Main {
 	public static final String NAME = "Weapons of Mass Defense";
-	public static final String VERSION = "0.3";
+	public static final String VERSION = "0.5";
 	
 	public static final boolean DEBUG = false;
 	public static final boolean CHEAT_MODE = true;

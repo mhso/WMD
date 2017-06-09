@@ -16,11 +16,13 @@ import dk.itu.mhso.wmd.Resources;
 import dk.itu.mhso.wmd.Util;
 
 public class BeamProjectile extends Projectile {
+	private final boolean debug = false;
+	
 	private BufferedImage[] windupImages;
 	private BufferedImage beamIcon;
 	private int counter;
 	
-	private final int TICK_DIV = 2;
+	private final int TICK_DIV = 20;
 	
 	public BeamProjectile(String name, Ally ally, Enemy targetEnemy) {
 		super(name, ally, targetEnemy);

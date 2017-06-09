@@ -42,9 +42,12 @@ import java.awt.geom.Path2D;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
+import java.nio.file.FileVisitResult;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.nio.file.SimpleFileVisitor;
+import java.nio.file.attribute.BasicFileAttributes;
 import java.awt.FlowLayout;
 import javax.swing.JLabel;
 import javax.swing.JList;
@@ -62,6 +65,7 @@ import javax.swing.JComboBox;
 import javax.swing.JMenuBar;
 import javax.swing.JMenu;
 import javax.swing.JMenuItem;
+import javax.swing.JOptionPane;
 import javax.swing.KeyStroke;
 import java.awt.event.InputEvent;
 
@@ -245,7 +249,7 @@ public class WindowLevelEditor extends JFrame {
 		
 		if(Files.exists(Paths.get(Resources.getEditorPath() + "/meta.bin"))) {
 			recentFile = (String)Util.readObjectFromFile(Resources.getEditorPath() + "/meta.bin");
-			try { loadLevel(recentFile); } catch(IOException ex) { ex.printStackTrace(); }
+			try { loadLevel(recentFile); } catch(IOException ex) {  }
 		}
 		
 		setLocationRelativeTo(null);
@@ -375,15 +379,21 @@ public class WindowLevelEditor extends JFrame {
 		textFieldLevelName.setText("Awesome Level");
 		paths = new ArrayList<>();
 		areas = new ArrayList<>();
+		info = new LevelInfo();
 		getContentPane().add(canvas);
 		revalidate();
 	}
 	
 	private void saveLevel() {
 		String pathName = "resources/editor/" + textFieldLevelName.getText();
+		if(!isSaveConfirmed(pathName)) return;
 		try {
+			if(Files.exists(Paths.get(pathName))) {
+				deleteDirectory(Paths.get(pathName));
+			}
 			Files.createDirectory(Paths.get(pathName));
 		} catch (IOException e1) {
+			e1.printStackTrace();
 		}
 		Cursor cursor = canvas.getCursor();
 		canvas.setCursor(CursorImage.getDefault());
@@ -406,7 +416,7 @@ public class WindowLevelEditor extends JFrame {
 		canvas.setWindow(this);
 		getContentPane().add(canvas);
 		BufferedImage image = ImageIO.read(new File(fileName + "/bg.png"));
-		canvas.setBGImage(image);
+		if(image != null) canvas.setBGImage(image);
 		
 		info = (LevelInfo) Util.readObjectFromFile(fileName + "/config.bin");
 		paths = (List<UnitPath>) Util.readObjectFromFile(fileName + "/paths.bin");
@@ -443,7 +453,7 @@ public class WindowLevelEditor extends JFrame {
 				if(e.getClickCount() == 2) {
 					int index = list.getSelectedIndex();
 					if(index > -1) {
-						try { loadLevel(files.get(index).toString()); } catch(IOException ex) { ex.printStackTrace(); }
+						try { loadLevel(files.get(index).toString()); } catch(IOException ex) {  }
 						dialog.dispose();
 					}
 				}
@@ -507,18 +517,49 @@ public class WindowLevelEditor extends JFrame {
 			}
 		}
 		try {
-			int i = 1;
-			while(Files.exists(Paths.get(pathName))) {
-				pathName = pathName + "(" + i + ")";
+			if(isSaveConfirmed(pathName)) {
+				if(Files.exists(Paths.get(pathName))) {
+					deleteDirectory(Paths.get(pathName));
+				}
+				
+				Files.createDirectory(Paths.get(pathName));
+				ImageIO.write(bgImage, "png", new File(pathName + "/bg.png"));
+				writeThingsToBinary(pathName);
+				Game.addLevel(new Level(pathName));
 			}
-			Files.createDirectory(Paths.get(pathName));
-			ImageIO.write(bgImage, "png", new File(pathName + "/bg.png"));
-			writeThingsToBinary(pathName);
-			
-			Game.addLevel(new Level(pathName));
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
+	}
+	
+	private void deleteDirectory(Path path) throws IOException {
+		Files.walkFileTree(path, new SimpleFileVisitor<Path>() {
+	         @Override
+	         public FileVisitResult visitFile(Path file, BasicFileAttributes attrs)
+	             throws IOException
+	         {
+	             Files.delete(file);
+	             return FileVisitResult.CONTINUE;
+	         }
+	         @Override
+	         public FileVisitResult postVisitDirectory(Path dir, IOException e)
+	             throws IOException
+	         {
+	             if (e == null) {
+	                 Files.delete(dir);
+	                 return FileVisitResult.CONTINUE;
+	             } else {
+	                 throw e;
+	             }
+	         }
+	     });
+	}
+	
+	private boolean isSaveConfirmed(String pathName) {
+		int confirm = JOptionPane.OK_OPTION;
+		if(Files.exists(Paths.get(pathName))) confirm = JOptionPane.showConfirmDialog(this, "Do You Want To Overwrite The File?", 
+				"Name Already Exists!", JOptionPane.OK_CANCEL_OPTION, JOptionPane.ERROR_MESSAGE);
+		return confirm == JOptionPane.OK_OPTION;
 	}
 	
 	private void writeThingsToBinary(String pathName) {

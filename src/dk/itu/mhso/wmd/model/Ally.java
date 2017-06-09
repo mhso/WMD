@@ -28,7 +28,7 @@ public abstract class Ally extends Unit {
 	
 	private int enemiesKilled;
 	private int goldEarned;
-	private int tick;
+	private int tick = -1;
 	private BufferedImage highlightIcon;
 	private List<Enemy> enemiesInRange = new ArrayList<>();
 	private List<Projectile> activeProjectiles = new ArrayList<>();
@@ -84,8 +84,7 @@ public abstract class Ally extends Unit {
 	}
 	
 	public void addProjectile(Projectile projectile) {
-		if(maxProjectiles == 0) activeProjectiles.add(projectile);
-		else if(activeProjectiles.size() + 1 < maxProjectiles) activeProjectiles.add(projectile);
+		activeProjectiles.add(projectile);
 	}
 	
 	public List<Projectile> getCurrentProjectiles() { return activeProjectiles; }
@@ -97,12 +96,12 @@ public abstract class Ally extends Unit {
 	}
 	
 	public void incrementTick() {
-		tick++;
+		if(hasCapacity()) tick++;
 		if(tick < 0) tick = 0;
 	}
 	
 	public boolean checkFireCooldown() {
-		return tick % (WMDConstants.FIRE_RATE_INVERTION - fireRate) == 0;
+		return tick % (WMDConstants.FIRE_RATE_INVERTION/fireRate) == 0;
 	}
 	
 	public boolean canProjectilesMove() {
@@ -211,5 +210,13 @@ public abstract class Ally extends Unit {
 	public boolean contains(Point point) {
 		return point.x >= location.x && point.x <= location.x + getWidth()
 				&& point.y >= location.y && point.y <= location.y + getHeight();
+	}
+	
+	public String toString() {
+		return "Ally " + super.toString() + ", cost=" + cost + ", range=" + range + "damage=" + damage + ", fireRate=" + 
+				fireRate + ", aoeDamage=" + aoeDamage + ", aoeRadius=" + aoeRadius + ", maxProjectiles=" + maxProjectiles + ", upgradeLevel="
+				+ upgradeLevel + ", worth=" + worth + ", upgradeInfo=" + upgradeInfo + ", enemiesKilled=" + enemiesKilled + ", goldEarned=" 
+				+ goldEarned + ", tick=" + tick + ", enemiesInRange=" + enemiesInRange + ", activeProjectiles=" + activeProjectiles + 
+				", currentlyTargetedEnemy=" + currentlyTargetedEnemy;
 	}
 }

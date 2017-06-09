@@ -8,12 +8,19 @@ public class WMDConstants {
 	public static final double AOE_DAMAGE_RATIO = 0.4;
 	public static final Image EXPLOSION_IMAGE = Toolkit.getDefaultToolkit().getImage("resources/sprites/explosion.gif");
 	
-	public static final int FIRE_RATE_INVERTION = 300;
+	public static final int FIRE_RATE_INVERTION = 6000;
+	
 	public static final int LEVEL_EDITOR_CURSOR_SIZE = 17;
+	
 	public static final int ENEMY_AREA_WIDTH = 50;
+	
 	public static final int ENEMY_MOVE_TICK_INVERSION = 8;
-	public static final int DEFAULT_TICKRATE = 200;
-	public static final int PROJECTILE_MOVE_MOD = 20;
+	
+	public static final int PATH_POINT_SKIP_AMOUNT = 20;
+	
+	public static final int DEFAULT_TICKRATE = 100;
+	
+	public static final int PROJECTILE_MOVE_MOD = 10;
 	
 	public static final double SELL_RETURN_PERCENTAGE = 0.75;
 	

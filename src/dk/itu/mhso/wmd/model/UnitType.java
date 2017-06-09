@@ -5,6 +5,8 @@ public enum UnitType {
 	SOLDIER_BASIC,
 	SOLDIER_ARMORED,
 	TANK_LIGHT,
+	TANK_HEAVY,
+	TECHNICAL,
 	
 	// Allies
 	SNIPER,

@@ -155,7 +155,7 @@ public class Game {
 	}
 	
 	public static void toggleSpeed() {
-		if(gameTimer.getDelay() == 1000/WMDConstants.DEFAULT_TICKRATE) gameTimer.setDelay(2);
+		if(gameTimer.getDelay() == 1000/WMDConstants.DEFAULT_TICKRATE) gameTimer.setDelay(5);
 		else gameTimer.setDelay(1000/WMDConstants.DEFAULT_TICKRATE);
 	}
 	
@@ -227,7 +227,7 @@ public class Game {
 	private static class GameTimer implements ActionListener {
 		private Timer timer;
 		private int gameTick;
-		private final int ENEMY_SPAWN_MOD = 360;
+		private final int ENEMY_SPAWN_MOD = 290;
 		
 		public GameTimer(int delay) {
 			timer = new Timer(delay, this);
@@ -272,7 +272,7 @@ public class Game {
 			}
 			else {
 				if(getDelay() != WMDConstants.DEFAULT_TICKRATE) setDelay(1000/WMDConstants.DEFAULT_TICKRATE);
-				if(gameTick % 200 == 0) {
+				if(gameTick % 100 == 0) {
 					waveEnded();
 					if(waveCountdown == 0) {
 						currentWave = currentLevel.getNextWave();

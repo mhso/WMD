@@ -69,4 +69,10 @@ public abstract class Enemy extends Unit {
 			active = false;
 		}
 	}
+
+	@Override
+	public String toString() {
+		return "Enemy " + super.toString() + ", path=" + path + ", pointNr=" + pointNr + ", previousPoint=" + previousPoint + ", maxHealth="
+				+ maxHealth + ", currentHealth=" + currentHealth + "]";
+	}
 }

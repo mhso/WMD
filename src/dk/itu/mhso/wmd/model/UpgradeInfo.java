@@ -1,6 +1,7 @@
 package dk.itu.mhso.wmd.model;
 
 import java.io.Serializable;
+import java.util.Arrays;
 
 import dk.itu.mhso.wmd.Util;
 import dk.itu.mhso.wmd.WMDConstants;
@@ -98,6 +99,18 @@ public class UpgradeInfo implements Serializable {
 		return fireRateIncrements.length == currentFireRateIndex;
 	}
 	
+	@Override
+	public String toString() {
+		return "UpgradeInfo [ally=" + ally + ", rangeIncrements=" + Arrays.toString(rangeIncrements) + ", rangeCosts="
+				+ Arrays.toString(rangeCosts) + ", damageIncrements=" + Arrays.toString(damageIncrements)
+				+ ", damageCosts=" + Arrays.toString(damageCosts) + ", fireRateIncrements="
+				+ Arrays.toString(fireRateIncrements) + ", fireRateCosts=" + Arrays.toString(fireRateCosts)
+				+ ", aoeRadiusIncrements=" + Arrays.toString(aoeRadiusIncrements) + ", aoeRadiusCosts="
+				+ Arrays.toString(aoeRadiusCosts) + ", currentRangeIndex=" + currentRangeIndex + ", currentDamageIndex="
+				+ currentDamageIndex + ", currentFireRateIndex=" + currentFireRateIndex + ", currentAOERadiusIndex="
+				+ currentAOERadiusIndex + "]";
+	}
+
 	public static void main(String[] args) {
 		UpgradeInfo uiSniper = new UpgradeInfo(new int[]{100, 150, 250}, new int[]{50, 75, 150}, new int[]{1, 1, 2, 2}, new int[]{75, 125, 200, 300},
 				new int[]{10, 10, 12, 13}, new int[]{50, 75, 150, 250});
