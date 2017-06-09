@@ -26,6 +26,7 @@ import dk.itu.mhso.wmd.model.Enemy;
 import dk.itu.mhso.wmd.model.Level;
 import dk.itu.mhso.wmd.model.Projectile;
 import dk.itu.mhso.wmd.model.Wave;
+import dk.itu.mhso.wmd.view.windows.WindowFloatingText;
 import dk.itu.mhso.wmd.view.windows.WindowGame;
 import dk.itu.mhso.wmd.model.Explosion;
 
@@ -69,6 +70,7 @@ public class Game {
 	}
 	
 	public static void startGame(int level) {
+		Main.window.dispose();
 		levelNr = level;
 		currentLevel = levels.get(level);
 		money = currentLevel.getLevelInfo().getStartingMoney();
@@ -76,6 +78,7 @@ public class Game {
 		lives = currentLevel.getLevelInfo().getLives();
 		window = new WindowGame(levels.get(level));
 		addGameListener("gameTick", window);
+		
 		gameTimer = new GameTimer(1000/WMDConstants.DEFAULT_TICKRATE);
 	}
 	
@@ -232,6 +235,7 @@ public class Game {
 		public GameTimer(int delay) {
 			timer = new Timer(delay, this);
 			currentWave = currentLevel.getNextWave();
+			window.showWaveText(currentWave.getDescription(), WMDConstants.WAVE_TEXT_DURATION);
 			timer.start();
 		}
 		
@@ -277,6 +281,7 @@ public class Game {
 					if(waveCountdown == 0) {
 						currentWave = currentLevel.getNextWave();
 						waveCountdown = 20;
+						window.showWaveText(currentWave.getDescription(), WMDConstants.WAVE_TEXT_DURATION);
 						waveStarted();
 					}
 					else waveCountdown--;

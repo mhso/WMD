@@ -3,21 +3,13 @@ package dk.itu.mhso.wmd.model;
 import java.awt.Color;
 import java.awt.geom.Path2D;
 import java.awt.image.BufferedImage;
-import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
-import java.nio.charset.Charset;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Random;
 
 import javax.imageio.ImageIO;
-
-import com.sun.crypto.provider.AESParameters;
 
 import dk.itu.mhso.wmd.Resources;
 import dk.itu.mhso.wmd.Util;
@@ -50,12 +42,17 @@ public class Level {
 		List<UnitPath> copyList = new ArrayList<>(unitPaths.length);
 		for(int u = 0; u < unitPaths.length; u++) copyList.add(unitPaths[u]);
 		String[] arr = Resources.getEnemies(pathName);
+		String waveDescription = null;
 		for(String s : arr) {
 			if(s.equals("-")) {
-				waves.add(new Wave(currentWaveEnemies));
+				Wave wave = new Wave(currentWaveEnemies);
+				wave.setDescription(waveDescription);
+				waves.add(wave);
 				currentWaveEnemies = new ArrayList<>();
 			}
-			else if(s.startsWith("//")) {}
+			else if(s.startsWith("//")) {
+				waveDescription = s.substring(3);
+			}
 			else {
 				Enemy enemy = (Enemy)UnitFactory.createUnit(s);
 				if(info.getEnemiesPerSpawn() == 1) enemy.setUnitPaths(unitPaths);

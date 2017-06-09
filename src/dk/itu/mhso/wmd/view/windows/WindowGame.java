@@ -58,6 +58,10 @@ public class WindowGame extends JFrame implements GameTickListener {
 		setVisible(true);
 	}
 	
+	public void showWaveText(String text, int durationMs) {
+		overlay.showWaveLabel(text, durationMs);
+	}
+	
 	@Override
 	public void onGameTick() {
 		repaint();

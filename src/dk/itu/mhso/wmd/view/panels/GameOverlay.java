@@ -14,10 +14,20 @@ import javax.swing.JButton;
 import javax.swing.JLabel;
 import java.awt.Color;
 import java.awt.Font;
+import java.awt.Graphics;
+import java.awt.Graphics2D;
+import java.awt.Rectangle;
+import java.awt.Shape;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.awt.font.FontRenderContext;
+import java.awt.font.GlyphVector;
 import java.awt.FlowLayout;
 import javax.swing.border.LineBorder;
+import javax.swing.SwingConstants;
+import javax.swing.Timer;
 
 public class GameOverlay extends JPanel implements GameStateListener {
 	private TowersMenu towers;
@@ -26,10 +36,10 @@ public class GameOverlay extends JPanel implements GameStateListener {
 	private JLabel labelEnemiesRemaining;
 	private JLabel labelLevel;
 	private JLabel labelWave;
-	private JButton speedUp;
 	
 	private final int FONT_SIZE = 15;
 	private JButton buttonSpeedUp;
+	private FancyLabel labelWaveDescription;
 	
 	public GameOverlay() {
 		setLayout(new BorderLayout(0, 0));
@@ -109,11 +119,11 @@ public class GameOverlay extends JPanel implements GameStateListener {
 		});
 		topPanelLabels[2] = labelEnemiesRemaining;
 		
-		for(JLabel label : topPanelLabels) {
+		for(JLabel waveLabel : topPanelLabels) {
 			JPanel panel = new JPanel();
 			panel.setOpaque(false);
 			panel.setBorder(new LineBorder(Color.WHITE));
-			panel.add(label);
+			panel.add(waveLabel);
 			topPanel.add(panel);
 		}
 		
@@ -135,6 +145,11 @@ public class GameOverlay extends JPanel implements GameStateListener {
 		labelLives.setFont(new Font("Tahoma", Font.PLAIN, FONT_SIZE));
 		southPanel.add(labelLives);
 		
+		labelWaveDescription = new FancyLabel();
+		labelWaveDescription.setFont(new Font("Tahoma", Font.PLAIN, 45));
+		labelWaveDescription.setHorizontalAlignment(SwingConstants.CENTER);
+		centerPanel.add(labelWaveDescription, BorderLayout.CENTER);
+		
 		JPanel rightPanel = new JPanel();
 		rightPanel.setOpaque(false);
 		add(rightPanel, BorderLayout.EAST);
@@ -155,6 +170,18 @@ public class GameOverlay extends JPanel implements GameStateListener {
 		inflatedLeftPanel.add(panel, BorderLayout.NORTH);
 	}
 
+	public void showWaveLabel(String text, int durationMs) {
+		labelWaveDescription.fadeIn(text);
+		Timer timer = new Timer(durationMs, new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				labelWaveDescription.fadeOut();
+			}
+		});
+		timer.setRepeats(false);
+		timer.start();
+	}
+	
 	@Override
 	public void onWaveEnded() {
 		buttonSpeedUp.setEnabled(false);
@@ -189,5 +216,60 @@ public class GameOverlay extends JPanel implements GameStateListener {
 	@Override
 	public void onEnemySpawned() {
 		labelEnemiesRemaining.setText("Enemies: " + Game.getCurrentEnemies().size());
+	}
+	
+	private class FancyLabel extends JLabel {
+		private String text;
+		private int transparency;
+		
+		protected void paintComponent(Graphics g) {
+			Graphics2D g2d = (Graphics2D) g;
+			FontRenderContext frc = g2d.getFontRenderContext();
+			GlyphVector gv = new Font("Tahoma", Font.PLAIN, 50).createGlyphVector(frc, text);
+			Rectangle bounds = gv.getOutline().getBounds();
+			Shape s = gv.getOutline((getWidth()/2) - (int)(bounds.getWidth()/2), (getHeight()/2) - (int)(bounds.getHeight()/2));
+			
+			g2d.setColor(new Color(Color.ORANGE.getRed(), Color.ORANGE.getGreen(), Color.ORANGE.getBlue(), transparency));
+			g2d.fill(s);
+			g2d.setColor(new Color(Color.BLACK.getRed(), Color.BLACK.getGreen(), Color.BLACK.getBlue(), transparency));
+			g2d.draw(s);
+			g2d.setClip(s);
+		}
+		
+		public void setTransparency(int transparency) {
+			this.transparency = transparency;
+		}
+		
+		public int getTransparency() {
+			return transparency;
+		}
+		
+		public void fadeIn(String text) {
+			this.text = text;
+			new FadeTimer(true);
+		}
+		
+		public void fadeOut() {
+			new FadeTimer(false);
+		}
+	}
+	
+	private class FadeTimer implements ActionListener {
+		private Timer timer;
+		private int delta = 15;
+		
+		public FadeTimer(boolean in) {
+			if(!in) delta = -15;
+			timer = new Timer(1000/17, this);
+			timer.start();
+		}
+		
+		@Override
+		public void actionPerformed(ActionEvent e) {
+			labelWaveDescription.setTransparency(labelWaveDescription.getTransparency() + delta);
+			labelWaveDescription.repaint();
+			if(labelWaveDescription.getTransparency() >= 255 || labelWaveDescription.getTransparency() <= 0) timer.stop();;
+		}
+		
 	}
 }
