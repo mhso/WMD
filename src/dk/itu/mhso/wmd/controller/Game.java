@@ -26,7 +26,6 @@ import dk.itu.mhso.wmd.model.Enemy;
 import dk.itu.mhso.wmd.model.Level;
 import dk.itu.mhso.wmd.model.Projectile;
 import dk.itu.mhso.wmd.model.Wave;
-import dk.itu.mhso.wmd.view.windows.WindowFloatingText;
 import dk.itu.mhso.wmd.view.windows.WindowGame;
 import dk.itu.mhso.wmd.model.Explosion;
 

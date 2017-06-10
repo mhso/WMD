@@ -76,6 +76,10 @@ public class Canvas extends JPanel {
 		}
 	}
 	
+	public void eraseAllies() {
+		
+	}
+	
 	private void drawAllies(Graphics2D g2d) {
 		for(Ally ally : Game.getAllies()) {
 			if(highlightedUnit != ally) transformAndDrawImage(ally, ally.getIcon(),ally.getLocation(), g2d);
