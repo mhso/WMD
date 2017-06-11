@@ -18,7 +18,6 @@ import dk.itu.mhso.wmd.view.panels.GameOverlay;
 public class WindowGame extends JFrame implements GameTickListener {
 	public static Canvas canvas;
 	private GameOverlay overlay;
-	private boolean changed;
 	
 	public WindowGame(Level level) {
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -65,46 +64,6 @@ public class WindowGame extends JFrame implements GameTickListener {
 	
 	@Override
 	public void onGameTick() {
-		if(changed)repaint();
-	}
-	
-	@Override
-	public void onGameChanged() {
-		
-	}
-
-	@Override
-	public void onAllyChanged() {
-		
-	}
-
-	@Override
-	public void onEnemyChanged() {
-		
-	}
-
-	@Override
-	public void onProjectileChanged() {
-		
-	}
-
-	@Override
-	public void onExplosion() {
-		
-	}
-
-	@Override
-	public void onAllyReset() {
-		
-	}
-
-	@Override
-	public void onEnemyReset() {
-		
-	}
-
-	@Override
-	public void onProjectileReset() {
-		
+		repaint();
 	}
 }

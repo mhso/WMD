@@ -7,6 +7,7 @@ public class Main {
 	public static final String NAME = "Weapons of Mass Defense";
 	public static final String VERSION = "0.5";
 	
+	public static final boolean SHOW_FPS = true;
 	public static final boolean DEBUG = false;
 	public static final boolean CHEAT_MODE = true;
 	public static final boolean PRODUCTION = false;

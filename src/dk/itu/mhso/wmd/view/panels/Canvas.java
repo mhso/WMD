@@ -5,13 +5,18 @@ import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.Image;
 import java.awt.Point;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.awt.geom.Ellipse2D;
 import java.awt.geom.Path2D;
 import java.awt.geom.Rectangle2D;
 import java.awt.image.BufferedImage;
+import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.List;
 
 import javax.swing.JPanel;
+import javax.swing.Timer;
 
 import dk.itu.mhso.wmd.Main;
 import dk.itu.mhso.wmd.WMDConstants;
@@ -27,9 +32,19 @@ public class Canvas extends JPanel {
 	private Level level;	
 	private Ally highlightedUnit;
 	private Ellipse2D rangeCircle;
+	private int fps;
+	private FPSMonitor fpsMonitor;
+	private int fpsCounter;
 	
 	public Canvas() {
 		setDoubleBuffered(true);
+		fpsMonitor = new FPSMonitor();
+		if(Main.SHOW_FPS) fpsMonitor.start();
+	}
+	
+	public void toggleFPS() {
+		if(!fpsMonitor.isRunning()) fpsMonitor.start();
+		else fpsMonitor.stop();
 	}
 	
 	public void setLevel(Level level) {
@@ -59,10 +74,19 @@ public class Canvas extends JPanel {
 	}
 	
 	protected void paintComponent(Graphics g) {
-		drawLevel((Graphics2D) g);
-		drawAllies((Graphics2D) g);
-		drawEnemies((Graphics2D) g);
-		if(!Game.getExplosions().isEmpty()) drawExplosions((Graphics2D) g);
+		Graphics2D g2d = (Graphics2D) g;
+		drawLevel(g2d);
+		drawAllies(g2d);
+		drawEnemies(g2d);
+		if(!Game.getExplosions().isEmpty()) drawExplosions(g2d);
+		if(Main.SHOW_FPS) drawFPS(g2d);
+	}
+	
+	private void drawFPS(Graphics2D g2d) {
+		fpsCounter++;
+		g2d.setColor(Color.WHITE);
+		g2d.drawString("FPS: "+fps, 15, 55);
+		g2d.setColor(Color.BLACK);
 	}
 
 	public void setUnitRangeCircle(Ellipse2D rangeCircle) {
@@ -140,5 +164,42 @@ public class Canvas extends JPanel {
 		g2d.fill(new Rectangle2D.Double(enemy.getLocation().getX()+1-(enemy.getWidth()/2), enemy.getLocation().getY()-11-(enemy.getHeight()/2), 
 				(enemy.getWidth()-1)*((double)enemy.getCurrentHealth()/(double)enemy.getMaxHealth()), 6));
 		g2d.setColor(Color.BLACK);
+	}
+	
+	private class FPSMonitor implements ActionListener {
+		private final int averageSampleAmount = 20;
+		
+		private Timer timer;
+		private List<Integer> fpsValues;
+		
+		public FPSMonitor() {
+			fpsValues = new ArrayList<>();
+			timer = new Timer(1000, this);
+		}
+		
+		@Override
+		public void actionPerformed(ActionEvent e) {
+			fpsValues.add(fpsCounter);
+			if(fpsValues.size() > averageSampleAmount) fpsValues.remove(0);
+			
+			int sum = 0;
+			for(int l : fpsValues) {
+				sum += l;
+			}
+			fps = sum/fpsValues.size();
+			fpsCounter = 0;
+		}
+		
+		public void start() {
+			timer.start();
+		}
+		
+		public void stop() {
+			timer.stop();
+		}
+		
+		public boolean isRunning() {
+			return timer.isRunning();
+		}
 	}
 }
