@@ -85,7 +85,7 @@ public class Canvas extends JPanel {
 	private void drawFPS(Graphics2D g2d) {
 		fpsCounter++;
 		g2d.setColor(Color.WHITE);
-		g2d.drawString("FPS: "+fps, 15, 55);
+		g2d.drawString("FPS: "+fps, 8, 55);
 		g2d.setColor(Color.BLACK);
 	}
 

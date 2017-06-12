@@ -49,6 +49,7 @@ public class Level {
 				wave.setDescription(waveDescription);
 				waves.add(wave);
 				currentWaveEnemies = new ArrayList<>();
+				copyList.removeAll(copyList);
 			}
 			else if(s.startsWith("//")) {
 				waveDescription = s.substring(3);
@@ -57,7 +58,7 @@ public class Level {
 				Enemy enemy = (Enemy)UnitFactory.createUnit(s);
 				if(info.getEnemiesPerSpawn() == 1) enemy.setUnitPaths(unitPaths);
 				else {
-					if(copyList.size() == 0) for(int u = 0; u < unitPaths.length; u++) copyList.add(unitPaths[u]);
+					if(copyList.isEmpty()) for(int u = 0; u < unitPaths.length; u++) copyList.add(unitPaths[u]);
 					enemy.setUnitPath(copyList.remove(new Random().nextInt(copyList.size())));
 				}
 				currentWaveEnemies.add(enemy);

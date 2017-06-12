@@ -22,7 +22,7 @@ public class WMDConstants {
 	
 	public static final int PROJECTILE_MOVE_MOD = 10;
 	
-	public static final int WAVE_TEXT_DURATION = 3000;
+	public static final int WAVE_TEXT_DURATION = 3500;
 	
 	public static final double SELL_RETURN_PERCENTAGE = 0.75;
 	

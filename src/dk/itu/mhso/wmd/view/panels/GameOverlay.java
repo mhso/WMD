@@ -104,7 +104,7 @@ public class GameOverlay extends JPanel implements GameStateListener {
 		labelLevel.setForeground(Color.WHITE);
 		topPanelLabels[0] = labelLevel;
 		
-		labelWave = new JLabel("Wave " + Game.getCurrentWaveNr());
+		labelWave = new JLabel("Wave " + (Game.getCurrentWaveNr() + 1));
 		labelWave.setForeground(Color.WHITE);
 		labelWave.setFont(new Font("Tahoma", Font.PLAIN, FONT_SIZE));
 		topPanelLabels[1] = labelWave;
@@ -192,7 +192,7 @@ public class GameOverlay extends JPanel implements GameStateListener {
 	
 	@Override
 	public void onWaveStarted() {
-		labelWave.setText("Wave " + Game.getCurrentWaveNr());
+		labelWave.setText("Wave " + (Game.getCurrentWaveNr() + 1));
 		labelEnemiesRemaining.setText("Enemies: " + Game.getCurrentEnemies().size());
 		labelLevel.setText("Level " + Game.getCurrentLevelNr() + ": " + Game.getCurrentLevel().getName());
 		buttonSpeedUp.setEnabled(true);
