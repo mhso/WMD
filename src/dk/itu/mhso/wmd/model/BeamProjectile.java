@@ -44,7 +44,6 @@ public class BeamProjectile extends Projectile {
 	
 	@Override
 	public BufferedImage transformIcon(BufferedImage transformIcon) {
-		//TODO Fix crash 'Transformed width (0) is less than or equal to 0.'
 		AffineTransform transform = AffineTransform.getRotateInstance(getAngle(), 0, getHeight()/2);
 		AffineTransformOp op = new AffineTransformOp(transform, AffineTransformOp.TYPE_BILINEAR);
 		return op.filter(transformIcon, null);

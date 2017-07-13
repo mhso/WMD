@@ -20,8 +20,9 @@ import javax.swing.JPopupMenu;
 import javax.swing.event.ChangeEvent;
 import dk.itu.mhso.wmd.Main;
 import dk.itu.mhso.wmd.controller.Game;
-import dk.itu.mhso.wmd.controller.GameMoneyListener;
+import dk.itu.mhso.wmd.controller.UnitCreator;
 import dk.itu.mhso.wmd.controller.UnitFactory;
+import dk.itu.mhso.wmd.controller.listeners.GameMoneyListener;
 import dk.itu.mhso.wmd.model.Ally;
 import dk.itu.mhso.wmd.model.Unit;
 import dk.itu.mhso.wmd.model.UnitType;
@@ -50,13 +51,7 @@ public class TowersMenu extends JPopupMenu implements GameMoneyListener {
 					return;
 				}
 				if(e.getButton() == MouseEvent.BUTTON1) {
-					if(selectedUnit != null && !Game.isWithinMainPath(e.getPoint())) {
-						Game.addAlly(selectedUnit);
-						Game.decrementMoney(selectedUnit.getCost());
-						selectedUnit.setLocation(e.getPoint());
-						selectedUnit.createUpgradeWindow();
-						deselectUnit();
-					}
+					if(selectedUnit != null && UnitCreator.createUnit(selectedUnit, e.getPoint())) deselectUnit();
 				}
 				else if(e.getButton() == MouseEvent.BUTTON3) {
 					if(selectedUnit != null) deselectUnit();

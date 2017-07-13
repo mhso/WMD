@@ -42,12 +42,24 @@ public abstract class Ally extends Unit {
 	
 	public void loadIcons(String unitName) {
 		try {
-			icon = ImageIO.read(new File("resources/sprites/ally/"+unitName+".png"));
-			highlightIcon = ImageIO.read(new File("resources/sprites/ally/"+unitName+"_highlight.png"));
-			projectileIcon = ImageIO.read(new File("resources/sprites/ally/"+unitName+"_projectile.png"));
+			loadMainIcon(unitName);
+			loadHighlightedIcon(unitName);
+			loadProjectileIcon(unitName);
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
+	}
+	
+	protected void loadMainIcon(String unitName) throws IOException {
+		icon = ImageIO.read(new File("resources/sprites/ally/"+unitName+".png"));
+	}
+	
+	protected void loadHighlightedIcon(String unitName) throws IOException {
+		highlightIcon = ImageIO.read(new File("resources/sprites/ally/"+unitName+"_highlight.png"));
+	}
+	
+	protected void loadProjectileIcon(String unitName) throws IOException {
+		projectileIcon = ImageIO.read(new File("resources/sprites/ally/"+unitName+"_projectile.png"));
 	}
 	
 	public void loadUpgradeInfo(String fileName) { 

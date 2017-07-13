@@ -1,4 +1,4 @@
-package dk.itu.mhso.wmd.controller;
+package dk.itu.mhso.wmd.controller.listeners;
 
 public interface GameStateListener extends GameMoneyListener {
 	void onLivesChanged();

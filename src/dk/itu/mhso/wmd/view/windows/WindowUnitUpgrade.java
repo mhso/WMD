@@ -65,12 +65,6 @@ public class WindowUnitUpgrade extends JPopupMenu implements ChangeListener {
 		panelCenter.add(panelIcons, BorderLayout.NORTH);
 		panelIcons.setLayout(new GridLayout(0, 1, 0, 0));
 		
-		JButton upgradeButton = new JButton("Upgrade to Next Tier");
-		upgradeButton.setFont(new Font("Tahoma", Font.PLAIN, 12));
-		upgradeButton.setForeground(Color.RED);
-		upgradeButton.setBackground(getBackground());
-		panelIcons.add(upgradeButton);
-		
 		JPanel panelStats = new JPanel();
 		panelStats.setOpaque(false);
 		panelCenter.add(panelStats, BorderLayout.CENTER);
@@ -81,82 +75,90 @@ public class WindowUnitUpgrade extends JPopupMenu implements ChangeListener {
 		labelDamage.setFont(new Font("Tahoma", Font.PLAIN, 12));
 		panelStats.add(labelDamage);
 		
-		buttonUpgDamage = new JButton("<html><body>Upgrade<br>(" + (ally.getUpgradeInfo().getCurrentDamageCost()) +"$)</body></html>");
-		buttonUpgDamage.addActionListener(e -> {
-			int cost = ally.getUpgradeInfo().getCurrentDamageCost();
-			ally.getUpgradeInfo().upgradeDamage();
-			statUpdated(cost);
-		});
-		buttonUpgDamage.setBackground(getBackground());
-		buttonUpgDamage.setForeground(Color.WHITE);
-		buttonUpgDamage.setFont(new Font("Tahoma", Font.PLAIN, 12));
-		panelStats.add(buttonUpgDamage);
-		
-		labelFireRate = new JLabel("Fire Rate: " + ally.getFireRate());
-		labelFireRate.setForeground(Color.WHITE);
-		labelFireRate.setFont(new Font("Tahoma", Font.PLAIN, 12));
-		panelStats.add(labelFireRate);
-		
-		buttonUpgFireRate = new JButton("<html><body>Upgrade<br>(" + (ally.getUpgradeInfo().getCurrentFireRateCost()) +"$)</body></html>");
-		buttonUpgFireRate.addActionListener(e -> {
-			int cost = ally.getUpgradeInfo().getCurrentFireRateCost();
-			ally.getUpgradeInfo().upgradeFireRate();
-			statUpdated(cost);
-		});
-		buttonUpgFireRate.setBackground(getBackground());
-		buttonUpgFireRate.setForeground(Color.WHITE);
-		buttonUpgFireRate.setFont(new Font("Tahoma", Font.PLAIN, 12));
-		panelStats.add(buttonUpgFireRate);
-		
-		labelRange = new JLabel("Range: " + ally.getRange());
-		labelRange.setForeground(Color.WHITE);
-		labelRange.setFont(new Font("Tahoma", Font.PLAIN, 12));
-		panelStats.add(labelRange);
-		
-		buttonUpgRange = new JButton("<html><body>Upgrade<br>(" + (ally.getUpgradeInfo().getCurrentRangeCost()) +"$)</body></html>");
-		buttonUpgRange.addActionListener(e -> {
-			int cost = ally.getUpgradeInfo().getCurrentRangeCost();
-			ally.getUpgradeInfo().upgradeRange();
-			statUpdated(cost);
-		});
-		buttonUpgRange.setBackground(getBackground());
-		buttonUpgRange.setForeground(Color.WHITE);
-		buttonUpgRange.setFont(new Font("Tahoma", Font.PLAIN, 12));
-		panelStats.add(buttonUpgRange);
-		
-		if(ally.getAOEDamage() > 0) {
-			labelAOEsize = new JLabel("AOE Radius: " + ally.getAOERadius());
-			labelAOEsize.setForeground(Color.WHITE);
-			labelAOEsize.setFont(new Font("Tahoma", Font.PLAIN, 12));
-			panelStats.add(labelAOEsize);
-			
-			buttonUpgAOEsize = new JButton("<html><body>Upgrade<br>(" + (ally.getUpgradeInfo().getCurrentAOERadiusCost()) +"$)</body></html>");
-			buttonUpgAOEsize.addActionListener(e -> {
-				int cost = ally.getUpgradeInfo().getCurrentAOERadiusCost();
-				ally.getUpgradeInfo().upgradeAOERadius();
-				statUpdated(cost);
-			});
-			buttonUpgAOEsize.setBackground(getBackground());
-			buttonUpgAOEsize.setForeground(Color.WHITE);
-			buttonUpgAOEsize.setFont(new Font("Tahoma", Font.PLAIN, 12));
-			panelStats.add(buttonUpgAOEsize);
-		}
-		
 		JPanel panelSouth = new JPanel();
 		panelSouth.setOpaque(false);
 		add(panelSouth, BorderLayout.SOUTH);
 		panelSouth.setLayout(new GridLayout(0, 1, 0, 0));
 		
-		labelEnemiesKilled = new JLabel("Enemies Killed: " + ally.getEnemiesKilled());
-		labelEnemiesKilled.setFont(new Font("Tahoma", Font.PLAIN, 12));
-		labelEnemiesKilled.setForeground(Color.WHITE);
-		panelSouth.add(labelEnemiesKilled);
-		
-		labelGoldEarned = new JLabel("Gold Earned: " + ally.getGoldEarned());
-		labelGoldEarned.setFont(new Font("Tahoma", Font.PLAIN, 12));
-		labelGoldEarned.setForeground(Color.WHITE);
-		panelSouth.add(labelGoldEarned);
-		
+		if(ally.getUpgradeInfo() != null) {
+			JButton upgradeButton = new JButton("Upgrade to Next Tier");
+			upgradeButton.setFont(new Font("Tahoma", Font.PLAIN, 12));
+			upgradeButton.setForeground(Color.RED);
+			upgradeButton.setBackground(getBackground());
+			panelIcons.add(upgradeButton);
+			
+			buttonUpgDamage = new JButton("<html><body>Upgrade<br>(" + (ally.getUpgradeInfo().getCurrentDamageCost()) +"$)</body></html>");
+			buttonUpgDamage.addActionListener(e -> {
+				int cost = ally.getUpgradeInfo().getCurrentDamageCost();
+				ally.getUpgradeInfo().upgradeDamage();
+				statUpdated(cost);
+			});
+			buttonUpgDamage.setBackground(getBackground());
+			buttonUpgDamage.setForeground(Color.WHITE);
+			buttonUpgDamage.setFont(new Font("Tahoma", Font.PLAIN, 12));
+			panelStats.add(buttonUpgDamage);
+			
+			labelFireRate = new JLabel("Fire Rate: " + ally.getFireRate());
+			labelFireRate.setForeground(Color.WHITE);
+			labelFireRate.setFont(new Font("Tahoma", Font.PLAIN, 12));
+			panelStats.add(labelFireRate);
+			
+			buttonUpgFireRate = new JButton("<html><body>Upgrade<br>(" + (ally.getUpgradeInfo().getCurrentFireRateCost()) +"$)</body></html>");
+			buttonUpgFireRate.addActionListener(e -> {
+				int cost = ally.getUpgradeInfo().getCurrentFireRateCost();
+				ally.getUpgradeInfo().upgradeFireRate();
+				statUpdated(cost);
+			});
+			buttonUpgFireRate.setBackground(getBackground());
+			buttonUpgFireRate.setForeground(Color.WHITE);
+			buttonUpgFireRate.setFont(new Font("Tahoma", Font.PLAIN, 12));
+			panelStats.add(buttonUpgFireRate);
+			
+			labelRange = new JLabel("Range: " + ally.getRange());
+			labelRange.setForeground(Color.WHITE);
+			labelRange.setFont(new Font("Tahoma", Font.PLAIN, 12));
+			panelStats.add(labelRange);
+			
+			buttonUpgRange = new JButton("<html><body>Upgrade<br>(" + (ally.getUpgradeInfo().getCurrentRangeCost()) +"$)</body></html>");
+			buttonUpgRange.addActionListener(e -> {
+				int cost = ally.getUpgradeInfo().getCurrentRangeCost();
+				ally.getUpgradeInfo().upgradeRange();
+				statUpdated(cost);
+			});
+			buttonUpgRange.setBackground(getBackground());
+			buttonUpgRange.setForeground(Color.WHITE);
+			buttonUpgRange.setFont(new Font("Tahoma", Font.PLAIN, 12));
+			panelStats.add(buttonUpgRange);
+			
+			if(ally.getAOEDamage() > 0) {
+				labelAOEsize = new JLabel("AOE Radius: " + ally.getAOERadius());
+				labelAOEsize.setForeground(Color.WHITE);
+				labelAOEsize.setFont(new Font("Tahoma", Font.PLAIN, 12));
+				panelStats.add(labelAOEsize);
+				
+				buttonUpgAOEsize = new JButton("<html><body>Upgrade<br>(" + (ally.getUpgradeInfo().getCurrentAOERadiusCost()) +"$)</body></html>");
+				buttonUpgAOEsize.addActionListener(e -> {
+					int cost = ally.getUpgradeInfo().getCurrentAOERadiusCost();
+					ally.getUpgradeInfo().upgradeAOERadius();
+					statUpdated(cost);
+				});
+				buttonUpgAOEsize.setBackground(getBackground());
+				buttonUpgAOEsize.setForeground(Color.WHITE);
+				buttonUpgAOEsize.setFont(new Font("Tahoma", Font.PLAIN, 12));
+				panelStats.add(buttonUpgAOEsize);
+			}
+			
+			labelEnemiesKilled = new JLabel("Enemies Killed: " + ally.getEnemiesKilled());
+			labelEnemiesKilled.setFont(new Font("Tahoma", Font.PLAIN, 12));
+			labelEnemiesKilled.setForeground(Color.WHITE);
+			panelSouth.add(labelEnemiesKilled);
+			
+			labelGoldEarned = new JLabel("Gold Earned: " + ally.getGoldEarned());
+			labelGoldEarned.setFont(new Font("Tahoma", Font.PLAIN, 12));
+			labelGoldEarned.setForeground(Color.WHITE);
+			panelSouth.add(labelGoldEarned);
+		}
+			
 		buttonSell = new JButton("Sell (+"+ (int)(ally.getWorth()*WMDConstants.SELL_RETURN_PERCENTAGE) +"$)");
 		buttonSell.addActionListener(e -> sellUnit());
 		buttonSell.setBackground(getBackground());
@@ -236,6 +238,7 @@ public class WindowUnitUpgrade extends JPopupMenu implements ChangeListener {
 	
 	@Override
 	public void stateChanged(ChangeEvent e) {
+		if(ally.getUpgradeInfo() == null) return;
 		labelEnemiesKilled.setText("Enemies Killed: " + ally.getEnemiesKilled());
 		labelGoldEarned.setText("Gold Earned: " + ally.getGoldEarned());
 		

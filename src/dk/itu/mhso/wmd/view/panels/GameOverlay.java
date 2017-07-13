@@ -3,7 +3,7 @@ package dk.itu.mhso.wmd.view.panels;
 import javax.swing.JPanel;
 
 import dk.itu.mhso.wmd.controller.Game;
-import dk.itu.mhso.wmd.controller.GameStateListener;
+import dk.itu.mhso.wmd.controller.listeners.GameStateListener;
 import dk.itu.mhso.wmd.view.Style;
 import dk.itu.mhso.wmd.view.windows.WindowGame;
 
