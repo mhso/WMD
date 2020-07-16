@@ -23,11 +23,16 @@ import javax.swing.event.ChangeEvent;
 import dk.itu.mhso.wmd.Main;
 import dk.itu.mhso.wmd.Resources;
 import dk.itu.mhso.wmd.WMDConstants;
+import dk.itu.mhso.wmd.controller.listeners.GameListener;
+import dk.itu.mhso.wmd.controller.listeners.GameMoneyListener;
+import dk.itu.mhso.wmd.controller.listeners.GameStateListener;
+import dk.itu.mhso.wmd.controller.listeners.GameTickListener;
 import dk.itu.mhso.wmd.model.Ally;
 import dk.itu.mhso.wmd.model.Enemy;
 import dk.itu.mhso.wmd.model.Level;
 import dk.itu.mhso.wmd.model.Projectile;
 import dk.itu.mhso.wmd.model.Wave;
+import dk.itu.mhso.wmd.model.Trap;
 import dk.itu.mhso.wmd.view.windows.WindowGame;
 import dk.itu.mhso.wmd.model.Explosion;
 

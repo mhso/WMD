@@ -43,13 +43,27 @@ public abstract class Ally extends Unit {
 	
 	public void loadIcons(String unitName) {
 		try {
-            var path = Resources.getSpritesPath() + "/ally/" + unitName.toLowerCase();
-			icon = ImageIO.read(ClassLoader.getSystemResource(path+".png"));
-			highlightIcon = ImageIO.read(ClassLoader.getSystemResource(path+"_highlight.png"));
-			projectileIcon = ImageIO.read(ClassLoader.getSystemResource(path+"_projectile.png"));
+			loadMainIcon(unitName);
+			loadHighlightedIcon(unitName);
+			loadProjectileIcon(unitName);
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
+    }
+    
+    protected void loadMainIcon(String unitName) throws IOException {
+        var path = Resources.getSpritesPath() + "/ally/" + unitName.toLowerCase() + ".png";
+        icon = ImageIO.read(ClassLoader.getSystemResource(path));
+	}
+	
+	protected void loadHighlightedIcon(String unitName) throws IOException {
+        var path = Resources.getSpritesPath() + "/ally/" + unitName.toLowerCase() + "_highlight.png";
+        highlightIcon = ImageIO.read(ClassLoader.getSystemResource(path));
+	}
+	
+	protected void loadProjectileIcon(String unitName) throws IOException {
+        var path = Resources.getSpritesPath() + "/ally/" + unitName.toLowerCase() + "_projectile.png";
+        projectileIcon = ImageIO.read(ClassLoader.getSystemResource(path));
 	}
 	
 	public void loadUpgradeInfo(String fileName) { 
