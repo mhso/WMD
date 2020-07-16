@@ -165,7 +165,7 @@ public class Game {
 	}
 	
 	public static void toggleSpeed() {
-		if(gameTimer.getDelay() == 1000/WMDConstants.DEFAULT_TICKRATE) gameTimer.setDelay(5);
+		if(gameTimer.getDelay() == 1000/WMDConstants.DEFAULT_TICKRATE) gameTimer.setDelay(4);
 		else gameTimer.setDelay(1000/WMDConstants.DEFAULT_TICKRATE);
 	}
 	
@@ -308,9 +308,14 @@ public class Game {
 						ally.setCurrentlyTargetedEnemy(enemy);
 					}
 				}
-				if(ally.getCurrentlyTargetedEnemy() != null && ally.hasCapacity() && 
-					ally.checkFireCooldown())  {
-					ally.addProjectile(ProjectileFactory.createProjectile(ally));
+				if(ally.getCurrentlyTargetedEnemy() != null)  {
+					if(ally instanceof Trap) {
+						createExplosion(ally, ally.getCurrentlyTargetedEnemy(), ally.getMiddlePoint());
+						currentEnemies.remove(ally.getCurrentlyTargetedEnemy());
+						it.remove();
+					}
+					else if(ally.hasCapacity() && 
+							ally.checkFireCooldown()) ally.addProjectile(ProjectileFactory.createProjectile(ally));
 				}
 				ally.getUpgradeWindow().stateChanged(new ChangeEvent(this));
 			}
@@ -334,27 +339,31 @@ public class Game {
 					}
 					
 					if(projectile.getAlly().getAOEDamage() > 0) {
-						int radius = projectile.getAlly().getAOERadius();
-						explosions.add(new Explosion(Resources.getExplosionImages().get(radius), new Point(projectile.getTarget().getLocation().x - 
-								Resources.getExplosionImages().get(radius)[0].getWidth()/2, 
-								projectile.getTarget().getLocation().y - Resources.getExplosionImages().get(radius)[0].getHeight()/2)));
-						Iterator<Enemy> itEnemy = currentEnemies.iterator();
-						while(itEnemy.hasNext()) {
-							Enemy enemy = itEnemy.next();
-							if(enemy != projectile.getTarget() && new Ellipse2D.Double(projectile.getMiddlePoint().x - projectile.getAlly().getAOERadius(), 
-									projectile.getMiddlePoint().y - projectile.getAlly().getAOERadius(), 
-									projectile.getAlly().getAOERadius()*2, projectile.getAlly().getAOERadius()*2).contains(enemy.getLocation())) {
-								enemy.decrementHealth(projectile.getAlly().getAOEDamage());
-								if(!enemy.isActive()) {
-									projectile.getAlly().incrementEnemiesKilled(1);
-									projectile.getAlly().incrementGoldEarned(enemy.getMaxHealth() * 10);
-									itEnemy.remove();
-									enemyKilled(enemy);
-								}
-							}
-						}
+						createExplosion(projectile.getAlly(), projectile.getTarget(), projectile.getMiddlePoint());
 					}
 					it.remove();
+				}
+			}
+		}
+		
+		private void createExplosion(Ally source, Enemy target, Point location) {
+			int radius = source.getAOERadius();
+			explosions.add(new Explosion(Resources.getExplosionImages().get(radius), new Point(target.getLocation().x - 
+					Resources.getExplosionImages().get(radius)[0].getWidth()/2, 
+					target.getLocation().y - Resources.getExplosionImages().get(radius)[0].getHeight()/2)));
+			Iterator<Enemy> itEnemy = currentEnemies.iterator();
+			while(itEnemy.hasNext()) {
+				Enemy enemy = itEnemy.next();
+				if(enemy != target && new Ellipse2D.Double(location.x - source.getAOERadius(), 
+						location.y - source.getAOERadius(), 
+						source.getAOERadius()*2, source.getAOERadius()*2).contains(enemy.getLocation())) {
+					enemy.decrementHealth(source.getAOEDamage());
+					if(!enemy.isActive()) {
+						source.incrementEnemiesKilled(1);
+						source.incrementGoldEarned(enemy.getMaxHealth() * 10);
+						itEnemy.remove();
+						enemyKilled(enemy);
+					}
 				}
 			}
 		}

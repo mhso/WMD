@@ -10,7 +10,7 @@ import javax.swing.JPanel;
 import javax.swing.OverlayLayout;
 
 import dk.itu.mhso.wmd.controller.Game;
-import dk.itu.mhso.wmd.controller.GameTickListener;
+import dk.itu.mhso.wmd.controller.listeners.GameTickListener;
 import dk.itu.mhso.wmd.model.Level;
 import dk.itu.mhso.wmd.view.panels.Canvas;
 import dk.itu.mhso.wmd.view.panels.GameOverlay;
