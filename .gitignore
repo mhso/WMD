@@ -1,5 +1,7 @@
 resources/editor/**
 target/
+bin/
+.settings
 
 *.class
 *.project
