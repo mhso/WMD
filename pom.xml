@@ -1,0 +1,21 @@
+<project>
+    <modelVersion>4.0.0</modelVersion>
+    <groupId>dk.itu.mhso.wmd</groupId>
+    <artifactId>Game</artifactId>
+    <version>0.4</version>
+    <build>
+        <plugins>
+            <plugin>
+                <artifactId>maven-compiler-plugin</artifactId>
+				<version>3.1</version>
+                <configuration>
+                    <fork>true</fork>
+                    <source>1.10</source>
+                    <target>1.10</target>
+                    <forceJavacCompilerUser>true</forceJavacCompilerUser>
+                    <executable>C:\Program Files\Java\jdk-10.0.2\bin\javac</executable>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
+</project>
