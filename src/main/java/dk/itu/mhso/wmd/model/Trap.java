@@ -9,7 +9,6 @@ public abstract class Trap extends Ally {
 	}
 
 	public void loadIcons(String unitName) {
-        System.out.println(unitName);
 		try {
 			loadMainIcon(unitName);
 			loadHighlightedIcon(unitName);

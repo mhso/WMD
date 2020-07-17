@@ -7,6 +7,7 @@ import java.awt.Dimension;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+import java.util.stream.Stream;
 
 import javax.swing.JFrame;
 import javax.swing.JPanel;
@@ -43,6 +44,8 @@ import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
 import java.net.URISyntaxException;
+import java.nio.file.FileSystem;
+import java.nio.file.FileSystems;
 import java.nio.file.FileVisitResult;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -210,7 +213,7 @@ public class WindowLevelEditor extends JFrame {
 		miLoadLevel.addActionListener(e -> {
 			try {
 				showSavedFiles();
-			} catch (IOException e1) {
+			} catch (IOException | URISyntaxException e1) {
 				e1.printStackTrace();
 			}
 		});
@@ -412,7 +415,7 @@ public class WindowLevelEditor extends JFrame {
 	}
 	
 	private void loadLevel(String fileName) throws IOException {
-		getContentPane().remove(canvas);
+        getContentPane().remove(canvas);
 		canvas = (EditorCanvas) Util.readObjectFromFile(fileName + "/canvas.bin");
 		canvas.setWindow(this);
 		getContentPane().add(canvas);
@@ -431,20 +434,23 @@ public class WindowLevelEditor extends JFrame {
 		Util.writeObjectToFile(recentFile, Resources.getEditorPath() + "/meta.bin");
 	}
 	
-	private void showSavedFiles() throws IOException {
+	private void showSavedFiles() throws IOException, URISyntaxException {
 		JDialog dialog = new JDialog(this);
 		JPanel dc = (JPanel) dialog.getContentPane();
 		dc.setLayout(new BorderLayout());
 		List<Path> files = new ArrayList<>();
-		Iterator<Path> it = Files.list(Paths.get("resources/editor")).iterator();
-		while(it.hasNext()) {
+        var uri = Resources.class.getResource("/dk/itu/mhso/wmd/").toURI();
+        FileSystem fileSystem = FileSystems.getFileSystem(uri);
+        Path editorPath = fileSystem.getPath("editor");
+        Stream<Path> walk = Files.walk(editorPath, 1);
+		for(Iterator<Path> it = walk.iterator(); it.hasNext();) {
 			Path p = it.next();
 			if(Files.isDirectory(p)) files.add(p);
 		}
 		
 		String[] fileNames = new String[files.size()];
 		for(int i = 0; i < files.size(); i++) {
-			fileNames[i] = files.get(i).toFile().getName();
+			fileNames[i] = files.get(i).getFileName().toString();
 		}
 		
 		JList<String> list = new JList<>(fileNames);
